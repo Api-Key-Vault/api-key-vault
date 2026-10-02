@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ApiKeyVault.Api/ApiKeyVault.Api.csproj" />
+  <Project Path="ApiKeyVault.Application/ApiKeyVault.Application.csproj" />
+  <Project Path="ApiKeyVault.Domain/ApiKeyVault.Domain.csproj" />
+  <Project Path="ApiKeyVault.Infrastructure/ApiKeyVault.Infrastructure.csproj" />
+</Solution>
