@@ -1,0 +1,6 @@
+@apikeyvault_api_HostAddress = http://localhost:5034
+
+GET {{apikeyvault_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
