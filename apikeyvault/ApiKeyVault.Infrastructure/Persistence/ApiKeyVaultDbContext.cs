@@ -27,42 +27,42 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
             builder.Entity<TeamMember>(teamMember =>
             {
-                teamMember.HasIndex(tm => new
+                teamMember.HasIndex(member => new
                 {
-                    tm.TeamId,
-                    tm.UserId
+                    member.TeamId,
+                    member.UserId
                 })
                 .IsUnique();
 
                 teamMember.HasOne<ApplicationUser>()
-                    .WithMany(tm => tm.TeamMemberships)
-                    .HasForeignKey(tm => tm.UserId);
+                    .WithMany(user => user.TeamMemberships)
+                    .HasForeignKey(member => member.UserId);
 
-                teamMember.HasOne(tm => tm.Team)
-                    .WithMany(t => t.Members)
-                    .HasForeignKey(tm => tm.TeamId);
+                teamMember.HasOne(member => member.Team)
+                    .WithMany(team => team.Members)
+                    .HasForeignKey(member => member.TeamId);
 
-                teamMember.HasOne(tm => tm.Role)
-                    .WithMany(t => t.Members)
-                    .HasForeignKey(tm => tm.RoleId);                
+                teamMember.HasOne(member => member.Role)
+                    .WithMany(role => role.Members)
+                    .HasForeignKey(member => member.RoleId);                
             });
 
 
             builder.Entity<TeamInvite>(teamInvite =>
             {
-                teamInvite.HasOne(ti => ti.CreatedByMember)
-                    .WithMany(tm => tm.CreatedInvites)
-                    .HasForeignKey(ti => ti.CreatedByMemberId);
+                teamInvite.HasOne(invite => invite.CreatedByMember)
+                    .WithMany(member => member.CreatedInvites)
+                    .HasForeignKey(invite => invite.CreatedByMemberId);
 
-                teamInvite.HasOne(ti => ti.UsedByMember)
-                    .WithMany(tm => tm.UsedInvites)
-                    .HasForeignKey(ti => ti.UsedByMemberId);
+                teamInvite.HasOne(invite => invite.UsedByMember)
+                    .WithMany(member => member.UsedInvites)
+                    .HasForeignKey(invite => invite.UsedByMemberId);
 
-                teamInvite.HasOne(ti => ti.Team)
-                    .WithMany(t => t.Invites)
-                    .HasForeignKey(ti => ti.TeamId);
+                teamInvite.HasOne(invite => invite.Team)
+                    .WithMany(team => team.Invites)
+                    .HasForeignKey(invite => invite.TeamId);
 
-                teamInvite.Property(ti => ti.TokenHash)
+                teamInvite.Property(invite => invite.TokenHash)
                     .IsUnicode(false)
                     .HasMaxLength(255);
             });
@@ -70,15 +70,15 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
             builder.Entity<ApiKey>(apiKey =>
             {
-                apiKey.HasOne(ak => ak.Team)
-                    .WithMany(t => t.ApiKeys)
-                    .HasForeignKey(ak => ak.TeamId);
+                apiKey.HasOne(apiKey => apiKey.Team)
+                    .WithMany(team => team.ApiKeys)
+                    .HasForeignKey(apiKey => apiKey.TeamId);
 
-                apiKey.HasOne(ak => ak.CreatedByMember)
-                    .WithMany(tm => tm.CreatedApiKeys)
-                    .HasForeignKey(ak => ak.CreatedByMemberId);
+                apiKey.HasOne(apiKey => apiKey.CreatedByMember)
+                    .WithMany(member => member.CreatedApiKeys)
+                    .HasForeignKey(apiKey => apiKey.CreatedByMemberId);
 
-                apiKey.Property(ak => ak.EncryptedValue)
+                apiKey.Property(apiKey => apiKey.EncryptedValue)
                     .IsUnicode(false)
                     .HasMaxLength(255);
 
@@ -86,23 +86,23 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
             builder.Entity<ApiKeyAccess>(apiKeyAccess =>
             {
-                apiKeyAccess.HasKey(aka => new
+                apiKeyAccess.HasKey(access => new
                 {
-                    aka.ApiKeyId,
-                    aka.TeamMemberId
+                    access.ApiKeyId,
+                    access.TeamMemberId
                 });
 
-                apiKeyAccess.HasOne(aka => aka.ApiKey)
-                .WithMany(ak => ak.ApiKeyAccesses)
-                .HasForeignKey(aka => aka.ApiKeyId);
+                apiKeyAccess.HasOne(access => access.ApiKey)
+                .WithMany(apiKey => apiKey.ApiKeyAccesses)
+                .HasForeignKey(access => access.ApiKeyId);
 
-                apiKeyAccess.HasOne(aka => aka.Member)
-                .WithMany(tm => tm.GrantedApiKeyAccesses)
-                .HasForeignKey(aka => aka.TeamMemberId);
+                apiKeyAccess.HasOne(access => access.Member)
+                .WithMany(member => member.GrantedApiKeyAccesses)
+                .HasForeignKey(access => access.TeamMemberId);
 
-                apiKeyAccess.HasOne(aka => aka.GrantedByMember)
-                .WithMany(tm => tm.CreatedApiKeyAccesses)
-                .HasForeignKey(aka => aka.GrantedByMemberId);
+                apiKeyAccess.HasOne(access => access.GrantedByMember)
+                .WithMany(member => member.CreatedApiKeyAccesses)
+                .HasForeignKey(access => access.GrantedByMemberId);
             });
 
 
