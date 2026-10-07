@@ -35,7 +35,7 @@ namespace ApiKeyVault.Infrastructure.Persistence
                 .IsUnique();
 
                 teamMember.HasOne<ApplicationUser>()
-                    .WithMany()
+                    .WithMany(tm => tm.TeamMemberships)
                     .HasForeignKey(tm => tm.UserId);
 
                 teamMember.HasOne(tm => tm.Team)
