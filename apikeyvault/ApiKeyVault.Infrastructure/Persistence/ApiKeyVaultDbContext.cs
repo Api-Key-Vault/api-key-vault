@@ -2,10 +2,6 @@
 using ApiKeyVault.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
-
 namespace ApiKeyVault.Infrastructure.Persistence
 {
     public class ApiKeyVaultDbContext : IdentityDbContext<ApplicationUser>
@@ -71,6 +67,9 @@ namespace ApiKeyVault.Infrastructure.Persistence
                 teamInvite.Property(invite => invite.TokenHash)
                     .IsUnicode(false)
                     .HasMaxLength(255);
+
+                teamInvite.HasIndex(invite => invite.TokenHash)
+                    .IsUnique();
             });
 
 
@@ -86,6 +85,8 @@ namespace ApiKeyVault.Infrastructure.Persistence
                     .HasForeignKey(apiKey => apiKey.CreatedByMemberId)
                     .OnDelete(DeleteBehavior.NoAction);
 
+                apiKeyConfiguration.Property(apiKey => apiKey.EncryptedValue)
+                    .IsUnicode(false);
             });
 
             builder.Entity<ApiKeyAccess>(apiKeyAccess =>
@@ -113,18 +114,24 @@ namespace ApiKeyVault.Infrastructure.Persistence
             });
 
 
-            builder.Entity<TeamRole>().HasData(
-                new TeamRole
-                {
-                    Id = 1,
-                    Name = "Owner"
-                },
-                new TeamRole
-                {
-                    Id = 2,
-                    Name = "Member"
-                }
-            );
+            builder.Entity<TeamRole>(teamRole =>
+            {
+                teamRole.HasIndex(role => role.Name)
+                    .IsUnique();
+
+                teamRole.HasData(
+                    new TeamRole
+                    {
+                        Id = 1,
+                        Name = "Owner"
+                    },
+                    new TeamRole
+                    {
+                        Id = 2,
+                        Name = "Member"
+                    }
+                );
+            });
         }
     }
 }
