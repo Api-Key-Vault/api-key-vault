@@ -11,6 +11,23 @@ namespace ApiKeyVault.Api
 
             // Add services to the container.
             builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+            });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("Frontend", policy =>
+                {
+                    policy.WithOrigins(builder.Configuration["Frontend:Origin"])
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -26,6 +43,8 @@ namespace ApiKeyVault.Api
 
             app.UseHttpsRedirection();
 
+            app.UseCors("Frontend");
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

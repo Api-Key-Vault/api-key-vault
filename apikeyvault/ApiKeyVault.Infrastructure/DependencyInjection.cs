@@ -1,12 +1,12 @@
 ﻿using ApiKeyVault.Infrastructure.Identity;
 using ApiKeyVault.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Security.Claims;
 
 namespace ApiKeyVault.Infrastructure
 {
@@ -22,6 +22,15 @@ namespace ApiKeyVault.Infrastructure
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApiKeyVaultDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddAuthentication()
+                .AddGitHub(options =>
+                {
+                    options.ClientId = configuration["Authentication:GitHub:ClientId"];
+                    options.ClientSecret = configuration["Authentication:GitHub:ClientSecret"];
+                    options.Scope.Add("user:email");                   
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");                    
+                });                    
 
             return services;
         }
