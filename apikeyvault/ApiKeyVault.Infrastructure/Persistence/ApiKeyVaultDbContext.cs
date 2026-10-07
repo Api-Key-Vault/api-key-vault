@@ -36,15 +36,18 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
                 teamMember.HasOne<ApplicationUser>()
                     .WithMany(user => user.TeamMemberships)
-                    .HasForeignKey(member => member.UserId);
+                    .HasForeignKey(member => member.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
                 teamMember.HasOne(member => member.Team)
                     .WithMany(team => team.Members)
-                    .HasForeignKey(member => member.TeamId);
+                    .HasForeignKey(member => member.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 teamMember.HasOne(member => member.Role)
                     .WithMany(role => role.Members)
-                    .HasForeignKey(member => member.RoleId);                
+                    .HasForeignKey(member => member.RoleId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
 
@@ -52,15 +55,18 @@ namespace ApiKeyVault.Infrastructure.Persistence
             {
                 teamInvite.HasOne(invite => invite.CreatedByMember)
                     .WithMany(member => member.CreatedInvites)
-                    .HasForeignKey(invite => invite.CreatedByMemberId);
+                    .HasForeignKey(invite => invite.CreatedByMemberId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
                 teamInvite.HasOne(invite => invite.UsedByMember)
                     .WithMany(member => member.UsedInvites)
-                    .HasForeignKey(invite => invite.UsedByMemberId);
+                    .HasForeignKey(invite => invite.UsedByMemberId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
                 teamInvite.HasOne(invite => invite.Team)
                     .WithMany(team => team.Invites)
-                    .HasForeignKey(invite => invite.TeamId);
+                    .HasForeignKey(invite => invite.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 teamInvite.Property(invite => invite.TokenHash)
                     .IsUnicode(false)
@@ -68,19 +74,17 @@ namespace ApiKeyVault.Infrastructure.Persistence
             });
 
 
-            builder.Entity<ApiKey>(apiKey =>
+            builder.Entity<ApiKey>(apiKeyConfiguration =>
             {
-                apiKey.HasOne(apiKey => apiKey.Team)
+                apiKeyConfiguration.HasOne(apiKey => apiKey.Team)
                     .WithMany(team => team.ApiKeys)
-                    .HasForeignKey(apiKey => apiKey.TeamId);
+                    .HasForeignKey(apiKey => apiKey.TeamId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                apiKey.HasOne(apiKey => apiKey.CreatedByMember)
+                apiKeyConfiguration.HasOne(apiKey => apiKey.CreatedByMember)
                     .WithMany(member => member.CreatedApiKeys)
-                    .HasForeignKey(apiKey => apiKey.CreatedByMemberId);
-
-                apiKey.Property(apiKey => apiKey.EncryptedValue)
-                    .IsUnicode(false)
-                    .HasMaxLength(255);
+                    .HasForeignKey(apiKey => apiKey.CreatedByMemberId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
             });
 
@@ -94,15 +98,18 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
                 apiKeyAccess.HasOne(access => access.ApiKey)
                 .WithMany(apiKey => apiKey.ApiKeyAccesses)
-                .HasForeignKey(access => access.ApiKeyId);
+                .HasForeignKey(access => access.ApiKeyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 apiKeyAccess.HasOne(access => access.Member)
                 .WithMany(member => member.GrantedApiKeyAccesses)
-                .HasForeignKey(access => access.TeamMemberId);
+                .HasForeignKey(access => access.TeamMemberId)
+                .OnDelete(DeleteBehavior.NoAction);
 
                 apiKeyAccess.HasOne(access => access.GrantedByMember)
                 .WithMany(member => member.CreatedApiKeyAccesses)
-                .HasForeignKey(access => access.GrantedByMemberId);
+                .HasForeignKey(access => access.GrantedByMemberId)
+                .OnDelete(DeleteBehavior.NoAction);
             });
 
 
