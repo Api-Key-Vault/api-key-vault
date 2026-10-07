@@ -13,7 +13,6 @@ namespace ApiKeyVault.Domain.Entities
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Name must be between 3 to 50 characters.")]
         public string Name { get; set; } = string.Empty;
         [Required] 
-        [MaxLength(255)]
         public string EncryptedValue { get; set; } = string.Empty;
 
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Name must be between 3 to 50 characters.")]
