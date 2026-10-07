@@ -27,6 +27,13 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
             builder.Entity<TeamMember>(teamMember =>
             {
+                teamMember.HasIndex(tm => new
+                {
+                    tm.TeamId,
+                    tm.UserId
+                })
+                .IsUnique();
+
                 teamMember.HasOne<ApplicationUser>()
                     .WithMany()
                     .HasForeignKey(tm => tm.UserId);
@@ -37,7 +44,7 @@ namespace ApiKeyVault.Infrastructure.Persistence
 
                 teamMember.HasOne(tm => tm.Role)
                     .WithMany(t => t.Members)
-                    .HasForeignKey(tm => tm.RoleId);
+                    .HasForeignKey(tm => tm.RoleId);                
             });
 
 
