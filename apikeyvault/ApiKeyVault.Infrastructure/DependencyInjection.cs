@@ -23,14 +23,27 @@ namespace ApiKeyVault.Infrastructure
                 .AddEntityFrameworkStores<ApiKeyVaultDbContext>()
                 .AddDefaultTokenProviders();
 
+            var githubClientId = configuration["Authentication:GitHub:ClientId"];
+            var githubClientSecret = configuration["Authentication:GitHub:ClientSecret"];
+
+            if (string.IsNullOrWhiteSpace(githubClientId))
+            {
+                throw new InvalidOperationException("GitHub OAuth client ID is not configured.");
+            }
+
+            if (string.IsNullOrWhiteSpace(githubClientSecret))
+            {
+                throw new InvalidOperationException("GitHub OAuth client secret is not configured.");
+            }
+
             services.AddAuthentication()
                 .AddGitHub(options =>
                 {
-                    options.ClientId = configuration["Authentication:GitHub:ClientId"];
-                    options.ClientSecret = configuration["Authentication:GitHub:ClientSecret"];
-                    options.Scope.Add("user:email");                   
-                    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");                    
-                });                    
+                    options.ClientId = githubClientId;
+                    options.ClientSecret = githubClientSecret;
+                    options.Scope.Add("user:email");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
+                });
 
             return services;
         }
