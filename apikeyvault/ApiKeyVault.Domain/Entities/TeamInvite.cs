@@ -21,6 +21,6 @@ namespace ApiKeyVault.Domain.Entities
 
         public Team Team { get; set; } = null!;
         public TeamMember CreatedByMember { get; set; } = null!;
-        public TeamMember UsedByMember { get; set; } = null!;
+        public TeamMember? UsedByMember { get; set; } = null!;
     }
 }
