@@ -1,7 +1,8 @@
-﻿using ApiKeyVault.Infrastructure.Identity;
+﻿using ApiKeyVault.Application.Interfaces.Services;
+using ApiKeyVault.Infrastructure.Identity;
 using ApiKeyVault.Infrastructure.Persistence;
+using ApiKeyVault.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,7 +44,16 @@ namespace ApiKeyVault.Infrastructure
                     options.ClientSecret = githubClientSecret;
                     options.Scope.Add("user:email");
                     options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        context.Response.Redirect("/api/auth/github/callback?error=external_login_failed");
+                        context.HandleResponse();
+                        
+                        return Task.CompletedTask;
+                    };
                 });
+
+            services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
 
             return services;
         }
