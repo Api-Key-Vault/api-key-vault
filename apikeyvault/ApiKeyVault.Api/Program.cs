@@ -1,5 +1,6 @@
 
 using ApiKeyVault.Infrastructure;
+using Scalar.AspNetCore;
 
 namespace ApiKeyVault.Api
 {
@@ -39,6 +40,7 @@ namespace ApiKeyVault.Api
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
