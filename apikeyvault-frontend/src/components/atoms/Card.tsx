@@ -1,0 +1,20 @@
+import { Card as RetroCard } from "pixel-retroui";
+import type { ReactNode } from "react";
+
+type CardProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+export default function Card({ children, className }: CardProps) {
+  return (
+      <RetroCard
+          bg="var(--color-surface)"
+          textColor="var(--color-text)"
+          shadowColor="var(--color-shadow)"
+          className={className}
+      >
+        {children}
+      </RetroCard>
+  );
+}
