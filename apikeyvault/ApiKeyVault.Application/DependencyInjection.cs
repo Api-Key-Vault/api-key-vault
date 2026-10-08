@@ -13,7 +13,7 @@ namespace ApiKeyVault.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
-            
+            services.AddScoped<ITeamService, TeamService>();
             return services;
         }
     }
