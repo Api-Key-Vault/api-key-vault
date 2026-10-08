@@ -1,4 +1,5 @@
 
+using ApiKeyVault.Application;
 using ApiKeyVault.Infrastructure;
 using Scalar.AspNetCore;
 
@@ -12,6 +13,8 @@ namespace ApiKeyVault.Api
 
             // Add services to the container.
             builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddApplication(builder.Configuration);
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
