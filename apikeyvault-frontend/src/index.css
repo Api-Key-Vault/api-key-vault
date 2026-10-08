@@ -19,6 +19,8 @@
   --warning-on-color: #FFFFFF;
   --error-on-color: #FFFFFF;
   --shadow: #000000;
+  --pattern-color-1: #484848;
+  --pattern-color-2: #393939;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,6 +41,8 @@
     --warning-on-color: #1A1A1A;
     --error-on-color: #1A1A1A;
     --shadow: #000000;
+    --pattern-color-1: #3B304F;
+    --pattern-color-2: #302346;
   }
 }
 
@@ -59,4 +63,20 @@
   --color-warning-on-color: var(--warning-on-color);
   --color-error-on-color: var(--error-on-color);
   --color-shadow: var(--shadow);
+  --color-pattern-1: var(--pattern-color-1);
+  --color-pattern-2: var(--pattern-color-2);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: conic-gradient(
+    var(--pattern-color-1) 25%,
+    var(--pattern-color-2) 0 50%,
+    var(--pattern-color-1) 0 75%,
+    var(--pattern-color-2) 0
+  );
+  background-size: 64px 64px; 
 }
