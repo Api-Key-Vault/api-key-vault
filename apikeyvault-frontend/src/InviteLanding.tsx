@@ -1,12 +1,21 @@
+import { Bubble } from "pixel-retroui";
 import Card from "./components/atoms/Card";
 import PrimaryButton from "./components/atoms/PrimaryButton";
 
 export default function InviteLanding() {
-    return (
-			<section className="flex justify-center items-center w-full min-h-screen flex-col gap-10">
-				<h1 className="text-4xl! text-primary-accent text-center">
+	return (
+		<section className="flex justify-center items-center w-full min-h-screen">
+			<div className="relative">
+				<Bubble
+					className="flex flex-row items-center gap-3 absolute -top-30 left-0 md:left-1/2 translate-x-0 md:translate-x-1/4 w-80"
+					direction="left"
+					bg="var(--color-surface-elevated)"
+					textColor="var(--color-text)"
+					borderColor="var(--color-border)"
+				>
+					<span className="pixelart-icons-font-mail text-text text-[30px]!"></span>
 					You have been invited!
-				</h1>
+				</Bubble>
 				<Card className="p-4 text-center w-80 h-80 flex gap-3.5 flex-col">
 					<span className="pixelart-icons-font-key text-secondary-accent text-[40px]!" />
 					<h2 className="text-text text-2xl">Welcome!</h2>
@@ -23,6 +32,7 @@ export default function InviteLanding() {
 						We use your Github account for login. We do not save your password.
 					</p>
 				</Card>
-			</section>
-		);
+			</div>
+		</section>
+	);
 }
