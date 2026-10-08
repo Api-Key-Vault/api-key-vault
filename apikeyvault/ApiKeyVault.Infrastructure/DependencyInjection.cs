@@ -1,6 +1,8 @@
-﻿using ApiKeyVault.Application.Interfaces.Services;
+﻿using ApiKeyVault.Application.Interfaces.Repositories;
+using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Infrastructure.Identity;
 using ApiKeyVault.Infrastructure.Persistence;
+using ApiKeyVault.Infrastructure.Persistence.Repositories;
 using ApiKeyVault.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -54,6 +56,8 @@ namespace ApiKeyVault.Infrastructure
                 });
 
             services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
+
+            services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
 
             return services;
         }
