@@ -5,6 +5,7 @@ using ApiKeyVault.Infrastructure.Persistence;
 using ApiKeyVault.Infrastructure.Persistence.Repositories;
 using ApiKeyVault.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,8 @@ namespace ApiKeyVault.Infrastructure
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddDataProtection().SetApplicationName("ApiKeyVault");
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApiKeyVaultDbContext>()
@@ -58,6 +61,7 @@ namespace ApiKeyVault.Infrastructure
             services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
 
             services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
+            services.AddScoped<IApiKeyProtector, ApiKeyProtector>();
 
             return services;
         }
