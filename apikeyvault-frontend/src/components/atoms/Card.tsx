@@ -12,6 +12,7 @@ export default function Card({ children, className }: CardProps) {
           bg="var(--color-surface)"
           textColor="var(--color-text)"
           shadowColor="var(--color-shadow)"
+          borderColor="var(--color-border)"
           className={className}
       >
         {children}
