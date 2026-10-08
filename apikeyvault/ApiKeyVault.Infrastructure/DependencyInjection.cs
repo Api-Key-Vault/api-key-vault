@@ -61,6 +61,7 @@ namespace ApiKeyVault.Infrastructure
             services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
 
             services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
+            services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
             services.AddScoped<IApiKeyProtector, ApiKeyProtector>();
 
             return services;
