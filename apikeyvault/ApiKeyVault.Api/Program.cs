@@ -1,5 +1,6 @@
-
+using ApiKeyVault.Application;
 using ApiKeyVault.Infrastructure;
+using Scalar.AspNetCore;
 
 namespace ApiKeyVault.Api
 {
@@ -11,8 +12,32 @@ namespace ApiKeyVault.Api
 
             // Add services to the container.
             builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddApplication(builder.Configuration);
 
-            builder.Services.AddControllers();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+            });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("Frontend", policy =>
+                {
+                    policy.WithOrigins(builder.Configuration["Frontend:Origin"]
+                        ?? throw new InvalidOperationException("Frontend:Origin configuration is required."))
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
+            builder.Services.AddControllers(options =>
+            {
+                options.SuppressAsyncSuffixInActionNames = false;
+            });
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -22,10 +47,13 @@ namespace ApiKeyVault.Api
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
 
+            app.UseCors("Frontend");
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
