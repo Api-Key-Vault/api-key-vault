@@ -1,6 +1,7 @@
 import Card from "../components/atoms/Card";
 import PrimaryButton from "../components/atoms/PrimaryButton";
 import TeamCard from "./components/TeamCard";
+import StatsBox from "./components/StatsBox";
 
 export default function UserDashboardPage(){
     return (
@@ -23,25 +24,28 @@ export default function UserDashboardPage(){
                 </div>
             </Card>
 
-            {/* SUMMARY BOXES */}
+            {/* STATS BOXES */}
             <div className="flex mt-8 flex-row gap-4 w-4/5 justify-between">
-                <Card className="p-4 w-75 flex flex-row items-center gap-5">
-                    <span className="pixelart-icons-font-users text-text text-[35px]!" />
-                    {/* TODO: Replace hardcoded number with real team count. */}
-                    <p className="text-text">3 teams</p>
-                </Card>
+                {/*TODO: Replace hardcoded number with real team count.*/}
+               <StatsBox 
+                icon={<span className="pixelart-icons-font-users text-text text-[35px]!" />}
+                count={3}
+	            label="Teams"
+               />
 
-                <Card className="p-4 w-75 flex flex-row items-center gap-5">
-	                <span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />
-	                {/* TODO: Replace hardcoded number with real API key count. */}
-	                <p className="text-text">16 API keys</p>
-                </Card>
+	            {/*TODO: Replace hardcoded number with real API key count.*/}
+                <StatsBox 
+                icon={<span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />}
+                count={16}
+                label="API Keys"
+                />
 
-                <Card className="p-4 w-75 flex flex-row items-center gap-5">
-	                <span className="pixelart-icons-font-user-plus text-text text-[35px]!" />
-	                {/* TODO: Replace hardcoded number with real member count. */}
-	                <p className="text-text">15 Members</p>
-                </Card>
+	            {/*TODO: Replace hardcoded number with real member count.*/}
+                <StatsBox 
+                icon={<span className="pixelart-icons-font-user-plus text-text text-[35px]!" />}
+                count={15}
+                label="Members"
+                />
             </div>
 
             <div className="flex mt-7 flex-row items-center justify-between w-4/5">
