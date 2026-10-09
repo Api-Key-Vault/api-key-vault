@@ -17,7 +17,7 @@ namespace ApiKeyVault.Infrastructure.Services
             _signInManager = signInManager;
         }
 
-        public async Task<AuthenticatedUserDto> GetCurrentUserAsync(ClaimsPrincipal principal)
+        public async Task<AuthenticatedUserDto?> GetCurrentUserAsync(ClaimsPrincipal principal)
         {
             var user = await _userManager.GetUserAsync(principal);
 
