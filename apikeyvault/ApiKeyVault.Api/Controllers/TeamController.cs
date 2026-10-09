@@ -1,8 +1,13 @@
-﻿using ApiKeyVault.Application.Interfaces.Services;
+﻿using ApiKeyVault.Application.Dtos.Team;
+using ApiKeyVault.Application.Interfaces.Services;
+using ApiKeyVault.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ApiKeyVault.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TeamController : ControllerBase
@@ -14,6 +19,35 @@ namespace ApiKeyVault.Api.Controllers
             _teamService = teamService;
         }
 
+
+		// this one is only temp to be able to do "Created at" will do proper one soon!
+		[HttpGet("{id:int}")]
+		public IActionResult GetById(int id)
+		{
+			return Ok();
+		}
+
+
+
+		[HttpPost]
+		public async Task<ActionResult<TeamResponse>> CreateTeam([FromBody] CreateTeamRequest createTeamRequest)
+        {
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (userId is null)
+			{
+				return Unauthorized();
+			}
+
+			var newTeam = await _teamService.CreateTeamAsync(createTeamRequest);
+
+            if(newTeam is null)
+            {
+                return Forbid();
+            }
+
+			return CreatedAtAction(nameof(GetById), new { id = newTeam.Id },newTeam);
+		}
 
     }
 }
