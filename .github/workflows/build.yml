@@ -24,3 +24,5 @@ jobs:
         working-directory: apikeyvault-frontend
       - run: npm run lint
         working-directory: apikeyvault-frontend
+      - run: npm run build
+        working-directory: apikeyvault-frontend
