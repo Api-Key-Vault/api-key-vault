@@ -66,6 +66,5 @@ namespace ApiKeyVault.Infrastructure
 
             return services;
         }
-
     }
 }
