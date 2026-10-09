@@ -42,6 +42,12 @@ export default function UserDashboardPage(){
 	                <p className="text-text">15 Members</p>
                 </Card>
             </div>
+
+            <div className="flex mt-7 flex-row items-center justify-between w-4/5">
+                <h2 className="text-primary-accent text-2xl">Teams</h2>
+                {/* TODO: Add function to create team button. */}
+                <PrimaryButton>Create team</PrimaryButton>
+            </div>
         </section>
     );
 }
