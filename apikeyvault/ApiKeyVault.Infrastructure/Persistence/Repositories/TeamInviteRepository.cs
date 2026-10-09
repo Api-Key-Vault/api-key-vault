@@ -14,7 +14,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
         }
         public async Task AddTeamInviteAsync(TeamInvite teamInvite)
         {
-            await _dbContext.AddAsync(teamInvite);
+            await _dbContext.TeamInvites.AddAsync(teamInvite);
         }
 
         public async Task<TeamInvite?> GetByTokenHashAsync(string tokenHash)
@@ -30,7 +30,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 
             var rowsAffected = await _dbContext.TeamInvites
                 .Where(ti => ti.Id == teamInviteId
-                    && ti.UsedByMember == null
+                    && ti.UsedByMemberId == null
                     && ti.ExpiresAt > now)
                 .ExecuteUpdateAsync(s => s.SetProperty(ti => ti.UsedByMemberId, usedByMemberId));
 
