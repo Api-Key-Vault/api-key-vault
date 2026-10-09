@@ -1,3 +1,5 @@
+﻿using System.Text.Json.Serialization;
+
 namespace ApiKeyVault.Application.Dtos.ApiKey
 {
     public class ApiKeyResponse
@@ -8,6 +10,8 @@ namespace ApiKeyVault.Application.Dtos.ApiKey
         public DateTime CreatedAt { get; set; }
         public DateTime? ExpiresAt { get; set; }
         public DateTime? RevokedAt { get; set; }
-        public string Status { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ApiKeyStatus Status { get; set; }
     }
 }

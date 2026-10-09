@@ -26,7 +26,8 @@ namespace ApiKeyVault.Api
             {
                 options.AddPolicy("Frontend", policy =>
                 {
-                    policy.WithOrigins(builder.Configuration["Frontend:Origin"])
+                    policy.WithOrigins(builder.Configuration["Frontend:Origin"]
+                        ?? throw new InvalidOperationException("Frontend:Origin configuration is required."))
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
