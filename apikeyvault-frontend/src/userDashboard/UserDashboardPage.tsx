@@ -2,6 +2,7 @@ import Card from "../components/atoms/Card";
 import PrimaryButton from "../components/atoms/PrimaryButton";
 import TeamCard from "./components/TeamCard";
 import StatsBox from "./components/StatsBox";
+import AvatarButton from "./components/AvatarButton";
 
 export default function UserDashboardPage(){
     return (
@@ -18,7 +19,8 @@ export default function UserDashboardPage(){
                 </div>
 
                 <div className="flex flex-row items-center gap-6">
-                    <span className="pixelart-icons-font-user text-text text-[40px]!" />
+                    {/* TODO: Add function to AvatarButton */}
+                    <AvatarButton />
                     {/*TODO: Add logout function.*/}
                     <PrimaryButton className="text-xl px-4! py-1!">Logout</PrimaryButton>
                 </div>
