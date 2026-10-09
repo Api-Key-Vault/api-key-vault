@@ -1,5 +1,6 @@
 import Card from "../components/atoms/Card";
 import PrimaryButton from "../components/atoms/PrimaryButton";
+import TeamCard from "./components/TeamCard";
 
 export default function UserDashboardPage(){
     return (
@@ -47,6 +48,11 @@ export default function UserDashboardPage(){
                 <h2 className="text-primary-accent text-2xl">Teams</h2>
                 {/* TODO: Add function to create team button. */}
                 <PrimaryButton>Create team</PrimaryButton>
+            </div>
+
+            <div className="flex flex-row gap-4 w-4/5 justify-between">
+                {/* TODO: Replace hardcoded team data with real teams (name, key count, member count) from the API. */}
+                <TeamCard name="Team 1" keyCount={12} memberCount={3}></TeamCard>
             </div>
         </section>
     );
