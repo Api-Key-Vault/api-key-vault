@@ -20,7 +20,7 @@ export default function UserDashboardPage(){
                 <div className="flex flex-row items-center gap-6">
                     <span className="pixelart-icons-font-user text-text text-[40px]!" />
                     {/*TODO: Add logout function.*/}
-                    <PrimaryButton>Logout</PrimaryButton>
+                    <PrimaryButton className="text-xl px-4! py-1!">Logout</PrimaryButton>
                 </div>
             </Card>
 
@@ -51,7 +51,7 @@ export default function UserDashboardPage(){
             <div className="flex mt-7 flex-row items-center justify-between w-4/5">
                 <h2 className="text-primary-accent text-2xl">Teams</h2>
                 {/* TODO: Add function to create team button. */}
-                <PrimaryButton>Create team</PrimaryButton>
+                <PrimaryButton className="text-xl px-4! py-1!">Create team</PrimaryButton>
             </div>
 
             <div className="flex flex-row gap-4 w-4/5 justify-between">
