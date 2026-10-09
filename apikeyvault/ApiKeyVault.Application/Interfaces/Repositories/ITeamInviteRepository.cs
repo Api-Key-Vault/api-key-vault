@@ -4,8 +4,9 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
 {
     public interface ITeamInviteRepository
     {
-        Task<TeamInvite> AddTeamInviteAsync(TeamInvite teamInvite);
+        Task AddTeamInviteAsync(TeamInvite teamInvite);
         Task<TeamInvite?> GetByTokenHashAsync(string tokenHash); 
         Task<bool> MarkInviteAsUsedAsync(int teamInviteId, int usedByMemberId);
+        Task SaveChangesAsync();
     }
 }

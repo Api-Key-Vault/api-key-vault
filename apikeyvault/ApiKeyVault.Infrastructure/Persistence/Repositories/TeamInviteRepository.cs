@@ -1,23 +1,44 @@
 using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 {
     public class TeamInviteRepository : ITeamInviteRepository
     {
-        public Task<TeamInvite> AddTeamInviteAsync(TeamInvite teamInvite)
+        private readonly ApiKeyVaultDbContext _dbContext;
+
+        public TeamInviteRepository(ApiKeyVaultDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+        }
+        public async Task AddTeamInviteAsync(TeamInvite teamInvite)
+        {
+            await _dbContext.AddAsync(teamInvite);
         }
 
-        public Task<TeamInvite?> GetByTokenHashAsync(string tokenHash)
+        public async Task<TeamInvite?> GetByTokenHashAsync(string tokenHash)
         {
-            throw new NotImplementedException();
+            return await _dbContext.TeamInvites
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ti => ti.TokenHash == tokenHash);
         }
 
-        public Task<bool> MarkInviteAsUsedAsync(int teamInviteId, int usedByMemberId)
+        public async Task<bool> MarkInviteAsUsedAsync(int teamInviteId, int usedByMemberId)
         {
-            throw new NotImplementedException();
+            var now = DateTime.UtcNow;
+
+            var rowsAffected = await _dbContext.TeamInvites
+                .Where(ti => ti.Id == teamInviteId
+                    && ti.UsedByMember == null
+                    && ti.ExpiresAt > now)
+                .ExecuteUpdateAsync(s => s.SetProperty(ti => ti.UsedByMemberId, usedByMemberId));
+
+            return rowsAffected > 0;
+        }
+        public Task SaveChangesAsync()
+        {
+            return _dbContext.SaveChangesAsync();
         }
     }
 }
