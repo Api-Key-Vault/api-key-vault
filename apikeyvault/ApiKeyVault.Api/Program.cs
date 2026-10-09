@@ -1,4 +1,3 @@
-
 using ApiKeyVault.Application;
 using ApiKeyVault.Infrastructure;
 using Scalar.AspNetCore;
