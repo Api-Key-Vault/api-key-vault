@@ -9,7 +9,7 @@ export default function UserDashboardPage(){
         <section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
 
             {/* HEADERN */}
-            <Card className="p-4 w-4/5 flex flex-row items-center justify-between">
+            <Card className="p-4 w-[83rem] flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center gap-8">
                     <span className="pixelart-icons-font-key text-secondary-accent text-[50px]!" />
                     <div className="text-left flex flex-col gap-1">
@@ -27,7 +27,7 @@ export default function UserDashboardPage(){
             </Card>
 
             {/* STATS BOXES */}
-            <div className="flex mt-8 flex-row gap-4 w-4/5 justify-between">
+            <div className="flex mt-8 flex-row gap-50 w-4/5 justify-center">
                 {/*TODO: Replace hardcoded number with real team count.*/}
                <StatsBox 
                 icon={<span className="pixelart-icons-font-users text-text text-[35px]!" />}
@@ -50,17 +50,19 @@ export default function UserDashboardPage(){
                 />
             </div>
 
-            <div className="flex mt-7 flex-row items-center justify-between w-4/5">
-                <h2 className="text-primary-accent text-2xl">Teams</h2>
-                {/* TODO: Add function to create team button. */}
-                <PrimaryButton className="text-xl px-4! py-1!">Create team</PrimaryButton>
-            </div>
-
-            <div className="flex flex-row gap-4 w-4/5 justify-between">
-                {/* TODO: Replace hardcoded team data with real teams (name, key count, member count) from the API. */}
-                <TeamCard name="Team 1" keyCount={12} memberCount={3}></TeamCard>
-                <TeamCard name="Team 2" keyCount={4} memberCount={5} />
-                <TeamCard name="Team 3" keyCount={6} memberCount={7} />
+            <div className="flex flex-col gap-8 w-fit">
+                <div className="flex flex-row items-center justify-between w-full">
+                    <h2 className="text-primary-accent text-2xl">Teams</h2>
+                    {/* TODO: Add function to create team button. */}
+                    <PrimaryButton className="text-xl px-4! py-1!">Create team</PrimaryButton>
+                </div>
+                
+                <div className="flex flex-row gap-50 justify-center">
+                    {/* TODO: Replace hardcoded team data with real teams (name, key count, member count) from the API. */}
+                    <TeamCard name="Team 1" keyCount={12} memberCount={3}></TeamCard>
+                    <TeamCard name="Team 2" keyCount={4} memberCount={5} />
+                    <TeamCard name="Team 3" keyCount={6} memberCount={7} />
+                </div>
             </div>
         </section>
     );
