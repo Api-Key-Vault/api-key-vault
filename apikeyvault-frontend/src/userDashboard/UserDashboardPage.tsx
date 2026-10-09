@@ -57,6 +57,8 @@ export default function UserDashboardPage(){
             <div className="flex flex-row gap-4 w-4/5 justify-between">
                 {/* TODO: Replace hardcoded team data with real teams (name, key count, member count) from the API. */}
                 <TeamCard name="Team 1" keyCount={12} memberCount={3}></TeamCard>
+                <TeamCard name="Team 2" keyCount={4} memberCount={5} />
+                <TeamCard name="Team 3" keyCount={6} memberCount={7} />
             </div>
         </section>
     );
