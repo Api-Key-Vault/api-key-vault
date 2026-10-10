@@ -21,6 +21,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
         {
             return await _dbContext.TeamInvites
                 .AsNoTracking()
+                .Include(ti => ti.Team)
                 .FirstOrDefaultAsync(ti => ti.TokenHash == tokenHash);
         }
 
