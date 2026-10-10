@@ -5,10 +5,12 @@ import TeamCard from "./components/TeamCard";
 import StatsBox from "./components/StatsBox";
 import AvatarButton from "./components/AvatarButton";
 import CreateTeamModal from "./components/CreateTeamModal";
+import AccountModal from "./components/AccountModal";
 
 export default function UserDashboardPage(){
 
     const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
+    const [isAccountOpen, setIsAccountOpen] = useState(false);
 
     return (
         <section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
@@ -24,8 +26,7 @@ export default function UserDashboardPage(){
                 </div>
 
                 <div className="flex flex-row items-center gap-6">
-                    {/* TODO: Add function to AvatarButton */}
-                    <AvatarButton />
+                    <AvatarButton onClick={() => setIsAccountOpen(true)} />
                     {/*TODO: Add logout function.*/}
                     <PrimaryButton className="text-xl px-4! py-1!">Logout</PrimaryButton>
                 </div>
@@ -72,8 +73,12 @@ export default function UserDashboardPage(){
                 </div>
             </div>
             {isCreateTeamOpen && (
-	<CreateTeamModal onClose={() => setIsCreateTeamOpen(false)} />
-)}
+	            <CreateTeamModal onClose={() => setIsCreateTeamOpen(false)} />
+            )}
+            
+            {isAccountOpen && (
+                <AccountModal onClose={() => setIsAccountOpen(false)} />
+            )}
         </section>
     );
 }
