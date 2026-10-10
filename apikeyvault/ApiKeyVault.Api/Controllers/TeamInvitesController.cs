@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ApiKeyVault.Application.Dtos.TeamInvite;
 using ApiKeyVault.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,21 @@ namespace ApiKeyVault.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateTeamInviteResponse>> CreateInvite(int teamId)
         {
-            throw new NotImplementedException();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var response = await _teamInviteService.CreateAsync(teamId, userId);
+
+            if (response is null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(response.InviteUrl);
         }
 
         [Route("/api/invites/accept")]
