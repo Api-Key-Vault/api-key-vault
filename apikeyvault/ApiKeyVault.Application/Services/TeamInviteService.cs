@@ -32,9 +32,47 @@ namespace ApiKeyVault.Application.Services
             return string.Equals(member.Role.Name, OwnerRoleName, StringComparison.Ordinal);
         }
 
-        public Task<AcceptInviteResponse> AcceptAsync(AcceptInviteRequest req, string userId)
+        public async Task<AcceptInviteResponse?> AcceptAsync(AcceptInviteRequest req, string userId)
         {
-            throw new NotImplementedException();
+            var invite = await _teamInviteRepository.GetByTokenHashAsync(HashToken(req.Token));
+            if (invite is null)
+            {
+                return null;
+            }
+            if (invite.UsedByMemberId is not null || invite.ExpiresAt <= DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            var existing = await _teamMemberRepository.GetByTeamAndUserAsync(invite.TeamId, userId);
+            if (existing is not null)
+            {
+                return null;
+            }
+
+            var member = new TeamMember
+            {
+                TeamId = invite.TeamId,
+                UserId = userId,
+                RoleId = 2
+            };
+
+            await _teamMemberRepository.AddAsync(member);
+            await _teamMemberRepository.SaveChangesAsync();
+
+            var markSuccessful = await _teamInviteRepository.MarkInviteAsUsedAsync(invite.Id, member.Id);
+            if (!markSuccessful)
+            {
+                await _teamMemberRepository.RemoveAsync(member);
+                await _teamMemberRepository.SaveChangesAsync();
+                return null;
+            }
+
+            return new AcceptInviteResponse
+            {
+                TeamId = invite.TeamId,
+                TeamName = invite.Team.Name
+            };
         }
 
         public async Task<CreateTeamInviteResponse?> CreateAsync(int teamId, string userId)
