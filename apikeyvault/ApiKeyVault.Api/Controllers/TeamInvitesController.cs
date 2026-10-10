@@ -42,7 +42,16 @@ namespace ApiKeyVault.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<AcceptInviteResponse>> AcceptInvite(AcceptInviteRequest req)
         {
-            throw new NotImplementedException();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var response = await _teamInviteService.AcceptAsync(req, userId);
+
+            return response is null ? NotFound() : Ok(response);
         }
     }
 }
