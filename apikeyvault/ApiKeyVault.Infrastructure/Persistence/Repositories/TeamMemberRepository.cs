@@ -13,6 +13,14 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
         }
 
+        public Task AddAsync(TeamMember teamMember)
+        {
+            throw new NotImplementedException();
+        }
+        public Task RemoveAsync(TeamMember teamMember)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<TeamMember?> GetByTeamAndUserAsync(int teamId, string userId)
         {
             return await _dbContext.TeamMembers
@@ -21,6 +29,10 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                 .SingleOrDefaultAsync(member =>
                     member.TeamId == teamId &&
                     member.UserId == userId);
+        }
+        public Task SaveChangesAsync()
+        {
+            return _dbContext.SaveChangesAsync();
         }
     }
 }
