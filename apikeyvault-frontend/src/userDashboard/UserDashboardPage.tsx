@@ -1,10 +1,15 @@
+import { useState } from "react";
 import Card from "../components/atoms/Card";
 import PrimaryButton from "../components/atoms/PrimaryButton";
 import TeamCard from "./components/TeamCard";
 import StatsBox from "./components/StatsBox";
 import AvatarButton from "./components/AvatarButton";
+import CreateTeamModal from "./components/CreateTeamModal";
 
 export default function UserDashboardPage(){
+
+    const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
+
     return (
         <section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
 
@@ -54,7 +59,9 @@ export default function UserDashboardPage(){
                 <div className="flex flex-row items-center justify-between w-full">
                     <h2 className="text-primary-accent text-2xl">Teams</h2>
                     {/* TODO: Add function to create team button. */}
-                    <PrimaryButton className="text-xl px-4! py-1!">Create team</PrimaryButton>
+                    <PrimaryButton 
+                        className="text-xl px-4! py-1!"
+                        onClick={() => setIsCreateTeamOpen(true)}>Create team</PrimaryButton>
                 </div>
                 
                 <div className="flex flex-row gap-50 justify-center">
@@ -64,6 +71,9 @@ export default function UserDashboardPage(){
                     <TeamCard name="Team 3" keyCount={6} memberCount={7} />
                 </div>
             </div>
+            {isCreateTeamOpen && (
+	<CreateTeamModal onClose={() => setIsCreateTeamOpen(false)} />
+)}
         </section>
     );
 }
