@@ -25,7 +25,8 @@ export default function AccountModal({ onClose }: AccountModalProps) {
 				</div>
 
 				<div className="flex flex-row items-center justify-start gap-5 mt-4">
-					{/* TODO: Replace placeholder with the user's real GitHub avatar. */}
+                    {/* TODO: Show the user's real GitHub profile picture here instead of this icon. 
+                    The picture URL comes from the logged-in user's GitHub data (via the API). */}
 					<span className="pixelart-icons-font-user text-text text-[50px]!" />
 					{/* TODO: Replace hardcoded username with the logged-in user's GitHub username. */}
 					<p className="text-text">Vic-Linden</p>

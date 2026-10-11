@@ -59,7 +59,6 @@ export default function UserDashboardPage(){
             <div className="flex flex-col gap-8 w-fit">
                 <div className="flex flex-row items-center justify-between w-full">
                     <h2 className="text-primary-accent text-2xl">Teams</h2>
-                    {/* TODO: Add function to create team button. */}
                     <PrimaryButton 
                         className="text-xl px-4! py-1!"
                         onClick={() => setIsCreateTeamOpen(true)}>Create team</PrimaryButton>
@@ -67,7 +66,7 @@ export default function UserDashboardPage(){
                 
                 <div className="flex flex-row gap-50 justify-center">
                     {/* TODO: Replace hardcoded team data with real teams (name, key count, member count) from the API. */}
-                    <TeamCard name="Team 1" keyCount={12} memberCount={3}></TeamCard>
+                    <TeamCard name="Team 1" keyCount={12} memberCount={3} />
                     <TeamCard name="Team 2" keyCount={4} memberCount={5} />
                     <TeamCard name="Team 3" keyCount={6} memberCount={7} />
                 </div>
@@ -75,7 +74,7 @@ export default function UserDashboardPage(){
             {isCreateTeamOpen && (
 	            <CreateTeamModal onClose={() => setIsCreateTeamOpen(false)} />
             )}
-            
+
             {isAccountOpen && (
                 <AccountModal onClose={() => setIsAccountOpen(false)} />
             )}
