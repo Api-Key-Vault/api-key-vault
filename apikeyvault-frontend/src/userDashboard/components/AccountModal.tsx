@@ -1,6 +1,5 @@
-
 import Card from "../../components/atoms/Card";
-import PrimaryButton from "../../components/atoms/PrimaryButton";
+import DeleteButton from "../../components/atoms/DeleteButton";
 
 type AccountModalProps ={
     onClose?: () => void;
@@ -36,7 +35,7 @@ export default function AccountModal({ onClose }: AccountModalProps) {
 
 				<p className="text-text text-left">Danger zone</p>
 				{/* TODO: Add function to delete the account. */}
-				<PrimaryButton className="w-[90%]">Delete account</PrimaryButton>
+				<DeleteButton className="w-[90%]">Delete account</DeleteButton>
 			</Card>
 		</div>
 	);
