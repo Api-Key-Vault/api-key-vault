@@ -110,7 +110,7 @@ function TeamKeyRow({ apiKey, isOwner, onManage }: TeamKeyRowProps) {
   }
 
   async function handleCopy() {
-    if (isRevoked) {
+    if (isRevoked || !isRevealed) {
       return;
     }
 
@@ -150,7 +150,7 @@ function TeamKeyRow({ apiKey, isOwner, onManage }: TeamKeyRowProps) {
             <button
               aria-label={(isRevealed ? "Hide " : "Reveal ") + apiKey.name}
               className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-[18px]! max-[599px]:w-[18px]! min-[900px]:h-5! min-[900px]:w-5!"
-              disabled={isRevoked}
+              disabled={isRevoked || !isRevealed}
               onClick={handleReveal}
               type="button"
             >
@@ -184,7 +184,7 @@ function TeamKeyRow({ apiKey, isOwner, onManage }: TeamKeyRowProps) {
 }
 
 export default function TeamDashboardPage({
-  role = "Owner",
+  role = "Member",
   team = mockTeam,
 }: TeamDashboardPageProps) {
   const [isAddKeyOpen, setIsAddKeyOpen] = useState(false);
