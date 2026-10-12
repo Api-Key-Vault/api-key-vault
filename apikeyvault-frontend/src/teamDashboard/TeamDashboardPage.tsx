@@ -327,7 +327,7 @@ export default function TeamDashboardPage({
         </Card>
 
         <div className="mb-3 flex items-center justify-between gap-3 px-1 min-[600px]:mb-6 min-[900px]:mb-8!">
-          <h2 className="text-base min-[900px]:text-xl! min-[900px]:leading-tight!">Keys</h2>
+          <h2 className="text-base! text-primary-accent! min-[900px]:text-xl! min-[900px]:leading-tight!">Keys</h2>
           {isOwner && (
             <PrimaryButton
               className="m-0! inline-flex h-[23px]! min-h-[23px]! items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[0_4px_4px_rgba(0,0,0,0.25)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
