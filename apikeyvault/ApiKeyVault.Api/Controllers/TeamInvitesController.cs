@@ -32,10 +32,10 @@ namespace ApiKeyVault.Api.Controllers
 
             if (response is null)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            return Ok(response.InviteUrl);
+            return Ok(new CreateTeamInviteResponse { InviteUrl = response.InviteUrl });
         }
 
         [Route("/api/invites/accept")]
