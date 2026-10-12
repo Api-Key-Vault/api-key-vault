@@ -54,7 +54,7 @@ namespace ApiKeyVault.Application.Services
             {
                 TeamId = invite.TeamId,
                 UserId = userId,
-                RoleId = 2
+                RoleId = 2 //TODO: When TeamRole Repository exists, change this to a GetByName lookup instead of hardcoded ID from DB seeding
             };
 
             await _teamMemberRepository.AddAsync(member);
