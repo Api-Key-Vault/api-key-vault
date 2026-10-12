@@ -4,6 +4,6 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
 {
     public interface ITeamRepository
     {
-        Task <Team>AddTeamAsync(Team team);
+        Task <bool> AddTeamAsync(Team teamToAdd);
     }
 }

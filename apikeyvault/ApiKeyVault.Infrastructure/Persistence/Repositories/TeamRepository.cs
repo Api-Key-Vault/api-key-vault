@@ -15,12 +15,12 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Team> AddTeamAsync(Team team)
+        public async Task<bool> AddTeamAsync(Team teamToAdd)
         {
-            await _dbContext.Teams.AddAsync(team);
-			await _dbContext.SaveChangesAsync();
+            await _dbContext.Teams.AddAsync(teamToAdd);
+            var result = 0 < await _dbContext.SaveChangesAsync();
 
-            return team;
+            return result;
 		}
 
 
