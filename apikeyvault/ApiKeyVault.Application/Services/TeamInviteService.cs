@@ -52,13 +52,13 @@ namespace ApiKeyVault.Application.Services
                 return null;
             }
 
-            var ownerRole = _teamRoleRepository.GetRoleByNameAsync("Owner");
+            var memberRole = _teamRoleRepository.GetRoleByNameAsync("Member");
 
             var member = new TeamMember
             {
                 TeamId = invite.TeamId,
                 UserId = userId,
-                RoleId = ownerRole.Id
+                RoleId = memberRole.Id
             };
 
             await _teamMemberRepository.AddAsync(member);
