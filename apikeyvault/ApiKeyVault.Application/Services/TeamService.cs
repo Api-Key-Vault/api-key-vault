@@ -1,6 +1,7 @@
 ﻿using ApiKeyVault.Application.Dtos.Team;
 using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Application.Interfaces.Services;
+using ApiKeyVault.Domain.Entities;
 
 namespace ApiKeyVault.Application.Services
 {
@@ -14,9 +15,30 @@ namespace ApiKeyVault.Application.Services
             _teamRepository = teamRepository;
         }
 
-        public async Task<bool> CreateAsync(CreateTeamRequest request)
+        public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request)
         {
-            return true; 
-        }
+
+            var newTeam = new Team
+            {
+                Name = request.Name,
+                CreatedAt = DateTime.UtcNow  // set time here instead of inside the class
+			};
+
+            var tryAdd = await _teamRepository.AddTeamAsync(newTeam);
+
+            if(tryAdd == false)
+            {
+                return null;
+            }
+
+            var response = new TeamResponse
+            {
+                Id = newTeam.Id,
+                Name= newTeam.Name,
+                CreatedAt = newTeam.CreatedAt
+            };
+
+            return response;
+		}
     }
 }
