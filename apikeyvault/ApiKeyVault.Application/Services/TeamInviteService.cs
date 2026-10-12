@@ -17,13 +17,15 @@ namespace ApiKeyVault.Application.Services
         private readonly string _frontendOrigin;
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly ITeamInviteRepository _teamInviteRepository;
+        private readonly ITeamRoleRepository _teamRoleRepository;
 
-        public TeamInviteService(ITeamMemberRepository teamMemberRepository, ITeamInviteRepository teamInviteRepository, IConfiguration configuration)
+        public TeamInviteService(ITeamMemberRepository teamMemberRepository, ITeamInviteRepository teamInviteRepository, IConfiguration configuration, ITeamRoleRepository teamRoleRepository)
         {
             _teamMemberRepository = teamMemberRepository;
             _teamInviteRepository = teamInviteRepository;
             _frontendOrigin = configuration["Frontend:Origin"]
                 ?? throw new InvalidOperationException("Frontend:Origin configuration is required.");
+            _teamRoleRepository = teamRoleRepository;
         }
         private static string HashToken(string token) =>
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
@@ -50,11 +52,13 @@ namespace ApiKeyVault.Application.Services
                 return null;
             }
 
+            var ownerRole = _teamRoleRepository.GetRoleByNameAsync("Owner");
+
             var member = new TeamMember
             {
                 TeamId = invite.TeamId,
                 UserId = userId,
-                RoleId = 2 //TODO: When TeamRole Repository exists, change this to a GetByName lookup instead of hardcoded ID from DB seeding
+                RoleId = ownerRole.Id
             };
 
             await _teamMemberRepository.AddAsync(member);
