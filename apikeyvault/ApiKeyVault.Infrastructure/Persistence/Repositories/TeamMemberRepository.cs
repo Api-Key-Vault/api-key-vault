@@ -13,13 +13,15 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public Task AddAsync(TeamMember teamMember)
+        public async Task AddAsync(TeamMember teamMember)
         {
-            throw new NotImplementedException();
+            await _dbContext.TeamMembers.AddAsync(teamMember);
         }
         public Task RemoveAsync(TeamMember teamMember)
         {
-            throw new NotImplementedException();
+            _dbContext.TeamMembers.Remove(teamMember);
+
+            return Task.CompletedTask;
         }
         public async Task<TeamMember?> GetByTeamAndUserAsync(int teamId, string userId)
         {
