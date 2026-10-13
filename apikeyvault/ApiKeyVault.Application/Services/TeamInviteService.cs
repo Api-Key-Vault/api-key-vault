@@ -52,7 +52,12 @@ namespace ApiKeyVault.Application.Services
                 return null;
             }
 
-            var memberRole = _teamRoleRepository.GetRoleByNameAsync("Member");
+            var memberRole = await _teamRoleRepository.GetRoleByNameAsync("Member");
+
+            if (memberRole is null)
+            {
+                throw new InvalidOperationException("The 'Member' role does not exist.");
+            }
 
             var member = new TeamMember
             {
