@@ -1,6 +1,6 @@
 
 export interface User{
     id: string,
-    displayname: string,
+    displayName: string,
     avatarUrl: string | null
 };

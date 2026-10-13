@@ -1,6 +1,6 @@
 import { type PropsWithChildren } from "react";
 import { useAuth } from "../model/useAuth";
-import { Navigate, Outlet } from "react-router";
+import { Navigate } from "react-router";
 import { ROUTE_PATHS } from "@/shared/config/routes";
 import Loading from "@/shared/ui/Loading";
 
@@ -16,8 +16,8 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
         case "error":
             return <div>ERROR: {state.error.message}</div>;
         case "authenticated":
-            return <Outlet />
+            return children;
     }
 
-    return children;
+    
 }
