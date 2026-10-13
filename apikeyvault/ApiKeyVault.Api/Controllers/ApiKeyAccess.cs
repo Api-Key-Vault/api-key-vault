@@ -13,7 +13,7 @@ namespace ApiKeyVault.Api.Controllers
     public class ApiKeyAccessController : ControllerBase
     {
         private readonly IApiKeyAccessService _apiKeyAccessService;
-        public ApiKeyAccess(IApiKeyAccessService apiKeyAccessService)
+        public ApiKeyAccessController(IApiKeyAccessService apiKeyAccessService)
         {
             _apiKeyAccessService = apiKeyAccessService;
         }
