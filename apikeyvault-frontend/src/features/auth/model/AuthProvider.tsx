@@ -11,6 +11,7 @@ export function AuthProvider ({children } : PropsWithChildren){
 
         async function checkCurrentUser() {
             try {
+                setState({status: "loading"});
                 const currentUser = await getCurrentUser();
 
                 if(cancelled){
@@ -30,7 +31,8 @@ export function AuthProvider ({children } : PropsWithChildren){
                         error: error instanceof Error
                             ? error: new Error("Failed to get current user")
                     });
-                }                
+                }
+                //Potential TODO: Offer user retry login after error?              
             }
         }
         checkCurrentUser();
@@ -39,10 +41,21 @@ export function AuthProvider ({children } : PropsWithChildren){
         }
     }, []);
 
-    const logout = useCallback(async () =>{        
-        await logoutRequest();
-        setState({status: "unauthenticated"});       
-    }, []);
+    const logout = useCallback(async () =>{      
+        try {
+            if(state.status !== "authenticated"){
+                return;
+            }            
+            await logoutRequest();
+            setState({status: "unauthenticated"});     
+        } catch (error) {
+            if(error instanceof Error){
+                console.error("Error logging out: " + error.message);                
+            }            
+        //Potential TODO: feedback to user if not able to logout, offer retry?
+        //TODO: add disabled on logout button if (state.status === "loading")
+        }  
+    }, [state]);
 
     const value = useMemo<AuthContextValue>(
         () => ({state, logout}),
