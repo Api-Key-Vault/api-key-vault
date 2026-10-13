@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ApiKeyVault.Application.Dtos.ApiKeyAccess;
 
 namespace ApiKeyVault.Application.Interfaces.Services
 {
-    internal interface IApiKeyAccessService
+    public interface IApiKeyAccessService
     {
+        Task<ApiKeyAccessResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request);
+        Task<bool> RevokeAsync(int teamId, string userId, int apiKeyId, int teamMemberId);
     }
 }

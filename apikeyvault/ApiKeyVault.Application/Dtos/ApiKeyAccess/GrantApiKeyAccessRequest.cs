@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ApiKeyVault.Application.Dtos.ApiKeyAccess
+﻿namespace ApiKeyVault.Application.Dtos.ApiKeyAccess
 {
-    internal class GrantApiKeyAccessRequest
+    public class GrantApiKeyAccessRequest
     {
+        public int ApiKeyId { get; set; }
+        public int TeamMemberId { get; set; }
     }
 }

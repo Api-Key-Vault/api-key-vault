@@ -1,5 +1,6 @@
 ﻿using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 {
@@ -15,7 +16,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             await _dbContext.ApiKeyAccesses.AddAsync(apiKeyAccess);
         }
 
-        public async Task<bool> DeleteAsync(int teamMemberId, int apiKeyId)
+        public async Task<bool> RevokeAsync(int teamMemberId, int apiKeyId)
         {
             var hasAccess = await _dbContext.ApiKeyAccesses.FindAsync(apiKeyId, teamMemberId);
 
@@ -27,6 +28,11 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             _dbContext.ApiKeyAccesses.Remove(hasAccess);
 
             return true; 
+        }
+
+        public async Task<bool> ExistsAsync(int teamMemberId, int apiKeyId)
+        {
+            return await _dbContext.ApiKeyAccesses.AnyAsync(access => access.TeamMemberId == teamMemberId && access.ApiKeyId == apiKeyId);
         }
 
         public Task SaveChangesAsync()
