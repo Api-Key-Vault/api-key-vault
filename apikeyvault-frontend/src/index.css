@@ -68,16 +68,18 @@
   --color-pattern-2: var(--pattern-color-2);
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
+body {
+  min-width: 320px;
   background: conic-gradient(
     var(--pattern-color-1) 25%,
     var(--pattern-color-2) 0 50%,
     var(--pattern-color-1) 0 75%,
     var(--pattern-color-2) 0
   );
-  background-size: 64px 64px; 
+  background-attachment: fixed;
+  background-size: 64px 64px;
+}
+
+body::before {
+  display: none;
 }
