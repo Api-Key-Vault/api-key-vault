@@ -30,6 +30,19 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                     member.TeamId == teamId &&
                     member.UserId == userId);
         }
+        public async Task<List<TeamMember>> GetByTeamAsync(int teamId)
+        {
+            return await _dbContext.TeamMembers
+                .AsNoTracking()
+                .Include(member => member.Role)
+                .Where(member => member.TeamId == teamId)
+                .ToListAsync();
+        }
+
+        public void Update(TeamMember teamMember)
+        {
+            _dbContext.TeamMembers.Update(teamMember);
+        }
         public Task SaveChangesAsync()
         {
             return _dbContext.SaveChangesAsync();
