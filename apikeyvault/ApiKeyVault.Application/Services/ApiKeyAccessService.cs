@@ -38,13 +38,6 @@ namespace ApiKeyVault.Application.Services
             if (targetMember is null || targetMember.TeamId != teamId)
             {
                 response.Status = GrantAccessResult.NotFound;
-                
-                return response;
-            }
-
-            if(IsOwner(targetMember))
-            {
-                response.Status = GrantAccessResult.AlreadyExists;
 
                 return response;
             }
@@ -54,6 +47,13 @@ namespace ApiKeyVault.Application.Services
             if (apiKey is null)
             {
                 response.Status = GrantAccessResult.NotFound;
+
+                return response;
+            }
+
+            if (IsOwner(targetMember))
+            {
+                response.Status = GrantAccessResult.AlreadyExists;
 
                 return response;
             }
@@ -98,10 +98,10 @@ namespace ApiKeyVault.Application.Services
             {
                 return false;
             }
-            
+
             var targetMember = await _teamMemberRepository.GetByIdAsync(teamMemberId);
 
-            if(targetMember is null || targetMember.TeamId != teamId)
+            if (targetMember is null || targetMember.TeamId != teamId)
             {
                 return false;
             }
