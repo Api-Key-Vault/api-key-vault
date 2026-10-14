@@ -34,5 +34,10 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
         {
             return _dbContext.SaveChangesAsync();
         }
+
+        public Task<TeamMember?> GetByIdAsync(int teamMemberId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
