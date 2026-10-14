@@ -35,15 +35,26 @@ namespace ApiKeyVault.Api.Controllers
                 return BadRequest();
             }
 
-            return Ok(result);
+            return result.Status switch
+            {
+                GrantAccessResult.Success
+                    => Ok(result.Data),
+                GrantAccessResult.Forbidden
+                    => Forbid(),
+                GrantAccessResult.NotFound
+                    => NotFound(),
+                GrantAccessResult.AlreadyExists
+                    => Conflict(),
+                _ => BadRequest()
+            };
         }
 
-        [HttpDelete("{apiKeyId:int}/{teamMemberId:int}")]
+        [HttpDelete("{apiKeyId:int}/revoke")]
         public async Task<IActionResult> RevokeAsync(int teamId, int apiKeyId, int teamMemberId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(userId is null)
+            if (userId is null)
             {
                 return Unauthorized();
             }

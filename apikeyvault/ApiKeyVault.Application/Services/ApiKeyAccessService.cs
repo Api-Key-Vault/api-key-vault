@@ -18,36 +18,37 @@ namespace ApiKeyVault.Application.Services
             _teamMemberRepository = teamMemberRepository;
             _apiKeyRepository = apiKeyRepository;
         }
-        public async Task<ApiKeyAccessResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request)
+        public async Task<ApiKeyAccessServiceResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
 
+            var response = new ApiKeyAccessServiceResponse();
+
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
 
-            if(member is null || !IsOwner(member))
+            if (member is null || !IsOwner(member) || member.TeamId != teamId)
             {
-                return null;
-            }
+                response.Status = GrantAccessResult.Forbidden;
 
-            var targetMember = await _teamMemberRepository.GetByIdAsync(request.TeamMemberId);
-
-            if(targetMember is null || targetMember.TeamId != teamId)
-            {
-                return null;
+                return response;
             }
 
             var apiKey = await _apiKeyRepository.GetByIdAsync(teamId, request.ApiKeyId);
 
-            if(apiKey is null)
+            if (apiKey is null)
             {
-                return null;
+                response.Status = GrantAccessResult.NotFound;
+
+                return response;
             }
 
             var exists = await _apiKeyAccessRepository.ExistsAsync(request.TeamMemberId, request.ApiKeyId);
 
             if (exists)
             {
-                return null;
+                response.Status = GrantAccessResult.AlreadyExists;
+
+                return response;
             }
 
             var apiKeyAccess = new ApiKeyAccess
@@ -60,23 +61,28 @@ namespace ApiKeyVault.Application.Services
             await _apiKeyAccessRepository.AddAsync(apiKeyAccess);
             await _apiKeyAccessRepository.SaveChangesAsync();
 
-            return new ApiKeyAccessResponse
+            response.Status = GrantAccessResult.Success;
+
+            response.Data = new ApiKeyAccessResponse
             {
                 ApiKeyId = apiKeyAccess.ApiKeyId,
                 TeamMemberId = apiKeyAccess.TeamMemberId,
                 GrantedByMemberId = apiKeyAccess.GrantedByMemberId
             };
+
+            return response;
         }
 
         public async Task<bool> RevokeAsync(int teamId, string userId, int apiKeyId, int teamMemberId)
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
 
-            if(member is null || !IsOwner(member))
+
+            if (member is null || !IsOwner(member) || member.TeamId != teamId)
             {
                 return false;
             }
-
+            
             var targetMember = await _teamMemberRepository.GetByIdAsync(teamMemberId);
 
             if(targetMember is null || targetMember.TeamId != teamId)
@@ -86,12 +92,12 @@ namespace ApiKeyVault.Application.Services
 
             var apikey = await _apiKeyRepository.GetByIdAsync(teamId, apiKeyId);
 
-            if(apikey is null)
+            if (apikey is null)
             {
                 return false;
             }
 
-            bool deleted = await _apiKeyAccessRepository.RevokeAsync(teamMemberId, apiKeyId);
+            bool deleted = await _apiKeyAccessRepository.RevokeAsync(targetMember.Id, apiKeyId);
 
             if (!deleted)
             {
@@ -100,7 +106,7 @@ namespace ApiKeyVault.Application.Services
 
             await _apiKeyAccessRepository.SaveChangesAsync();
 
-            return true; 
+            return true;
         }
 
         private static bool IsOwner(TeamMember member)

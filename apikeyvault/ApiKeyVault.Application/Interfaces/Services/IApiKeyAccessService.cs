@@ -4,7 +4,7 @@ namespace ApiKeyVault.Application.Interfaces.Services
 {
     public interface IApiKeyAccessService
     {
-        Task<ApiKeyAccessResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request);
+        Task<ApiKeyAccessServiceResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request);
         Task<bool> RevokeAsync(int teamId, string userId, int apiKeyId, int teamMemberId);
     }
 }
