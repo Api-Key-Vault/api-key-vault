@@ -33,6 +33,22 @@ namespace ApiKeyVault.Application.Services
                 return response;
             }
 
+            var targetMember = await _teamMemberRepository.GetByIdAsync(request.TeamMemberId);
+
+            if (targetMember is null || targetMember.TeamId != teamId)
+            {
+                response.Status = GrantAccessResult.NotFound;
+                
+                return response;
+            }
+
+            if(IsOwner(targetMember))
+            {
+                response.Status = GrantAccessResult.AlreadyExists;
+
+                return response;
+            }
+
             var apiKey = await _apiKeyRepository.GetByIdAsync(teamId, request.ApiKeyId);
 
             if (apiKey is null)
@@ -90,9 +106,9 @@ namespace ApiKeyVault.Application.Services
                 return false;
             }
 
-            var apikey = await _apiKeyRepository.GetByIdAsync(teamId, apiKeyId);
+            var apiKey = await _apiKeyRepository.GetByIdAsync(teamId, apiKeyId);
 
-            if (apikey is null)
+            if (apiKey is null)
             {
                 return false;
             }
