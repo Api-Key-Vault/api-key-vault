@@ -1,4 +1,5 @@
 using ApiKeyVault.Application;
+using ApiKeyVault.Application.Common.Options;
 using ApiKeyVault.Infrastructure;
 using Scalar.AspNetCore;
 
@@ -12,21 +13,28 @@ namespace ApiKeyVault.Api
 
             // Add services to the container.
             builder.Services.AddInfrastructure(builder.Configuration);
-            builder.Services.AddApplication(builder.Configuration);
+            builder.Services.AddApplication(builder.Configuration);           
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SameSite = builder.Environment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Lax;
             });
+
+            builder.Services.Configure<FrontendOptions>(builder.Configuration.GetSection(FrontendOptions.SectionName));
+
+            var frontendOptions = builder.Configuration.GetSection(FrontendOptions.SectionName).Get<FrontendOptions>();
+            if(frontendOptions == null || string.IsNullOrWhiteSpace(frontendOptions.Origin))
+            {
+                throw new InvalidOperationException("Frontend:Origin configuration is required.");
+            }
 
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("Frontend", policy =>
                 {
-                    policy.WithOrigins(builder.Configuration["Frontend:Origin"]
-                        ?? throw new InvalidOperationException("Frontend:Origin configuration is required."))
+                    policy.WithOrigins(frontendOptions.Origin)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
