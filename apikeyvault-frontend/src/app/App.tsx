@@ -3,11 +3,11 @@ import { AuthProvider } from '@/features/auth';
 import { ROUTE_PATHS } from '@/app/router/paths';
 import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 import { PublicOnlyRoute } from '@/app/router/PublicOnlyRoute';
-import Login from '@/pages/login/ui/Login';
-import WelcomePage from '@/pages/home/ui/WelcomePage';
-import UserDashboardPage from '@/pages/dashboard/ui/UserDashboardPage';
-import TeamDashboardPage from '@/pages/team-vault/ui/TeamDashboardPage';
-import InviteLanding from '@/pages/invite/ui/InviteLanding';
+import { UserDashboardPage } from '@/pages/dashboard';
+import { WelcomePage } from '@/pages/home';
+import { InviteLanding } from '@/pages/invite';
+import { Login } from '@/pages/login';
+import { TeamDashboardPage } from '@/pages/team-vault';
 
 function App() {	
 	return <>
