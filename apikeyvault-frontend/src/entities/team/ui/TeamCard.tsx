@@ -1,4 +1,4 @@
-import Card from '../../components/atoms/Card';
+import Card from '@/shared/ui/Card';
 
 type TeamCardProps ={
     name: string;

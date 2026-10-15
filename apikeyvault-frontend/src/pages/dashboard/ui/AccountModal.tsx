@@ -1,5 +1,5 @@
-import Card from "../../components/atoms/Card";
-import DeleteButton from "../../components/atoms/DeleteButton";
+import Card from "@/shared/ui/Card";
+import DeleteButton from "@/shared/ui/DeleteButton";
 
 type AccountModalProps ={
     onClose?: () => void;

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Card from "../../components/atoms/Card";
+import Card from "@/shared/ui/Card";
 
 type StatsBoxProps = {
     icon: ReactNode;

@@ -1,6 +1,6 @@
 import { Bubble } from "pixel-retroui";
-import Card from "./components/atoms/Card";
-import PrimaryButton from "./components/atoms/PrimaryButton";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
 
 export default function InviteLanding() {
 	return (

@@ -1,5 +1,5 @@
-import Card from "../../components/atoms/Card";
-import PrimaryButton from "../../components/atoms/PrimaryButton";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
 
 type CreateTeamModalProps = {
     onClose?: () => void;

@@ -1,5 +1,5 @@
-import PrimaryButton from "./components/atoms/PrimaryButton";
-import Card from "./components/atoms/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
+import Card from "@/shared/ui/Card";
 
 export default function WelcomePage() {
   return (

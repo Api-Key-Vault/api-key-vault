@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
-import Card from "../components/atoms/Card";
-import PrimaryButton from "../components/atoms/PrimaryButton";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
 
 type AddKeyModalProps = {
   onAdd: (request: AddKeyRequest) => void;

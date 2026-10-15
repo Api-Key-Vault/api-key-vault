@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Card from "../components/atoms/Card";
-import PrimaryButton from "../components/atoms/PrimaryButton";
-import TeamCard from "./components/TeamCard";
-import StatsBox from "./components/StatsBox";
-import AvatarButton from "./components/AvatarButton";
-import CreateTeamModal from "./components/CreateTeamModal";
-import AccountModal from "./components/AccountModal";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
+import TeamCard from "@/entities/team/ui/TeamCard";
+import StatsBox from "./StatsBox";
+import AvatarButton from "@/entities/user/ui/AvatarButton";
+import CreateTeamModal from "@/features/create-team/ui/CreateTeamModal";
+import AccountModal from "./AccountModal";
 
 export default function UserDashboardPage(){
 

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import Card from "../components/atoms/Card";
-import PrimaryButton from "../components/atoms/PrimaryButton";
-import AddKeyModal from "./AddKeyModal";
-import type { AddKeyRequest } from "./AddKeyModal";
-import ManageKeyModal from "./ManageKeyModal";
-import type { ManageKeyUpdate } from "./ManageKeyModal";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
+import AddKeyModal from "@/features/create-api-key/ui/AddKeyModal";
+import type { AddKeyRequest } from "@/features/create-api-key/ui/AddKeyModal";
+import ManageKeyModal from "@/features/manage-api-key/ui/ManageKeyModal";
+import type { ManageKeyUpdate } from "@/features/manage-api-key/ui/ManageKeyModal";
 import "./TeamDashboardPage.css";
-import TeamSettingsModal from "./TeamSettingsModal";
+import TeamSettingsModal from "@/features/update-team/ui/TeamSettingsModal";
 
 export type TeamRole = "Owner" | "Member";
 

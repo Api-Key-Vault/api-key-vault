@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
-import Card from "../components/atoms/Card";
-import PrimaryButton from "../components/atoms/PrimaryButton";
-import type { TeamDashboardData } from "./TeamDashboardPage";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
+import type { TeamDashboardData } from "@/pages/team-vault/ui/TeamDashboardPage";
 
 type TeamSettingsModalProps = {
   onClose: () => void;

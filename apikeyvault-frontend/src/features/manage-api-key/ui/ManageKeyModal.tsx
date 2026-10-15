@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
-import Card from "../components/atoms/Card";
-import PrimaryButton from "../components/atoms/PrimaryButton";
-import type { TeamKey } from "./TeamDashboardPage";
+import Card from "@/shared/ui/Card";
+import PrimaryButton from "@/shared/ui/PrimaryButton";
+import type { TeamKey } from "@/pages/team-vault/ui/TeamDashboardPage";
 
 export type ManageKeyUpdate = {
   category: string;

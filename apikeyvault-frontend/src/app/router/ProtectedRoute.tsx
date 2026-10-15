@@ -1,7 +1,7 @@
 import { type PropsWithChildren } from "react";
-import { useAuth } from "../model/useAuth";
+import { useAuth } from "@/features/auth";
 import { Navigate } from "react-router";
-import { ROUTE_PATHS } from "@/shared/config/routes";
+import { ROUTE_PATHS } from "./routes";
 import Loading from "@/shared/ui/Loading";
 
 
