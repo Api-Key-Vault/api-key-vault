@@ -10,10 +10,12 @@ namespace ApiKeyVault.Application.Services
     {
         private const string OwnerRoleName = "Owner";
         private readonly ITeamMemberRepository _teamMemberRepository;
+        private readonly IApiKeyAccessRepository _apiKeyAccessRepository;
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository)
+        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IApiKeyAccessRepository apiKeyAccessRepository)
         {
             _teamMemberRepository = teamMemberRepository;
+            _apiKeyAccessRepository = apiKeyAccessRepository;
         }
 
         public async Task<List<TeamMemberResponse>> GetByTeamAsync(int teamId, string userId)
@@ -60,8 +62,31 @@ namespace ApiKeyVault.Application.Services
                 return TeamMemberResult.Forbidden;
             }
 
+            // Remove the Apikey access for the target member before removing the member itself
+            var apiKeyAccesses = await _apiKeyAccessRepository.GetByTeamMemberIdAsync(targetMember.Id);
+
+            if(apiKeyAccesses.Count > 0)
+            {
+                foreach(var access in apiKeyAccesses)
+                {
+                    await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
+                }
+
+                var results = await _apiKeyAccessRepository.SaveChangesAsync();
+
+                if(results <= 0)
+                {
+                    return TeamMemberResult.Failed;
+                }
+            }
+
             await _teamMemberRepository.RemoveAsync(targetMember);
-            await _teamMemberRepository.SaveChangesAsync();
+            var result = await _teamMemberRepository.SaveChangesAsync();
+
+            if(result <= 0)
+            {
+                return TeamMemberResult.Failed;
+            }
 
             return TeamMemberResult.Success;
         }

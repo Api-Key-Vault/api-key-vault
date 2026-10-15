@@ -35,9 +35,14 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             return await _dbContext.ApiKeyAccesses.AnyAsync(access => access.TeamMemberId == teamMemberId && access.ApiKeyId == apiKeyId);
         }
 
-        public Task SaveChangesAsync()
+        public Task<int> SaveChangesAsync()
         {
             return _dbContext.SaveChangesAsync();
+        }
+
+        public Task<List<ApiKeyAccess>> GetByTeamMemberIdAsync(int teamMemberId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

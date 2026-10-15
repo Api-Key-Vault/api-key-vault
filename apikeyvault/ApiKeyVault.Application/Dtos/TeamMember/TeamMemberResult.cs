@@ -4,6 +4,7 @@ namespace ApiKeyVault.Application.Dtos.TeamMember
     {
         Success,
         Forbidden,
-        NotFound
+        NotFound,
+        Failed
     }
 }
