@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router';
-import { ROUTE_PATHS } from '@/app/router/routes';
 import { AuthProvider } from '@/features/auth';
+import { ROUTE_PATHS } from '@/app/router/paths';
 import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 import { PublicOnlyRoute } from '@/app/router/PublicOnlyRoute';
 import Login from '@/pages/login/ui/Login';
