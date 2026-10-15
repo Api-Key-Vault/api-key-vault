@@ -20,12 +20,6 @@ namespace ApiKeyVault.Api.Controllers
         }
 
 
-		// this one is only dumb and temp to be able to do "Created at" will do proper one soon!
-		[HttpGet("{id:int}")]
-		public IActionResult GetById(int id)
-		{
-			return Ok();
-		}
 
 
 
@@ -46,9 +40,9 @@ namespace ApiKeyVault.Api.Controllers
                 return Forbid();
             }
 
-			// TODO implementation of add role "owner" to this userId here when role exist
+            // TODO implementation of add role "owner" to this userId here when role exist
 
-			return CreatedAtAction(nameof(GetById), new { id = newTeam.Id },newTeam);
+            return Created();
 		}
 
     }
