@@ -1,17 +1,11 @@
 import type { FormEvent } from "react";
 import Card from "@/shared/ui/Card";
 import PrimaryButton from "@/shared/ui/PrimaryButton";
+import type { AddKeyRequest } from "../model/types";
 
 type AddKeyModalProps = {
   onAdd: (request: AddKeyRequest) => void;
   onClose: () => void;
-};
-
-export type AddKeyRequest = {
-  category: string;
-  expiresAt: string;
-  name: string;
-  value: string;
 };
 
 export default function AddKeyModal({ onAdd, onClose }: AddKeyModalProps) {

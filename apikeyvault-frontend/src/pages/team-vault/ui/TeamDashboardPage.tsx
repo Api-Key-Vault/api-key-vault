@@ -1,38 +1,14 @@
 import { useEffect, useState } from "react";
 import Card from "@/shared/ui/Card";
 import PrimaryButton from "@/shared/ui/PrimaryButton";
-import AddKeyModal from "@/features/create-api-key/ui/AddKeyModal";
-import type { AddKeyRequest } from "@/features/create-api-key/ui/AddKeyModal";
-import ManageKeyModal from "@/features/manage-api-key/ui/ManageKeyModal";
-import type { ManageKeyUpdate } from "@/features/manage-api-key/ui/ManageKeyModal";
+import { AddKeyModal, type AddKeyRequest } from "@/features/create-api-key";
+import { ManageKeyModal, type ManageKeyUpdate } from "@/features/manage-api-key";
 import "./TeamDashboardPage.css";
-import TeamSettingsModal from "@/features/update-team/ui/TeamSettingsModal";
+import { TeamSettingsModal } from "@/features/update-team";
+import type { ApiKey } from "@/entities/api-key";
+import type { Team, TeamRole } from "@/entities/team";
 
-export type TeamRole = "Owner" | "Member";
-
-type TeamMember = {
-  id: number;
-  name: string;
-  role: TeamRole;
-};
-
-export type TeamKey = {
-  id: number;
-  name: string;
-  addedAt: string;
-  visiblePrefix: string;
-  maskedValue: string;
-  demoValue?: string;
-  category?: string;
-  expiresAt?: string;
-  isRevoked?: boolean;
-};
-
-export type TeamDashboardData = {
-  name: string;
-  members: TeamMember[];
-  keys: TeamKey[];
-};
+type TeamDashboardData = Team & { keys: ApiKey[] };
 
 type TeamDashboardPageProps = {
   role?: TeamRole;
@@ -75,9 +51,9 @@ const mockTeam: TeamDashboardData = {
 };
 
 type TeamKeyRowProps = {
-  apiKey: TeamKey;
+  apiKey: ApiKey;
   isOwner: boolean;
-  onManage: (apiKey: TeamKey) => void;
+  onManage: (apiKey: ApiKey) => void;
 };
 
 function TeamKeyRow({ apiKey, isOwner, onManage }: TeamKeyRowProps) {
@@ -190,7 +166,7 @@ export default function TeamDashboardPage({
   const [isAddKeyOpen, setIsAddKeyOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [keys, setKeys] = useState(team.keys);
-  const [selectedKey, setSelectedKey] = useState<TeamKey | null>(null);
+  const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
   const [teamData, setTeamData] = useState(team);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const isOwner = role === "Owner";

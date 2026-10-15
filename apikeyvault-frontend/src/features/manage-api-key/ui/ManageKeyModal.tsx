@@ -1,21 +1,7 @@
 import { useState, type FormEvent } from "react";
 import Card from "@/shared/ui/Card";
 import PrimaryButton from "@/shared/ui/PrimaryButton";
-import type { TeamKey } from "@/pages/team-vault/ui/TeamDashboardPage";
-
-export type ManageKeyUpdate = {
-  category: string;
-  expiresAt: string;
-  name: string;
-  value: string;
-};
-
-type ManageKeyModalProps = {
-  apiKey: TeamKey;
-  onClose: () => void;
-  onRevoke: () => void;
-  onSave: (update: ManageKeyUpdate) => void;
-};
+import type { ManageKeyModalProps } from "../model/types";
 
 export default function ManageKeyModal({
   apiKey,

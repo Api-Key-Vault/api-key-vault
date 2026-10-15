@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from "react";
 import Card from "@/shared/ui/Card";
 import PrimaryButton from "@/shared/ui/PrimaryButton";
-import type { TeamDashboardData } from "@/pages/team-vault/ui/TeamDashboardPage";
+import type { Team } from "@/entities/team";
 
 type TeamSettingsModalProps = {
   onClose: () => void;
   onSaveName: (name: string) => void;
-  team: TeamDashboardData;
+  team: Pick<Team, "name" | "members">;
 };
 
 export default function TeamSettingsModal({

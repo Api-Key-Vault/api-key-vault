@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Card from "@/shared/ui/Card";
 import PrimaryButton from "@/shared/ui/PrimaryButton";
-import TeamCard from "@/entities/team/ui/TeamCard";
+import { TeamCard } from "@/entities/team";
 import StatsBox from "./StatsBox";
-import AvatarButton from "@/entities/user/ui/AvatarButton";
-import CreateTeamModal from "@/features/create-team/ui/CreateTeamModal";
+import { AvatarButton } from "@/entities/user";
+import { CreateTeamModal } from "@/features/create-team";
 import AccountModal from "./AccountModal";
 
 export default function UserDashboardPage(){
