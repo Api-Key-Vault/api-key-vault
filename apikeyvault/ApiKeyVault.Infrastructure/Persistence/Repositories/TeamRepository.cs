@@ -1,5 +1,6 @@
 ﻿using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,21 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task AddTeamAsync(Team teamToAdd)
+		public async Task<Team?> GetTeamByIdAsync(int teamId)
+		{
+			return await _dbContext.Teams
+				.AsNoTracking()
+				.SingleOrDefaultAsync(team => team.Id == teamId);
+		}
+		public async Task<List<Team>> GetAllTeamsAsync()
+		{
+			return await _dbContext.Teams
+				.AsNoTracking()
+				.OrderByDescending(t => t.CreatedAt)
+				.ToListAsync();
+		}
+
+		public async Task AddTeamAsync(Team teamToAdd)
         {
             await _dbContext.Teams.AddAsync(teamToAdd);
 
