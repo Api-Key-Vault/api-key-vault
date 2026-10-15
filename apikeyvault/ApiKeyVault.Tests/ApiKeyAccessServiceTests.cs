@@ -44,5 +44,35 @@ namespace ApiKeyVault.Tests
             Assert.NotNull(result);
             Assert.Equal(GrantAccessResult.Forbidden, result.Status);
         }
+
+
+        [Fact]
+        public async Task RevokeAsync_MemberIsNotOwner_ReturnsFalse()
+        {
+            //Arrange
+            var member = new TeamMember
+            {
+                Id = 1,
+                TeamId = 1,
+                UserId = "member",
+                Role = new TeamRole { Name = "Member" }
+            };
+
+            var membersRepository = new Mock<ITeamMemberRepository>();
+            var apiKeyAccessRepository = new Mock<IApiKeyAccessRepository>();
+            var apiKeyRepository = new Mock<IApiKeyRepository>();
+
+            membersRepository
+                .Setup(repo => repo.GetByTeamAndUserAsync(1, "member"))
+                .ReturnsAsync(member);
+
+            var service = new ApiKeyAccessService(apiKeyAccessRepository.Object, membersRepository.Object, apiKeyRepository.Object);
+
+            //Act
+            var result = await service.RevokeAsync(1, "member", 1, member.Id);
+
+            //Assert
+            Assert.False(result);
+        }
     }
 }
