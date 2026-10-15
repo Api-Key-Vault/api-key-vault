@@ -18,13 +18,16 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 		{
 			return await _dbContext.Teams
 				.AsNoTracking()
-				.SingleOrDefaultAsync(team => team.Id == teamId && team.Members.Any(m => m.UserId == userId));
+				.Include(t => t.Members)
+				.SingleOrDefaultAsync(team => team.Id == teamId && team.Members.Any(m => m.UserId == userId)); 
 		}
-		public async Task<List<Team>> GetAllTeamsAsync(string userId)
+		public async Task<List<Team>> GetAllTeamsByUserIdAsync(string userId)
 		{
-			return await _dbContext.Teams
+			return await _dbContext.TeamMembers
 				.AsNoTracking()
-				.Where(t => t.Members.Any(m => m.UserId == userId))
+				.Include(tm => tm.Team)
+				.Where(tm => tm.UserId == userId)
+				.Select(tm => tm.Team)
 				.OrderByDescending(t => t.CreatedAt)
 				.ToListAsync();
 		}
