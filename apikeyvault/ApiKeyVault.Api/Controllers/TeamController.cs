@@ -41,7 +41,7 @@ namespace ApiKeyVault.Api.Controllers
         }
 
         [HttpGet]
-		public async Task<ActionResult<GetTeamResponse>> GetAllTeams()
+		public async Task<ActionResult<List<GetTeamResponse>>> GetAllTeams()
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (userId is null)
