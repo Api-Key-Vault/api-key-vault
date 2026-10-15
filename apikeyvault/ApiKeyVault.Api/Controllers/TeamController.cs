@@ -20,7 +20,7 @@ namespace ApiKeyVault.Api.Controllers
         }
 
 
-        [HttpGet("{userId:int}")]
+        [HttpGet("{teamId:int}")]
         public async Task<ActionResult<GetTeamResponse>> GetTeamById([FromRoute]int teamId)
         {
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
