@@ -22,27 +22,8 @@ namespace ApiKeyVault.Application.Services
         public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
         {
 
-            var newTeam = new Team
-            {
-                Name = request.Name,
-                CreatedAt = DateTime.UtcNow  // set time here instead of inside the class
-			};
-
-            var tryAdd = await _teamRepository.AddTeamAsync(newTeam);
-
-            if(tryAdd == false)
-            {
-                return null;
-            }
-
-            var response = new TeamResponse
-            {
-                Id = newTeam.Id,
-                Name= newTeam.Name
-            };
-
-            // set team-role as owner here
-            var ownerRole = await _teamRoleRepository.GetRoleByNameAsync("Owner");
+			// set team-role as owner here
+			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync("Owner");
 
 			if (ownerRole is null)
 			{
@@ -50,16 +31,29 @@ namespace ApiKeyVault.Application.Services
 			}
 
 			var setOwnerOfThisTeam = new TeamMember
+			{
+				UserId = userId,
+				RoleId = ownerRole.Id
+			};
+
+			var newTeam = new Team
             {
-                TeamId = newTeam.Id,
-                UserId = userId,
-                RoleId = ownerRole.Id
-            };
+                Name = request.Name,
+                CreatedAt = DateTime.UtcNow  // set time here instead of inside the class
+			};
 
-            await _teamMemberRepository.AddAsync(setOwnerOfThisTeam);
-            await _teamMemberRepository.SaveChangesAsync();
+			newTeam.Members.Add(setOwnerOfThisTeam);
 
-            return response;
+			await _teamRepository.AddTeamAsync(newTeam);
+			await _teamRepository.SaveChangesAsync();
+
+			var response = new TeamResponse
+			{
+				Id = newTeam.Id,
+				Name = newTeam.Name
+			};
+
+			return response;
 		}
     }
 }
