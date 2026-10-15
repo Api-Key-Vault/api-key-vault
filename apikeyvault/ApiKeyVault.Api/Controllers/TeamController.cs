@@ -41,7 +41,7 @@ namespace ApiKeyVault.Api.Controllers
             }
 
 
-            return Created();
+			return StatusCode(StatusCodes.Status201Created, newTeam);
 		}
 
     }
