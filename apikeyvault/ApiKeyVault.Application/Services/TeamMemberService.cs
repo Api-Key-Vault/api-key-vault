@@ -70,5 +70,25 @@ namespace ApiKeyVault.Application.Services
         {
             return string.Equals(member.Role.Name, OwnerRoleName, StringComparison.Ordinal);
         }
+
+        public async Task<TeamMemberResult> LeaveAsync(int teamId, string userId)
+        {
+            var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
+
+            if(member is null)
+            {
+                return TeamMemberResult.NotFound;
+            }
+
+            if(IsOwner(member))
+            {
+                return TeamMemberResult.Forbidden;
+            }
+
+            await _teamMemberRepository.RemoveAsync(member);
+            await _teamMemberRepository.SaveChangesAsync();
+
+            return TeamMemberResult.Success;
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace ApiKeyVault.Application.Interfaces.Services
     {
         Task<List<TeamMemberResponse>> GetByTeamAsync(int teamId, string userId);
         Task<TeamMemberResult> RemoveAsync(int id, string userId, int teamMemberId);
+        Task<TeamMemberResult> LeaveAsync(int teamId, string userId);
     }
 }
