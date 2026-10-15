@@ -33,14 +33,13 @@ namespace ApiKeyVault.Api.Controllers
 				return Unauthorized();
 			}
 
-			var newTeam = await _teamService.CreateTeamAsync(createTeamRequest);
+			var newTeam = await _teamService.CreateTeamAsync(createTeamRequest, userId);
 
             if(newTeam is null)
             {
                 return Forbid();
             }
 
-            // TODO implementation of add role "owner" to this userId here when role exist
 
             return Created();
 		}
