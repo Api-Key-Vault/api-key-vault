@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace ApiKeyVault.Api.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/teams")]
     [ApiController]
     public class TeamController : ControllerBase
     {
