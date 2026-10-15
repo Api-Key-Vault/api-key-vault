@@ -2,7 +2,7 @@ import { type PropsWithChildren } from "react";
 import { useAuth } from "@/features/auth";
 import { Navigate } from "react-router";
 import { ROUTE_PATHS } from "./paths";
-import Loading from "@/shared/ui/Loading";
+import { Loading } from "@/shared/ui";
 
 export function PublicOnlyRoute({children} : PropsWithChildren){
     const { state } = useAuth();

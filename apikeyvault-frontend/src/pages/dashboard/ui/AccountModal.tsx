@@ -1,5 +1,4 @@
-import Card from "@/shared/ui/Card";
-import DeleteButton from "@/shared/ui/DeleteButton";
+import { Card, DeleteButton } from "@/shared/ui";
 
 type AccountModalProps ={
     onClose?: () => void;

@@ -1,6 +1,5 @@
 import type { FormEvent } from "react";
-import Card from "@/shared/ui/Card";
-import PrimaryButton from "@/shared/ui/PrimaryButton";
+import { Card, PrimaryButton } from "@/shared/ui";
 import type { AddKeyRequest } from "../model/types";
 
 type AddKeyModalProps = {

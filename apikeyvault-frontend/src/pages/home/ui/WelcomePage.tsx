@@ -1,5 +1,4 @@
-import PrimaryButton from "@/shared/ui/PrimaryButton";
-import Card from "@/shared/ui/Card";
+import { Card, PrimaryButton } from "@/shared/ui";
 
 export default function WelcomePage() {
   return (

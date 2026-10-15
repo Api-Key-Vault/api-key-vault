@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import Card from "@/shared/ui/Card";
-import PrimaryButton from "@/shared/ui/PrimaryButton";
+import { Card, PrimaryButton } from "@/shared/ui";
 import { AddKeyModal, type AddKeyRequest } from "@/features/create-api-key";
 import { ManageKeyModal, type ManageKeyUpdate } from "@/features/manage-api-key";
 import "./TeamDashboardPage.css";

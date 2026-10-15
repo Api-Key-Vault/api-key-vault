@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiClient }  from '@/shared/api/apiClient'
+import { apiClient } from '@/shared/api';
 import type { User } from '@/entities/user';
 
 

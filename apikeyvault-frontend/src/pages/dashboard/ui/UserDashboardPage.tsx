@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Card from "@/shared/ui/Card";
-import PrimaryButton from "@/shared/ui/PrimaryButton";
+import { Card, PrimaryButton } from "@/shared/ui";
 import { TeamCard } from "@/entities/team";
 import StatsBox from "./StatsBox";
 import { AvatarButton } from "@/entities/user";

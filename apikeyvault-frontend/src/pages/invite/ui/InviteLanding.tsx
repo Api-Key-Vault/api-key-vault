@@ -1,6 +1,5 @@
 import { Bubble } from "pixel-retroui";
-import Card from "@/shared/ui/Card";
-import PrimaryButton from "@/shared/ui/PrimaryButton";
+import { Card, PrimaryButton } from "@/shared/ui";
 
 export default function InviteLanding() {
 	return (
