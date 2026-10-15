@@ -20,7 +20,7 @@ namespace ApiKeyVault.Api.Controllers
         }
 
 
-        [HttpGet("/{userId:int}")]
+        [HttpGet("{userId:int}")]
         public async Task<ActionResult<GetTeamResponse>> GetTeamById([FromRoute]int teamId)
         {
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -50,11 +50,6 @@ namespace ApiKeyVault.Api.Controllers
 			}
 
 			var allTeams = await _teamService.GetAllTeamsAsync(userId);
-
-			if (allTeams is null)
-			{
-				return NotFound();
-			}
 
 			return Ok(allTeams);
 		}

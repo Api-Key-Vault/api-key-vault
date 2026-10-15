@@ -42,12 +42,7 @@ namespace ApiKeyVault.Application.Services
 
 		public async Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId)
 		{
-			List<Team> teams= await _teamRepository.GetAllTeamsAsync(userId);
-
-			if (teams == null)
-			{
-				return new List<GetTeamResponse>();
-			}
+			List<Team> teams= await _teamRepository.GetAllTeamsByUserIdAsync(userId);
 
 			List<GetTeamResponse> responseList = teams.Select(team => new GetTeamResponse
 			{
