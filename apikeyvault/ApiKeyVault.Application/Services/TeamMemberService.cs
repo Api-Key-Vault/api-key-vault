@@ -48,6 +48,21 @@ namespace ApiKeyVault.Application.Services
                 return TeamMemberResult.Forbidden;
             }
 
+            var targetMember = await _teamMemberRepository.GetByIdAsync(teamMemberId);
+
+            if(targetMember is null || targetMember.TeamId != teamId)
+            {
+                return TeamMemberResult.NotFound;
+            }
+
+            if(IsOwner(targetMember))
+            {
+                return TeamMemberResult.Forbidden;
+            }
+
+            await _teamMemberRepository.RemoveAsync(targetMember);
+            await _teamMemberRepository.SaveChangesAsync();
+
             return TeamMemberResult.Success;
         }
         // Checks if the member has the Owner role
