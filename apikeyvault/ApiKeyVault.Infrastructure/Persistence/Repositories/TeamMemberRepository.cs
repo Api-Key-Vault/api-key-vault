@@ -12,14 +12,12 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
         }
-
-        public Task AddAsync(TeamMember teamMember)
+        public async Task<TeamMember?> GetByIdAsync(int teamMemberId)
         {
-            throw new NotImplementedException();
-        }
-        public Task RemoveAsync(TeamMember teamMember)
-        {
-            throw new NotImplementedException();
+            return await _dbContext.TeamMembers
+                .AsNoTracking()
+                .Include(member => member.Role)
+                .SingleOrDefaultAsync(member => member.Id == teamMemberId);
         }
         public async Task<TeamMember?> GetByTeamAndUserAsync(int teamId, string userId)
         {
@@ -29,6 +27,28 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                 .SingleOrDefaultAsync(member =>
                     member.TeamId == teamId &&
                     member.UserId == userId);
+        }
+        public async Task<List<TeamMember>> GetByTeamAsync(int teamId)
+        {
+            return await _dbContext.TeamMembers
+                .AsNoTracking()
+                .Include(member => member.Role)
+                .Where(member => member.TeamId == teamId)
+                .ToListAsync();
+        }
+        public async Task AddAsync(TeamMember teamMember)
+        {
+            await _dbContext.TeamMembers.AddAsync(teamMember);
+        }
+        public void Update(TeamMember teamMember)
+        {
+            _dbContext.TeamMembers.Update(teamMember);
+        }
+        public Task RemoveAsync(TeamMember teamMember)
+        {
+            _dbContext.TeamMembers.Remove(teamMember);
+
+            return Task.CompletedTask;
         }
         public Task SaveChangesAsync()
         {

@@ -23,7 +23,8 @@ namespace ApiKeyVault.Tests
 
             var memberRepository = new Mock<ITeamMemberRepository>();
             var inviteRepository = new Mock<ITeamInviteRepository>();
-            var config = new Mock<IConfiguration>();    
+            var config = new Mock<IConfiguration>();
+            var roleRepository = new Mock<ITeamRoleRepository>();
 
             memberRepository
                 .Setup(repository => repository.GetByTeamAndUserAsync(1, "owner"))
@@ -31,8 +32,8 @@ namespace ApiKeyVault.Tests
             config
                 .Setup(config => config["Frontend:Origin"])
                 .Returns("https://localhost:5173");
-            
-            var service = new TeamInviteService(memberRepository.Object, inviteRepository.Object, config.Object);
+
+            var service = new TeamInviteService(memberRepository.Object, inviteRepository.Object, config.Object, roleRepository.Object);
 
             var result = await service.CreateAsync(1, "owner");
 
@@ -57,7 +58,8 @@ namespace ApiKeyVault.Tests
 
             var inviteRepository = new Mock<ITeamInviteRepository>();
             var memberRepository = new Mock<ITeamMemberRepository>();
-            var config = new Mock<IConfiguration>();    
+            var config = new Mock<IConfiguration>();
+            var roleRepository = new Mock<ITeamRoleRepository>();
 
             inviteRepository
                 .Setup(repository => repository.GetByTokenHashAsync(It.IsAny<string>()))
@@ -66,7 +68,7 @@ namespace ApiKeyVault.Tests
                 .Setup(config => config["Frontend:Origin"])
                 .Returns("https://localhost:5173");
 
-            var service = new TeamInviteService(memberRepository.Object, inviteRepository.Object, config.Object);
+            var service = new TeamInviteService(memberRepository.Object, inviteRepository.Object, config.Object, roleRepository.Object);
 
             var result = await service.AcceptAsync(new AcceptInviteRequest { Token = "token" }, "user");
 
@@ -90,7 +92,8 @@ namespace ApiKeyVault.Tests
 
             var inviteRepository = new Mock<ITeamInviteRepository>();
             var memberRepository = new Mock<ITeamMemberRepository>();
-            var config = new Mock<IConfiguration>();    
+            var config = new Mock<IConfiguration>();
+            var roleRepository = new Mock<ITeamRoleRepository>();
 
             inviteRepository
                 .Setup(repository => repository.GetByTokenHashAsync(It.IsAny<string>()))
@@ -99,7 +102,7 @@ namespace ApiKeyVault.Tests
                 .Setup(config => config["Frontend:Origin"])
                 .Returns("https://localhost:5173");
 
-            var service = new TeamInviteService(memberRepository.Object, inviteRepository.Object, config.Object);
+            var service = new TeamInviteService(memberRepository.Object, inviteRepository.Object, config.Object, roleRepository.Object);
 
             var result = await service.AcceptAsync(new AcceptInviteRequest { Token = "token" }, "user");
 
