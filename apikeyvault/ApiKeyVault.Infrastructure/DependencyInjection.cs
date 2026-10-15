@@ -67,6 +67,8 @@ namespace ApiKeyVault.Infrastructure
             services.AddScoped<IApiKeyProtector, ApiKeyProtector>();
             services.AddScoped<IApiKeyAccessRepository, ApiKeyAccessRepository>();
 
+            services.AddScoped<ITeamRepository, TeamRepository>();
+
             return services;
         }
     }

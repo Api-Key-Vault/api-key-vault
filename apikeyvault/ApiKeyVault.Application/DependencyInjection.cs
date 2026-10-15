@@ -10,10 +10,12 @@ namespace ApiKeyVault.Application
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IApiKeyService, ApiKeyService>();
+			services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<ITeamInviteService, TeamInviteService>();
             services.AddScoped<ITeamMemberService, TeamMemberService>();
+            services.AddScoped<IApiKeyAccessService, ApiKeyAccessService>();
 
-            return services;
+			return services;
         }
     }
 }
