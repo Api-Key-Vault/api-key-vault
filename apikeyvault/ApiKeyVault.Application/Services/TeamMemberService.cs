@@ -109,8 +109,31 @@ namespace ApiKeyVault.Application.Services
                 return TeamMemberResult.Forbidden;
             }
 
+            // Remove the Apikey access for the member before removing the member itself.
+            var apiKeyAccesses = await _apiKeyAccessRepository.GetByTeamMemberIdAsync(member.Id);
+
+            if(apiKeyAccesses.Count > 0)
+            {
+                foreach (var access in apiKeyAccesses)
+                {
+                    await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
+                }
+
+                var accessResult = await _apiKeyAccessRepository.SaveChangesAsync();
+
+                if (accessResult <= 0)
+                {
+                    return TeamMemberResult.Failed;
+                }
+            }
+
             await _teamMemberRepository.RemoveAsync(member);
-            await _teamMemberRepository.SaveChangesAsync();
+            var result = await _teamMemberRepository.SaveChangesAsync();
+
+            if(result <= 0)
+            {
+                return TeamMemberResult.Failed;
+            }
 
             return TeamMemberResult.Success;
         }
