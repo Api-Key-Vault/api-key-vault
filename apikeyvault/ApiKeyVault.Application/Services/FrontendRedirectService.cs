@@ -22,7 +22,7 @@ namespace ApiKeyVault.Application.Services
         {
             string loginUrl = $"{_frontendOptions.Origin}{_frontendOptions.LoginPath}";
 
-            if (string.IsNullOrWhiteSpace(error))
+            if (!string.IsNullOrWhiteSpace(error))
             {
                 string errorCode = Uri.EscapeDataString(error);
                 return $"{loginUrl}?{LoginRedirectErrors.ParameterName}={errorCode}";
