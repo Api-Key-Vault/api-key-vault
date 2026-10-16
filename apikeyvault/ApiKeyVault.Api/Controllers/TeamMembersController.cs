@@ -32,5 +32,31 @@ namespace ApiKeyVault.Api.Controllers
 
             return Ok(members);
         }
+
+        [HttpDelete("{teamMemberId:int}")]
+        public async Task<IActionResult> RemoveAsync(int teamId, int teamMemberId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _teamMemberService.RemoveAsync(teamId, userId, teamMemberId);
+
+            return result switch
+            {
+                TeamMemberResult.Success
+                    => NoContent(),
+                TeamMemberResult.Forbidden
+                    => Forbid(),
+                TeamMemberResult.NotFound
+                    => NotFound(),
+                TeamMemberResult.Failed
+                    => Problem(),
+                _ => BadRequest()
+            };
+        }
     }
 }
