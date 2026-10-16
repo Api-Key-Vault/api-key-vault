@@ -56,7 +56,7 @@ namespace ApiKeyVault.Application.Services
 		{
 
 			// set team-role as owner here
-			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync("Owner");
+			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync(OwnerRoleName);
 
 			if (ownerRole is null)
 			{
@@ -70,9 +70,9 @@ namespace ApiKeyVault.Application.Services
 			};
 
 			var newTeam = new Team
-			{
-				Name = request.Name,
-				CreatedAt = DateTime.UtcNow  // set time here instead of inside the class
+            {
+                Name = request.Name,
+                CreatedAt = DateTime.UtcNow
 			};
 
 			newTeam.Members.Add(setOwnerOfThisTeam);

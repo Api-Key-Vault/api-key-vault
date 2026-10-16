@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ApiKeyVault.Application.Constants
+﻿namespace ApiKeyVault.Application.Constants
 {
     public static class LoginRedirectErrors
     {

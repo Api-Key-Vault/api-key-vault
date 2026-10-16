@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace ApiKeyVault.Infrastructure
@@ -55,7 +54,7 @@ namespace ApiKeyVault.Infrastructure
 
                     options.Events.OnAccessDenied = context => RedirectToFrontendLogin(context, LoginRedirectErrors.AccessDenied);
                     options.Events.OnRemoteFailure = context => RedirectToFrontendLogin(context, LoginRedirectErrors.LoginFailed);
-                    
+
                 });
 
             services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
@@ -75,10 +74,8 @@ namespace ApiKeyVault.Infrastructure
         {
             var redirectService = context.HttpContext.RequestServices
                 .GetRequiredService<IFrontendRedirectService>();
-            string redirectUrl = redirectService
-                .GetLoginUrl(errorCode);
-            context.Response 
-                .Redirect(redirectUrl);
+            var redirectUrl = redirectService.GetLoginUrl(errorCode);
+            context.Response.Redirect(redirectUrl);
             context.HandleResponse();
 
             return Task.CompletedTask;

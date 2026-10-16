@@ -23,7 +23,7 @@ namespace ApiKeyVault.Application.Services
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
 
-            if(member is null)
+            if (member is null)
             {
                 return new List<TeamMemberResponse>();
             }
@@ -36,7 +36,7 @@ namespace ApiKeyVault.Application.Services
                     Id = teamMember.Id,
                     UserId = teamMember.UserId,
                     TeamId = teamMember.TeamId,
-                    RoleName = teamMember.Role.Name  
+                    RoleName = teamMember.Role.Name
                 })
                 .ToList();
 
@@ -54,12 +54,12 @@ namespace ApiKeyVault.Application.Services
 
             var targetMember = await _teamMemberRepository.GetByIdAsync(teamMemberId);
 
-            if(targetMember is null || targetMember.TeamId != teamId)
+            if (targetMember is null || targetMember.TeamId != teamId)
             {
                 return TeamMemberResult.NotFound;
             }
 
-            if(IsOwner(targetMember))
+            if (IsOwner(targetMember))
             {
                 return TeamMemberResult.Forbidden;
             }
@@ -67,12 +67,9 @@ namespace ApiKeyVault.Application.Services
             // Remove the Apikey access for the target member before removing the member itself
             var apiKeyAccesses = await _apiKeyAccessRepository.GetByTeamMemberIdAsync(targetMember.Id);
 
-            if(apiKeyAccesses.Count > 0)
+            foreach (var access in apiKeyAccesses)
             {
-                foreach(var access in apiKeyAccesses)
-                {
-                    await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
-                }
+                await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
             }
 
             // Remove any used invites for the target member
@@ -81,7 +78,7 @@ namespace ApiKeyVault.Application.Services
             await _teamMemberRepository.RemoveAsync(targetMember);
             var result = await _teamMemberRepository.SaveChangesAsync();
 
-            if(result <= 0)
+            if (result <= 0)
             {
                 return TeamMemberResult.Failed;
             }
@@ -98,12 +95,12 @@ namespace ApiKeyVault.Application.Services
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
 
-            if(member is null)
+            if (member is null)
             {
                 return TeamMemberResult.NotFound;
             }
 
-            if(IsOwner(member))
+            if (IsOwner(member))
             {
                 return TeamMemberResult.Forbidden;
             }
@@ -111,12 +108,9 @@ namespace ApiKeyVault.Application.Services
             // Remove the Apikey access for the member before removing the member itself.
             var apiKeyAccesses = await _apiKeyAccessRepository.GetByTeamMemberIdAsync(member.Id);
 
-            if(apiKeyAccesses.Count > 0)
+            foreach (var access in apiKeyAccesses)
             {
-                foreach (var access in apiKeyAccesses)
-                {
-                    await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
-                }
+                await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
             }
 
             // Remove any used invites for the target member
@@ -125,7 +119,7 @@ namespace ApiKeyVault.Application.Services
             await _teamMemberRepository.RemoveAsync(member);
             var result = await _teamMemberRepository.SaveChangesAsync();
 
-            if(result <= 0)
+            if (result <= 0)
             {
                 return TeamMemberResult.Failed;
             }

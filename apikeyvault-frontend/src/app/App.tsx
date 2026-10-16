@@ -1,0 +1,27 @@
+import { Routes, Route } from 'react-router';
+import { AuthProvider } from '@/features/auth';
+import { ROUTE_PATHS } from '@/app/router/paths';
+import { ProtectedRoute } from '@/app/router/ProtectedRoute';
+import { PublicOnlyRoute } from '@/app/router/PublicOnlyRoute';
+import { UserDashboardPage } from '@/pages/dashboard';
+import { WelcomePage } from '@/pages/home';
+import { InviteLanding } from '@/pages/invite';
+import { Login } from '@/pages/login';
+import { TeamDashboardPage } from '@/pages/team-vault';
+
+function App() {	
+	return <>
+	
+	<AuthProvider>	
+		<Routes>
+			<Route path={ROUTE_PATHS.HOME} element={<PublicOnlyRoute>{<WelcomePage />}</PublicOnlyRoute>} />
+			<Route path={ROUTE_PATHS.LOGIN} element={<PublicOnlyRoute>{<Login />}</PublicOnlyRoute>} />
+			<Route path={ROUTE_PATHS.DASHBOARD} element={<ProtectedRoute>{<UserDashboardPage /> }</ProtectedRoute>} />
+			<Route path={ROUTE_PATHS.TEAM} element={<ProtectedRoute>{<TeamDashboardPage />}</ProtectedRoute>} /> 
+			<Route path={ROUTE_PATHS.INVITE} element={<InviteLanding />} /> 
+		</Routes>
+	</AuthProvider>
+	</>;
+}
+
+export default App;
