@@ -7,7 +7,9 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
 		Task<Team?> GetTeamByIdAsync(int teamId, string userId);
 		Task<List<Team>> GetAllTeamsByUserIdAsync(string userId);
 		Task AddTeamAsync(Team teamToAdd);
-        Task SaveChangesAsync();
+		Task UpdateTeamAsync(Team teamToUpdate);
+
+		Task SaveChangesAsync();
 
 	}
 }

@@ -36,6 +36,13 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             await _dbContext.Teams.AddAsync(teamToAdd);
 
 		}
+
+		public async Task UpdateTeamAsync(Team teamToUpdate)
+		{
+			 _dbContext.Teams.Update(teamToUpdate);
+		}
+
+
 		public Task SaveChangesAsync()
 		{
 			return _dbContext.SaveChangesAsync();
