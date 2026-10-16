@@ -19,7 +19,7 @@ namespace ApiKeyVault.Api
             {
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = builder.Environment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Lax;
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
             builder.Services.AddOptions<FrontendOptions>()
