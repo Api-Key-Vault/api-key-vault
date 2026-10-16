@@ -18,6 +18,4 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
         case "authenticated":
             return children;
     }
-
-    
 }

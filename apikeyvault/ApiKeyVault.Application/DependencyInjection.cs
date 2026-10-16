@@ -14,6 +14,7 @@ namespace ApiKeyVault.Application
             services.AddScoped<ITeamInviteService, TeamInviteService>();
             services.AddScoped<ITeamMemberService, TeamMemberService>();
             services.AddScoped<IApiKeyAccessService, ApiKeyAccessService>();
+            services.AddSingleton<IFrontendRedirectService, FrontendRedirectService>();
 
 			return services;
         }

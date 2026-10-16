@@ -1,4 +1,6 @@
-﻿using ApiKeyVault.Application.Interfaces.Repositories;
+﻿using ApiKeyVault.Application.Common.Options;
+using ApiKeyVault.Application.Constants;
+using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Infrastructure.Identity;
 using ApiKeyVault.Infrastructure.Persistence;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace ApiKeyVault.Infrastructure
@@ -49,17 +52,13 @@ namespace ApiKeyVault.Infrastructure
                     options.ClientSecret = githubClientSecret;
                     options.Scope.Add("user:email");
                     options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
-                    options.Events.OnRemoteFailure = context =>
-                    {
-                        context.Response.Redirect("/api/auth/github/callback?error=external_login_failed");
-                        context.HandleResponse();
-                        
-                        return Task.CompletedTask;
-                    };
+
+                    options.Events.OnAccessDenied = context => RedirectToFrontendLogin(context, LoginRedirectErrors.AccessDenied);
+                    options.Events.OnRemoteFailure = context => RedirectToFrontendLogin(context, LoginRedirectErrors.LoginFailed);
+                    
                 });
 
             services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
-
             services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
             services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
             services.AddScoped<ITeamInviteRepository, TeamInviteRepository>();
@@ -70,6 +69,19 @@ namespace ApiKeyVault.Infrastructure
             services.AddScoped<ITeamRepository, TeamRepository>();
 
             return services;
+        }
+
+        private static Task RedirectToFrontendLogin(HandleRequestContext<RemoteAuthenticationOptions> context, string errorCode)
+        {
+            var redirectService = context.HttpContext.RequestServices
+                .GetRequiredService<IFrontendRedirectService>();
+            string redirectUrl = redirectService
+                .GetLoginUrl(errorCode);
+            context.Response 
+                .Redirect(redirectUrl);
+            context.HandleResponse();
+
+            return Task.CompletedTask;
         }
     }
 }
