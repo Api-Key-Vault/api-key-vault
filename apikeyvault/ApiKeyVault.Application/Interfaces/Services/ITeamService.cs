@@ -7,7 +7,9 @@ namespace ApiKeyVault.Application.Interfaces.Services
          Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId);
          Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId);
 		 Task<TeamResponse?>CreateTeamAsync( CreateTeamRequest request, string userId);
+         Task<TeamResponse?> UpdateTeam(UpdateTeamRequest updateTeamRequest, string userId);
 
-    }
+
+	}
 }
 

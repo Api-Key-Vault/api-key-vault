@@ -90,5 +90,30 @@ namespace ApiKeyVault.Application.Services
 
 			return response;
 		}
+
+
+
+		public async Task<TeamResponse?> UpdateTeam(UpdateTeamRequest updateTeamRequest, string userId)
+		{
+			var teamToUpdate = await _teamRepository.GetTeamByIdAsync(updateTeamRequest.Id, userId);
+
+			if (teamToUpdate is null)
+			{
+				return null;
+			}
+
+			teamToUpdate.Name = updateTeamRequest.Name;
+
+			await _teamRepository.UpdateTeamAsync(teamToUpdate);
+			await _teamRepository.SaveChangesAsync();
+
+			var response = new TeamResponse
+			{
+				Id = updateTeamRequest.Id,
+				Name = updateTeamRequest.Name
+			};
+
+			return response;
+		}
     }
 }
