@@ -16,8 +16,8 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 		public async Task<Team?> GetTeamByIdAsync(int teamId, string userId)
 		{
 			return await _dbContext.Teams
-				.AsNoTracking()
 				.Include(t => t.Members)
+				.ThenInclude(m => m.Role)
 				.SingleOrDefaultAsync(team => team.Id == teamId && team.Members.Any(m => m.UserId == userId)); 
 		}
 		public async Task<List<Team>> GetAllTeamsByUserIdAsync(string userId)
@@ -34,7 +34,6 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 		public async Task AddTeamAsync(Team teamToAdd)
         {
             await _dbContext.Teams.AddAsync(teamToAdd);
-
 		}
 
 		public async Task DeleteTeamAsync(Team teamToDelete)
