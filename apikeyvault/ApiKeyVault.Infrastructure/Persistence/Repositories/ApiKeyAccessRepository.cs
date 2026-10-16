@@ -1,4 +1,5 @@
-﻿using ApiKeyVault.Application.Interfaces.Repositories;
+﻿using ApiKeyVault.Application.Dtos.ApiKeyAccess;
+using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,5 +47,24 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                 .Where(aka => aka.TeamMemberId == teamMemberId)
                 .ToListAsync();
         }
+
+        public async Task<List<GetApiKeyAccessResponse>> GetByApiKey(int apiKeyId)
+        {
+            return await _dbContext.ApiKeyAccesses
+                .AsNoTracking()
+                .Where(access => access.ApiKeyId == apiKeyId)                
+                .Join(_dbContext.Users,
+                    access => access.Member.UserId,
+                    user => user.Id,
+                    (access, user) => new GetApiKeyAccessResponse
+                    {
+                        ApiKeyId = access.ApiKeyId,
+                        TeamMemberId = access.TeamMemberId,
+                        DisplayName = user.DisplayName,
+                        AssignedAt = access.AssignedAt
+                    })
+                .ToListAsync();
+        }
     }
+    
 }
