@@ -2,11 +2,6 @@
 using ApiKeyVault.Application.Constants;
 using ApiKeyVault.Application.Interfaces.Services;
 using Microsoft.Extensions.Options;
-using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.Marshalling;
-using System.Text;
 
 namespace ApiKeyVault.Application.Services
 {
@@ -18,13 +13,14 @@ namespace ApiKeyVault.Application.Services
         {
             _frontendOptions = frontendOptions.Value;
         }
+
         public string GetLoginUrl(string? error = null)
         {
-            string loginUrl = $"{_frontendOptions.Origin}{_frontendOptions.LoginPath}";
+            var loginUrl = $"{_frontendOptions.Origin}{_frontendOptions.LoginPath}";
 
             if (!string.IsNullOrWhiteSpace(error))
             {
-                string errorCode = Uri.EscapeDataString(error);
+                var errorCode = Uri.EscapeDataString(error);
                 return $"{loginUrl}?{LoginRedirectErrors.ParameterName}={errorCode}";
             }
 
@@ -33,9 +29,7 @@ namespace ApiKeyVault.Application.Services
 
         public string GetDashboardUrl()
         {
-            string dashboardUrl = $"{_frontendOptions.Origin}{_frontendOptions.DashboardPath}";
-
-            return dashboardUrl;
+            return $"{_frontendOptions.Origin}{_frontendOptions.DashboardPath}";
         }
     }
 }
