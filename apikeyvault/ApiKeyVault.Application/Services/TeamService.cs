@@ -7,15 +7,14 @@ namespace ApiKeyVault.Application.Services
 {
 	public class TeamService : ITeamService
 	{
+		private const string OwnerRoleName = "Owner";
 		private readonly ITeamRepository _teamRepository;
 		private readonly ITeamRoleRepository _teamRoleRepository;
-		private readonly ITeamMemberRepository _teamMemberRepository;
 
-		public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository, ITeamMemberRepository teamMemberRepository)
+		public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository)
 		{
 			_teamRepository = teamRepository;
 			_teamRoleRepository = teamRoleRepository;
-			_teamMemberRepository = teamMemberRepository;
 		}
 
 
