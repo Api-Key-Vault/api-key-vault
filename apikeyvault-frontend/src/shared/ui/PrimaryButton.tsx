@@ -7,7 +7,7 @@ type PrimaryButtonProps = {
 	className?: string;
 };
 
-export default function PrimaryButton({
+export function PrimaryButton({
 	children,
 	onClick,
 	className,

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { TeamCard } from "@/entities/team";
-import StatsBox from "./StatsBox";
+import { StatsBox } from "./StatsBox";
 import { AvatarButton } from "@/entities/user";
 import { CreateTeamModal } from "@/features/create-team";
-import AccountModal from "./AccountModal";
+import { AccountModal } from "./AccountModal";
 
-export default function UserDashboardPage(){
+export function UserDashboardPage(){
 
     const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
     const [isAccountOpen, setIsAccountOpen] = useState(false);

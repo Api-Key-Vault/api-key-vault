@@ -6,7 +6,7 @@ type CardProps = {
   className?: string;
 };
 
-export default function Card({ children, className }: CardProps) {
+export function Card({ children, className }: CardProps) {
   return (
       <RetroCard
           bg="var(--color-surface)"

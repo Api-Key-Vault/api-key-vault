@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import type { ManageKeyModalProps } from "../model/types";
 
-export default function ManageKeyModal({
+export function ManageKeyModal({
   apiKey,
   onClose,
   onRevoke,

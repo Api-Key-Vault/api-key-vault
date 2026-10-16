@@ -6,7 +6,7 @@ type TeamCardProps ={
     memberCount: number;
 };
 
-export default function TeamCard({
+export function TeamCard({
     name,
     keyCount,
     memberCount,

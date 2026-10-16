@@ -1,6 +1,6 @@
 import { Card, PrimaryButton } from "@/shared/ui";
 
-export default function Login() {
+export function Login() {
 	return (
 		<section className="flex justify-center items-center w-full min-h-screen">
 			<Card className="p-4 text-center w-80 h-80 flex gap-3.5 flex-col">

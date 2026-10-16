@@ -1,1 +1,1 @@
-export { default as InviteLanding } from './ui/InviteLanding';
+export { InviteLanding } from './ui/InviteLanding';

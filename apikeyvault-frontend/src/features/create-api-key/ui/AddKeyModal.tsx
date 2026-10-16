@@ -7,7 +7,7 @@ type AddKeyModalProps = {
   onClose: () => void;
 };
 
-export default function AddKeyModal({ onAdd, onClose }: AddKeyModalProps) {
+export function AddKeyModal({ onAdd, onClose }: AddKeyModalProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 

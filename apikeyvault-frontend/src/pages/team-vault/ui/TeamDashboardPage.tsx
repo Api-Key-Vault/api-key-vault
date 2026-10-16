@@ -158,7 +158,7 @@ function TeamKeyRow({ apiKey, isOwner, onManage }: TeamKeyRowProps) {
   );
 }
 
-export default function TeamDashboardPage({
+export function TeamDashboardPage({
   role = "Member",
   team = mockTeam,
 }: TeamDashboardPageProps) {

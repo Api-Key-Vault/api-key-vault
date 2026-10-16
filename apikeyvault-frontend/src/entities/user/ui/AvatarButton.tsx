@@ -5,7 +5,7 @@ type AvatarButtonProps = {
     onClick?: () => void;
 };
 
-export default function AvatarButton({ onClick }: AvatarButtonProps) {
+export function AvatarButton({ onClick }: AvatarButtonProps) {
 	return (
 		<Button
 			bg="var(--color-primary-accent)"

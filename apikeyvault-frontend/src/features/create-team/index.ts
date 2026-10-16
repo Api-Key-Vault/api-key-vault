@@ -1,1 +1,1 @@
-export { default as CreateTeamModal } from './ui/CreateTeamModal';
+export { CreateTeamModal } from './ui/CreateTeamModal';

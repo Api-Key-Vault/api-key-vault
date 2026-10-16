@@ -1,1 +1,1 @@
-export { default as TeamSettingsModal } from './ui/TeamSettingsModal';
+export { TeamSettingsModal } from './ui/TeamSettingsModal';

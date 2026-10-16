@@ -7,7 +7,7 @@ type DeleteButtonProps = {
     className?: string;
 };
 
-export default function DeleteButton({
+export function DeleteButton({
     children,
     onClick,
     className

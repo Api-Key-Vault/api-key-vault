@@ -7,7 +7,7 @@ type StatsBoxProps = {
     label: string;
 };
 
-export default function StatsBox({
+export function StatsBox({
     icon,
     count,
     label

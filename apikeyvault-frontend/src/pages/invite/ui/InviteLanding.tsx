@@ -1,7 +1,7 @@
 import { Bubble } from "pixel-retroui";
 import { Card, PrimaryButton } from "@/shared/ui";
 
-export default function InviteLanding() {
+export function InviteLanding() {
 	return (
 		<section className="flex justify-center items-center w-full min-h-screen">
 			<div className="relative">

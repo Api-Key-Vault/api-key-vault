@@ -1,6 +1,6 @@
 import { Card, PrimaryButton } from "@/shared/ui";
 
-export default function WelcomePage() {
+export function WelcomePage() {
   return (
     <section className="flex flex-col items-center justify-center min-h-screen gap-4 md:gap-10 px-6 py-6">
       <div className="flex items-center justify-center md:justify-between gap-3 md:gap-0 w-full max-w-3xl">

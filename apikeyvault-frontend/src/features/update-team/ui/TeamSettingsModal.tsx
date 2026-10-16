@@ -8,7 +8,7 @@ type TeamSettingsModalProps = {
   team: Pick<Team, "name" | "members">;
 };
 
-export default function TeamSettingsModal({
+export function TeamSettingsModal({
   onClose,
   onSaveName,
   team,

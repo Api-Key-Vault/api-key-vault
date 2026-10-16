@@ -4,7 +4,7 @@ type AccountModalProps ={
     onClose?: () => void;
 };
 
-export default function AccountModal({ onClose }: AccountModalProps) {
+export function AccountModal({ onClose }: AccountModalProps) {
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 			<Card className="relative p-4 w-80 flex flex-col gap-4">

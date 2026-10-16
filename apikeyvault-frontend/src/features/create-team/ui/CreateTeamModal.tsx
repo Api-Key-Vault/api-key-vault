@@ -4,7 +4,7 @@ type CreateTeamModalProps = {
     onClose?: () => void;
 };
 
-export default function CreateTeamModal({onClose}: CreateTeamModalProps){
+export function CreateTeamModal({onClose}: CreateTeamModalProps){
     return(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <Card className="relative p-4 w-80 flex flex-col gap-4">

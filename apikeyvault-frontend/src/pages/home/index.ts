@@ -1,1 +1,1 @@
-export { default as WelcomePage } from './ui/WelcomePage';
+export { WelcomePage } from './ui/WelcomePage';
