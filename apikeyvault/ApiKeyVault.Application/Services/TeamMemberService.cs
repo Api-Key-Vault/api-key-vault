@@ -40,6 +40,7 @@ namespace ApiKeyVault.Application.Services
 
             return memberDtos;
         }
+        
         public async Task<TeamMemberResult> RemoveAsync(int teamId, string userId, int teamMemberId)
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
@@ -69,13 +70,6 @@ namespace ApiKeyVault.Application.Services
                 foreach(var access in apiKeyAccesses)
                 {
                     await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
-                }
-
-                var results = await _apiKeyAccessRepository.SaveChangesAsync();
-
-                if(results <= 0)
-                {
-                    return TeamMemberResult.Failed;
                 }
             }
 
@@ -117,13 +111,6 @@ namespace ApiKeyVault.Application.Services
                 foreach (var access in apiKeyAccesses)
                 {
                     await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
-                }
-
-                var accessResult = await _apiKeyAccessRepository.SaveChangesAsync();
-
-                if (accessResult <= 0)
-                {
-                    return TeamMemberResult.Failed;
                 }
             }
 
