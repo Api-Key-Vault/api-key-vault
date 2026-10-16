@@ -1,6 +1,5 @@
 ﻿using ApiKeyVault.Application.Dtos.Team;
 using ApiKeyVault.Application.Interfaces.Services;
-using ApiKeyVault.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -19,9 +18,8 @@ namespace ApiKeyVault.Api.Controllers
             _teamService = teamService;
         }
 
-
         [HttpGet("{teamId:int}")]
-        public async Task<ActionResult<GetTeamResponse>> GetTeamById([FromRoute]int teamId)
+        public async Task<ActionResult<GetTeamResponse>> GetTeamById([FromRoute] int teamId)
         {
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -54,7 +52,6 @@ namespace ApiKeyVault.Api.Controllers
 			return Ok(allTeams);
 		}
 
-
 		[HttpPost]
 		public async Task<ActionResult<TeamResponse>> CreateTeam([FromBody] CreateTeamRequest createTeamRequest)
         {
@@ -67,7 +64,7 @@ namespace ApiKeyVault.Api.Controllers
 
 			var newTeam = await _teamService.CreateTeamAsync(createTeamRequest, userId);
 
-            if(newTeam is null)
+            if (newTeam is null)
             {
                 return Forbid();
             }
@@ -75,6 +72,5 @@ namespace ApiKeyVault.Api.Controllers
 
 			return StatusCode(StatusCodes.Status201Created, newTeam);
 		}
-
     }
 }
