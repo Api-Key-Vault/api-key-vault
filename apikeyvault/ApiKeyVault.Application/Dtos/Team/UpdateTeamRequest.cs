@@ -5,7 +5,7 @@ namespace ApiKeyVault.Application.Dtos.Team
 {
 	public class UpdateTeamRequest
 	{
-			[Required]
+			[Range(1, int.MaxValue)]
 			public int Id { get; set; }
 
 			[Required(ErrorMessage = "Name is mandatory")]
