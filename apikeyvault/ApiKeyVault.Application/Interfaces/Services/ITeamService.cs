@@ -4,7 +4,9 @@ namespace ApiKeyVault.Application.Interfaces.Services
 {
     public interface ITeamService
     {
-         Task<TeamResponse?>CreateTeamAsync( CreateTeamRequest request, string userId);
+         Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId);
+         Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId);
+		 Task<TeamResponse?>CreateTeamAsync( CreateTeamRequest request, string userId);
 
     }
 }

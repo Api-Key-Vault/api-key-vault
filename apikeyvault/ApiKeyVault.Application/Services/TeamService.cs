@@ -1,4 +1,5 @@
-﻿using ApiKeyVault.Application.Dtos.Team;
+﻿using ApiKeyVault.Application.Dtos.ApiKey;
+using ApiKeyVault.Application.Dtos.Team;
 using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Domain.Entities;
@@ -19,7 +20,41 @@ namespace ApiKeyVault.Application.Services
             _teamMemberRepository = teamMemberRepository;
         }
 
-        public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
+
+		public async Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId)
+		{
+			var team = await _teamRepository.GetTeamByIdAsync(teamId,userId);
+
+			if (team is null)
+			{
+				return null;
+			}
+
+			var getTeamResponse = new GetTeamResponse
+			{
+				Id = team.Id,
+				Name = team.Name,
+				CreatedAt = team.CreatedAt
+			};
+
+			return getTeamResponse;
+		}
+
+		public async Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId)
+		{
+			List<Team> teams= await _teamRepository.GetAllTeamsByUserIdAsync(userId);
+
+			List<GetTeamResponse> responseList = teams.Select(team => new GetTeamResponse
+			{
+				Id = team.Id,
+				Name = team.Name,
+				CreatedAt = team.CreatedAt
+			}).ToList();
+
+			return responseList ;
+		}
+
+		public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
         {
 
 			// set team-role as owner here
