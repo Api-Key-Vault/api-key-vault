@@ -57,7 +57,7 @@ namespace ApiKeyVault.Infrastructure.Persistence
                 teamInvite.HasOne(invite => invite.UsedByMember)
                     .WithMany(member => member.UsedInvites)
                     .HasForeignKey(invite => invite.UsedByMemberId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
 
                 teamInvite.HasOne(invite => invite.Team)
                     .WithMany(team => team.Invites)

@@ -10,11 +10,13 @@ namespace ApiKeyVault.Application.Services
         private const string OwnerRoleName = "Owner";
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IApiKeyAccessRepository _apiKeyAccessRepository;
+        private readonly ITeamInviteRepository _teamInviteRepository;
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IApiKeyAccessRepository apiKeyAccessRepository)
+        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IApiKeyAccessRepository apiKeyAccessRepository, ITeamInviteRepository teamInviteRepository)
         {
             _teamMemberRepository = teamMemberRepository;
             _apiKeyAccessRepository = apiKeyAccessRepository;
+            _teamInviteRepository = teamInviteRepository;
         }
 
         public async Task<List<TeamMemberResponse>> GetByTeamAsync(int teamId, string userId)
@@ -40,7 +42,7 @@ namespace ApiKeyVault.Application.Services
 
             return memberDtos;
         }
-        
+
         public async Task<TeamMemberResult> RemoveAsync(int teamId, string userId, int teamMemberId)
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
@@ -72,6 +74,9 @@ namespace ApiKeyVault.Application.Services
                     await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
                 }
             }
+
+            // Remove any used invites for the target member
+            await _teamInviteRepository.RemoveUsedInvitesAsync(targetMember.Id);
 
             await _teamMemberRepository.RemoveAsync(targetMember);
             var result = await _teamMemberRepository.SaveChangesAsync();
@@ -113,6 +118,9 @@ namespace ApiKeyVault.Application.Services
                     await _apiKeyAccessRepository.RevokeAsync(access.TeamMemberId, access.ApiKeyId);
                 }
             }
+
+            // Remove any used invites for the target member
+            await _teamInviteRepository.RemoveUsedInvitesAsync(member.Id);
 
             await _teamMemberRepository.RemoveAsync(member);
             var result = await _teamMemberRepository.SaveChangesAsync();
