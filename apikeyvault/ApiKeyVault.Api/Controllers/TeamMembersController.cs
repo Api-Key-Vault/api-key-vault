@@ -58,5 +58,31 @@ namespace ApiKeyVault.Api.Controllers
                 _ => BadRequest()
             };
         }
+
+        [HttpDelete("me")]
+        public async Task<IActionResult> LeaveAsync(int teamId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await _teamMemberService.LeaveAsync(teamId, userId);
+
+            return result switch
+            {
+                TeamMemberResult.Success
+                    => NoContent(),
+                TeamMemberResult.Forbidden
+                    => Forbid(),
+                TeamMemberResult.NotFound
+                    => NotFound(),
+                TeamMemberResult.Failed
+                    => Problem(),
+                _ => BadRequest()
+            };
+        }
     }
 }
