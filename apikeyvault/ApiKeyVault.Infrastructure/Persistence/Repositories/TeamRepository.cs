@@ -1,7 +1,6 @@
 ﻿using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.ClientModel.Primitives;
 
 namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 {
