@@ -76,5 +76,25 @@ namespace ApiKeyVault.Api.Controllers
 			return StatusCode(StatusCodes.Status201Created, newTeam);
 		}
 
+		[HttpPut]
+		public async Task<ActionResult> UpdateTeam([FromBody] UpdateTeamRequest updateTeamRequest)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (userId is null)
+			{
+				return Unauthorized();
+			}
+
+			var updatedTeam = await _teamService.UpdateTeam(updateTeamRequest, userId);
+
+			if(updatedTeam is null)
+			{
+				return Forbid();
+			}
+
+			return Ok(updatedTeam);
+		}
+
     }
 }
