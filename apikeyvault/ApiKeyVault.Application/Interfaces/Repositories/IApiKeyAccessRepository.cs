@@ -6,7 +6,8 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
     {
         Task AddAsync(ApiKeyAccess apiKeyAccess);
         Task<bool> RevokeAsync(int teamMemberId, int apiKeyId);
+        Task<List<ApiKeyAccess>> GetByTeamMemberIdAsync(int teamMemberId);
         Task<bool> ExistsAsync(int teamMemberId, int apiKeyId);
-        Task SaveChangesAsync();
+        Task<int> SaveChangesAsync();
     }
 }
