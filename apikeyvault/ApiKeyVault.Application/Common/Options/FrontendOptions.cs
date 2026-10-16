@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace ApiKeyVault.Application.Common.Options
@@ -7,9 +8,12 @@ namespace ApiKeyVault.Application.Common.Options
     public class FrontendOptions
     {
         public const string SectionName = "Frontend";
+        [Required(ErrorMessage = "Frontend:Origin configuration is required.")]
         public required string Origin { get; set; }
-        public string DashboardPath { get; init; } 
-        public string LoginPath { get; init; }
+        [Required(ErrorMessage = "Frontend:DashboardPath configuration is required.")]
+        public required string DashboardPath { get; init; }
+        [Required(ErrorMessage = "Frontend:LoginPath configuration is required.")]
+        public required string LoginPath { get; init; }
 
     }
 }

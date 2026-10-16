@@ -22,19 +22,16 @@ namespace ApiKeyVault.Api
                 options.Cookie.SameSite = builder.Environment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Lax;
             });
 
-            builder.Services.Configure<FrontendOptions>(builder.Configuration.GetSection(FrontendOptions.SectionName));
-
-            var frontendOptions = builder.Configuration.GetSection(FrontendOptions.SectionName).Get<FrontendOptions>();
-            if(frontendOptions == null || string.IsNullOrWhiteSpace(frontendOptions.Origin))
-            {
-                throw new InvalidOperationException("Frontend:Origin configuration is required.");
-            }
+            builder.Services.AddOptions<FrontendOptions>()
+                .Bind(builder.Configuration.GetSection(FrontendOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("Frontend", policy =>
                 {
-                    policy.WithOrigins(frontendOptions.Origin)
+                    policy.WithOrigins(builder.Configuration["Frontend:Origin"] ?? throw new InvalidOperationException("Frontend: Origin configuration is required."))
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
