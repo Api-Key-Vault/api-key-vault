@@ -1,9 +1,11 @@
 ﻿using ApiKeyVault.Application.Dtos.Authentication;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ApiKeyVault.Application.Constants;
 
 namespace ApiKeyVault.Api.Controllers
 {
@@ -13,11 +15,13 @@ namespace ApiKeyVault.Api.Controllers
     {
         private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IFrontendRedirectService _frontendRedirectService;
 
-        public AuthController(IGitHubAuthenticationService gitHubAuthenticationService, SignInManager<ApplicationUser> signInManager)
+        public AuthController(IGitHubAuthenticationService gitHubAuthenticationService, SignInManager<ApplicationUser> signInManager, IFrontendRedirectService frontendRedirectService)
         {
             _gitHubAuthenticationService = gitHubAuthenticationService;
             _signInManager = signInManager;
+            _frontendRedirectService = frontendRedirectService;
         }
 
         [HttpGet("github")]
@@ -27,7 +31,7 @@ namespace ApiKeyVault.Api.Controllers
 
             if (callbackUrl is null)
             {
-                return Problem("GitHub oauth callbackUrl could not be created");
+                return Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed));
             }
 
             var authenticationProperties = _signInManager.ConfigureExternalAuthenticationProperties("GitHub", callbackUrl);
@@ -40,7 +44,7 @@ namespace ApiKeyVault.Api.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                return Unauthorized();
+                return Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed));
             }
 
             var result = await _gitHubAuthenticationService.GitHubLoginAsync();
@@ -48,14 +52,14 @@ namespace ApiKeyVault.Api.Controllers
             return result switch
             {
                 ExternalLoginResult.Success
-                    => NoContent(),
+                    => Redirect(_frontendRedirectService.GetDashboardUrl()),
                 ExternalLoginResult.Invalid
-                    => Unauthorized(),
+                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.InvalidLogin)),
                 ExternalLoginResult.LockedOut
-                    => Forbid(),
+                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LockedOut)),
                 ExternalLoginResult.NotAllowed
-                    => Unauthorized(),
-                _ => BadRequest()
+                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.NotAllowed)),
+                _ => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed))
             };
         }
 

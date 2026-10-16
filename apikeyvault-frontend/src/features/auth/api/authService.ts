@@ -3,7 +3,7 @@ import { apiClient }  from '@/shared/api/apiClient'
 import type { User } from '@/entities/user';
 
 
-export async function login() {
+export async function loginWithGithub() {
     const fullUrl = apiClient.getUri({
         url: 'Auth/github'
     });
