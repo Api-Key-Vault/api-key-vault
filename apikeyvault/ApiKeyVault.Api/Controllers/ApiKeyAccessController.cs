@@ -9,7 +9,7 @@ namespace ApiKeyVault.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/teams/{teamId:int}/access")]
+    [Route("api/teams/{teamId:int}")]
     public class ApiKeyAccessController : ControllerBase
     {
         private readonly IApiKeyAccessService _apiKeyAccessService;
@@ -18,7 +18,7 @@ namespace ApiKeyVault.Api.Controllers
             _apiKeyAccessService = apiKeyAccessService;
         }
 
-        [HttpPost]
+        [HttpPost("/accesses")]
         public async Task<ActionResult<ApiKeyAccessResponse>> CreateAsync(int teamId, [FromBody] GrantApiKeyAccessRequest request)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -49,7 +49,7 @@ namespace ApiKeyVault.Api.Controllers
             };
         }
 
-        [HttpDelete("{apiKeyId:int}/revoke")]
+        [HttpDelete("keys/{apiKeyId:int}/accesses/{teamMemberId:int}")]
         public async Task<IActionResult> RevokeAsync(int teamId, int apiKeyId, int teamMemberId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -67,6 +67,26 @@ namespace ApiKeyVault.Api.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("keys/{apiKeyId:int}/accesses")]
+        public async Task<ActionResult<List<GetApiKeyAccessResponse>>> GetByApiKeyAsync(int teamId, int apiKeyId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var accesses = _apiKeyAccessService.GetByApiKeyAsync(teamId, userId, apiKeyId);
+
+            if (accesses is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(accesses);
         }
     }
 }
