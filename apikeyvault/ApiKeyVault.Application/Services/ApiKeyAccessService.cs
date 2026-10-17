@@ -125,6 +125,28 @@ namespace ApiKeyVault.Application.Services
             return true;
         }
 
+        public async Task<List<GetApiKeyAccessResponse>?> GetByApiKeyAsync(int teamId, string userId, int apiKeyId)
+        {
+            var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
+
+            if (member is null || !IsOwner(member))
+            {
+                return null;
+            }
+
+            var apiKey = await _apiKeyRepository.GetByIdAsync(teamId, apiKeyId);
+
+            if (apiKey is null)
+            {
+                return null;
+            }
+
+            var apiKeyAccesses = await _apiKeyAccessRepository
+                .GetByApiKeyAsync(apiKeyId);
+
+            return apiKeyAccesses;
+        }
+
         private static bool IsOwner(TeamMember member)
         {
             return string.Equals(member.Role.Name, OwnerRoleName, StringComparison.Ordinal);

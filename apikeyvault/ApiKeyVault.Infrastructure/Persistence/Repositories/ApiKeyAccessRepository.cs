@@ -48,7 +48,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<GetApiKeyAccessResponse>> GetByApiKey(int apiKeyId)
+        public async Task<List<GetApiKeyAccessResponse>> GetByApiKeyAsync(int apiKeyId)
         {
             return await _dbContext.ApiKeyAccesses
                 .AsNoTracking()
