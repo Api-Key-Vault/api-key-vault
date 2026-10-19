@@ -1,5 +1,5 @@
-﻿using ApiKeyVault.Application.Dtos.ApiKeyAccess;
-using ApiKeyVault.Application.Interfaces.Repositories;
+﻿using ApiKeyVault.Application.Interfaces.Repositories;
+using ApiKeyVault.Application.ReadModels;
 using ApiKeyVault.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,7 +48,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<GetApiKeyAccessResponse>> GetByApiKeyAsync(int apiKeyId)
+        public async Task<List<ApiKeyAccessReadModel>> GetByApiKeyAsync(int apiKeyId)
         {
             return await _dbContext.ApiKeyAccesses
                 .AsNoTracking()
@@ -56,7 +56,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                 .Join(_dbContext.Users,
                     access => access.Member.UserId,
                     user => user.Id,
-                    (access, user) => new GetApiKeyAccessResponse
+                    (access, user) => new ApiKeyAccessReadModel
                     {
                         ApiKeyId = access.ApiKeyId,
                         TeamMemberId = access.TeamMemberId,

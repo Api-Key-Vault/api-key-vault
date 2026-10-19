@@ -1,6 +1,7 @@
 ﻿using ApiKeyVault.Application.Dtos.ApiKeyAccess;
 using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Application.Interfaces.Services;
+using ApiKeyVault.Application.ReadModels;
 using ApiKeyVault.Domain.Entities;
 
 namespace ApiKeyVault.Application.Services
@@ -125,7 +126,7 @@ namespace ApiKeyVault.Application.Services
             return true;
         }
 
-        public async Task<List<GetApiKeyAccessResponse>?> GetByApiKeyAsync(int teamId, string userId, int apiKeyId)
+        public async Task<List<ApiKeyAccessReadModel>?> GetByApiKeyAsync(int teamId, string userId, int apiKeyId)
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
 

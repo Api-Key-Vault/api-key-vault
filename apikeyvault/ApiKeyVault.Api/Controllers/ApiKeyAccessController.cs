@@ -1,7 +1,8 @@
 ﻿using ApiKeyVault.Application.Dtos.ApiKeyAccess;
 using ApiKeyVault.Application.Interfaces.Services;
+using ApiKeyVault.Application.ReadModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -70,7 +71,7 @@ namespace ApiKeyVault.Api.Controllers
         }
 
         [HttpGet("keys/{apiKeyId:int}/accesses")]
-        public async Task<ActionResult<List<GetApiKeyAccessResponse>>> GetByApiKeyAsync(int teamId, int apiKeyId)
+        public async Task<ActionResult<List<ApiKeyAccessReadModel>>> GetByApiKeyAsync(int teamId, int apiKeyId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

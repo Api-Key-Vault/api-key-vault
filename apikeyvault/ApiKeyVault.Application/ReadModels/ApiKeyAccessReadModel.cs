@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ApiKeyVault.Application.Dtos.ApiKeyAccess
+namespace ApiKeyVault.Application.ReadModels
 {
-    public class GetApiKeyAccessResponse
+    public class ApiKeyAccessReadModel
     {
         public int ApiKeyId { get; set; }
         public int TeamMemberId { get; set; }
