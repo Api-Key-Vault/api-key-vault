@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import axios from "axios";
 import { AddKeyModal, type AddKeyRequest } from "@/features/create-api-key";
@@ -25,6 +25,7 @@ import "./TeamDashboardPage.css";
 
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
+const COPY_FEEDBACK_TIMEOUT_MS = 5000;
 
 function getResponseStatus(error: unknown): number | undefined {
   if (!axios.isAxiosError(error)) {
@@ -101,24 +102,39 @@ function formatDate(value: string | null): string {
   return Number.isNaN(date.getTime()) ? "Unknown" : date.toLocaleDateString();
 }
 
+type CopyAttempt = {
+  keyId: number;
+};
+
 type TeamKeyRowProps = {
   apiKey: ApiKey;
+  isCopied: boolean;
   isBusy: boolean;
   isOwner: boolean;
   teamId: number;
+  onCopy: (apiKey: ApiKey, isRowValid: () => boolean) => Promise<string | null>;
+  onCopyReset: (apiKeyId: number) => void;
   onManage: (apiKey: ApiKey) => void;
 };
 
-function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowProps) {
+function TeamKeyRow({
+  apiKey,
+  isCopied,
+  isBusy,
+  isOwner,
+  teamId,
+  onCopy,
+  onCopyReset,
+  onManage,
+}: TeamKeyRowProps) {
   const [revealedValue, setRevealedValue] = useState<string | null>(null);
-  const [isRevealPending, setIsRevealPending] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
+  const [isKeyActionPending, setIsKeyActionPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLocallyExpired, setIsLocallyExpired] = useState(() => hasExpired(apiKey.expiresAt));
   const requestVersionRef = useRef(0);
   const mountedRef = useRef(false);
   const isInactive = apiKey.status !== "Active" || isLocallyExpired;
-  const isPending = isRevealPending || isBusy;
+  const isPending = isKeyActionPending || isBusy;
   const isRevealed = revealedValue !== null;
   const displayedStatus = isLocallyExpired && apiKey.status === "Active" ? "Expired" : apiKey.status;
 
@@ -128,8 +144,9 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
     return () => {
       mountedRef.current = false;
       requestVersionRef.current += 1;
+      onCopyReset(apiKey.id);
     };
-  }, []);
+  }, [apiKey.id, onCopyReset]);
 
   useEffect(() => {
     if (apiKey.expiresAt === null) {
@@ -153,9 +170,9 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
       if (mountedRef.current) {
         requestVersionRef.current += 1;
         setIsLocallyExpired(true);
-        setIsRevealPending(false);
+        setIsKeyActionPending(false);
         setRevealedValue(null);
-        setIsCopied(false);
+        onCopyReset(apiKey.id);
         setErrorMessage(null);
       }
     };
@@ -163,7 +180,7 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
     timeoutId = window.setTimeout(expireKey, Math.min(Math.max(0, expiry.getTime() - Date.now()), MAX_TIMEOUT_MS));
 
     return () => window.clearTimeout(timeoutId);
-  }, [apiKey.expiresAt]);
+  }, [apiKey.expiresAt, apiKey.id, onCopyReset]);
 
   useEffect(() => {
     if (revealedValue === null) {
@@ -172,76 +189,60 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
 
     const timeoutId = window.setTimeout(() => {
       if (mountedRef.current) {
-        requestVersionRef.current += 1;
         setRevealedValue(null);
-        setIsCopied(false);
+        setErrorMessage(null);
       }
     }, 5000);
 
     return () => window.clearTimeout(timeoutId);
   }, [revealedValue]);
 
-  async function requestReveal(): Promise<{ value: string; version: number } | null> {
+  async function handleReveal() {
     if (isInactive || hasExpired(apiKey.expiresAt) || isPending) {
-      return null;
+      return;
+    }
+
+    if (isRevealed) {
+      setRevealedValue(null);
+      setErrorMessage(null);
+      return;
     }
 
     const requestVersion = ++requestVersionRef.current;
-    setIsRevealPending(true);
-    setIsCopied(false);
+    setIsKeyActionPending(true);
     setErrorMessage(null);
 
     try {
       const response = await revealApiKey(teamId, apiKey.id);
 
       if (!mountedRef.current || requestVersion !== requestVersionRef.current) {
-        return null;
+        return;
       }
 
       if (hasExpired(apiKey.expiresAt)) {
         setIsLocallyExpired(true);
         setRevealedValue(null);
-        setIsCopied(false);
-        return null;
+        onCopyReset(apiKey.id);
+        return;
       }
 
       if (typeof response.value !== "string" || response.value.length === 0) {
         setRevealedValue(null);
         setErrorMessage("The API key could not be revealed.");
-        return null;
+        return;
       }
 
       setRevealedValue(response.value);
-      return { value: response.value, version: requestVersion };
     } catch (error) {
       if (mountedRef.current && requestVersion === requestVersionRef.current) {
         setRevealedValue(null);
-        setIsCopied(false);
         setErrorMessage(getRevealErrorMessage(error));
       }
-
-      return null;
     } finally {
       if (mountedRef.current && requestVersion === requestVersionRef.current) {
-        setIsRevealPending(false);
+        setIsKeyActionPending(false);
       }
     }
-  }
-
-  function handleReveal() {
-    if (isInactive || hasExpired(apiKey.expiresAt) || isPending) {
-      return;
-    }
-
-    if (isRevealed) {
-      requestVersionRef.current += 1;
-      setRevealedValue(null);
-      setIsCopied(false);
-      setErrorMessage(null);
-      return;
-    }
-
-    void requestReveal();
   }
 
   async function handleCopy() {
@@ -249,35 +250,25 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
       return;
     }
 
-    const revealResult = await requestReveal();
-    if (
-      revealResult === null
-      || !mountedRef.current
-      || revealResult.version !== requestVersionRef.current
-    ) {
-      return;
-    }
-
-    if (hasExpired(apiKey.expiresAt)) {
-      requestVersionRef.current += 1;
-      setIsLocallyExpired(true);
-      setRevealedValue(null);
-      setIsCopied(false);
-      return;
-    }
+    const requestVersion = ++requestVersionRef.current;
+    setIsKeyActionPending(true);
+    setErrorMessage(null);
 
     try {
-      await navigator.clipboard.writeText(revealResult.value);
+      const copyError = await onCopy(apiKey, () => (
+        mountedRef.current
+        && requestVersionRef.current === requestVersion
+        && apiKey.status === "Active"
+        && !isLocallyExpired
+        && !hasExpired(apiKey.expiresAt)
+      ));
 
-      if (mountedRef.current && revealResult.version === requestVersionRef.current) {
-        setIsCopied(true);
+      if (mountedRef.current && requestVersionRef.current === requestVersion && copyError !== null) {
+        setErrorMessage(copyError);
       }
-    } catch {
-      if (mountedRef.current) {
-        requestVersionRef.current += 1;
-        setRevealedValue(null);
-        setIsCopied(false);
-        setErrorMessage("The API key could not be copied.");
+    } finally {
+      if (mountedRef.current && requestVersionRef.current === requestVersion) {
+        setIsKeyActionPending(false);
       }
     }
   }
@@ -328,7 +319,7 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
               onClick={handleReveal}
               type="button"
             >
-              <span aria-hidden="true" className="pixelart-icons-font-eye text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!" />
+              <span aria-hidden="true" className={`${isRevealed ? "pixelart-icons-font-eye-off" : "pixelart-icons-font-eye"} text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!`} />
             </button>
             <button
               aria-label={(isCopied ? "Copied " : "Copy ") + apiKey.name}
@@ -338,7 +329,7 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
               title={isCopied ? "Copied" : "Copy API key"}
               type="button"
             >
-              <span aria-hidden="true" className="pixelart-icons-font-copy text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!" />
+              <span aria-hidden="true" className={`${isCopied ? "pixelart-icons-font-check" : "pixelart-icons-font-copy"} text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!`} />
             </button>
             {isOwner && (
               <button
@@ -420,13 +411,91 @@ function TeamDashboardContent({
   const [isMutating, setIsMutating] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [copiedFeedback, setCopiedFeedback] = useState<CopyAttempt | null>(null);
   const mountedRef = useRef(false);
   const loadRequestRef = useRef(0);
   const toastTimerRef = useRef<number | null>(null);
+  const latestCopyRef = useRef<CopyAttempt | null>(null);
+  const copyWriteQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   const currentMember = members.find((member) => member.userId === authUserId);
   const isOwner = currentMember?.roleName === "Owner";
   const roleLabel = currentMember?.roleName ?? (isLoading ? "Loading..." : "Unknown");
+
+  const clearCopyForKey = useCallback((apiKeyId: number) => {
+    if (latestCopyRef.current?.keyId === apiKeyId) {
+      latestCopyRef.current = null;
+    }
+
+    if (mountedRef.current) {
+      setCopiedFeedback((current) => current?.keyId === apiKeyId ? null : current);
+    }
+  }, []);
+
+  async function handleCopyKey(apiKey: ApiKey, isRowValid: () => boolean): Promise<string | null> {
+    const attempt: CopyAttempt = { keyId: apiKey.id };
+    latestCopyRef.current = attempt;
+    setCopiedFeedback(null);
+
+    const isCurrentCopy = () => mountedRef.current && latestCopyRef.current === attempt && isRowValid();
+
+    if (!navigator.clipboard) {
+      return "The API key could not be copied.";
+    }
+
+    let response: { value: string };
+    try {
+      response = await revealApiKey(teamId, apiKey.id);
+    } catch (error) {
+      return isCurrentCopy() ? getRevealErrorMessage(error) : null;
+    }
+
+    if (!isCurrentCopy()) {
+      return null;
+    }
+
+    if (typeof response.value !== "string" || response.value.length === 0) {
+      return "The API key could not be revealed.";
+    }
+
+    const writeCopy = async (): Promise<string | null> => {
+      if (!isCurrentCopy()) {
+        return null;
+      }
+
+      try {
+        await navigator.clipboard.writeText(response.value);
+      } catch {
+        return isCurrentCopy()
+          ? "The API key could not be copied."
+          : null;
+      }
+
+      if (!isCurrentCopy()) {
+        return null;
+      }
+
+      setCopiedFeedback(attempt);
+      return null;
+    };
+
+    // Keep writes ordered so an older clipboard operation cannot finish last.
+    const queuedWrite = copyWriteQueueRef.current.then(writeCopy);
+    copyWriteQueueRef.current = queuedWrite.then(() => undefined, () => undefined);
+    return queuedWrite;
+  }
+
+  useEffect(() => {
+    if (copiedFeedback === null) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCopiedFeedback((current) => current === copiedFeedback ? null : current);
+    }, COPY_FEEDBACK_TIMEOUT_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [copiedFeedback]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -436,6 +505,7 @@ function TeamDashboardContent({
       if (toastTimerRef.current !== null) {
         window.clearTimeout(toastTimerRef.current);
       }
+      latestCopyRef.current = null;
     };
   }, []);
 
@@ -809,9 +879,12 @@ function TeamDashboardContent({
                 {keys.map((apiKey) => (
                   <TeamKeyRow
                     apiKey={apiKey}
+                    isCopied={copiedFeedback?.keyId === apiKey.id}
                     isBusy={isMutating}
                     isOwner={isOwner}
                     key={getTeamKeyRowKey(apiKey, isMutating)}
+                    onCopy={handleCopyKey}
+                    onCopyReset={clearCopyForKey}
                     onManage={handleSelectKey}
                     teamId={teamId}
                   />
