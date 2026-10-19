@@ -5,12 +5,14 @@ type PrimaryButtonProps = {
 	children: ReactNode;
 	onClick?: () => void;
 	className?: string;
+	disabled?: boolean;
 };
 
 export function PrimaryButton({
 	children,
 	onClick,
 	className,
+	disabled,
 }: PrimaryButtonProps) {
 	return (
 		<Button
@@ -19,6 +21,7 @@ export function PrimaryButton({
 			borderColor="var(--color-border)"
 			shadow="var(--color-shadow)"
 			onClick={onClick}
+			disabled={disabled}
 			className={`hover:![--button-custom-bg:var(--color-primary-accent-hover)] ${className}`}
 		>
 			{children}

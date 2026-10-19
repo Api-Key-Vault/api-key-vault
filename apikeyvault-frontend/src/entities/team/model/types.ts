@@ -2,11 +2,13 @@ export type TeamRole = "Owner" | "Member";
 
 export type TeamMember = {
   id: number;
-  name: string;
-  role: TeamRole;
+  userId: string;
+  teamId: number;
+  roleName: TeamRole;
 };
 
 export type Team = {
+  id: number;
   name: string;
-  members: TeamMember[];
+  createdAt: string;
 };

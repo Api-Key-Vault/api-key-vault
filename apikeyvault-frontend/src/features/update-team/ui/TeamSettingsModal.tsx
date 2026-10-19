@@ -1,25 +1,12 @@
-import { useState, type FormEvent } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
-import type { Team } from "@/entities/team";
+import type { Team, TeamMember } from "@/entities/team";
 
 type TeamSettingsModalProps = {
   onClose: () => void;
-  onSaveName: (name: string) => void;
-  team: Pick<Team, "name" | "members">;
+  team: Pick<Team, "name"> & { members: TeamMember[] };
 };
 
-export function TeamSettingsModal({
-  onClose,
-  onSaveName,
-  team,
-}: TeamSettingsModalProps) {
-  const [name, setName] = useState(team.name);
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    onSaveName(name.trim());
-  }
-
+export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div
@@ -48,18 +35,21 @@ export function TeamSettingsModal({
             </h2>
           </div>
 
-          <form className="flex flex-col gap-3.5" onSubmit={handleSubmit}>
+          <form className="flex flex-col gap-3.5" onSubmit={(event) => event.preventDefault()}>
             <div className="flex flex-col gap-1.25">
               <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="team-settings-name">
                 Team name
               </label>
               <input
                 className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                disabled
                 id="team-settings-name"
-                onChange={(event) => setName(event.target.value)}
                 required
-                value={name}
+                value={team.name}
               />
+              <p className="text-[11px]! leading-tight! text-text-muted!">
+                Team renaming is not available yet.
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3 border-2! border-border! p-3! text-text!">
@@ -77,7 +67,7 @@ export function TeamSettingsModal({
               >
                 Cancel
               </button>
-              <PrimaryButton className="m-0! inline-flex h-[23px]! min-h-[23px]! items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[0_4px_4px_rgba(0,0,0,0.25)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!">
+              <PrimaryButton className="m-0! inline-flex h-[23px]! min-h-[23px]! items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[0_4px_4px_rgba(0,0,0,0.25)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!" disabled>
                 Save changes
               </PrimaryButton>
             </div>
