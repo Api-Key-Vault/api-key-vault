@@ -1,2 +1,1 @@
-export type { User } from './model/types';
-export { AvatarButton } from './ui/AvatarButton';
+export type { User } from "./model/types";
