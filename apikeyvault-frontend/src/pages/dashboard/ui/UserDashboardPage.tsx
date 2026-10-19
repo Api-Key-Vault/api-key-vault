@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
-import { TeamCard } from "@/entities/team";
+import { TeamCard } from "./TeamCard";
 import { StatsBox } from "./StatsBox";
-import { AvatarButton } from "@/entities/user";
+import { AvatarButton } from "@/shared/ui/AvatarButton";
 import { CreateTeamModal } from "@/features/create-team";
 import { AccountModal } from "./AccountModal";
 

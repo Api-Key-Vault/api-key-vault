@@ -11,7 +11,7 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
         case "loading":
             return <Loading />;
         case "unauthenticated":
-            return <Navigate to={ROUTE_PATHS.LOGIN} replace />;
+            return <Navigate to={ROUTE_PATHS.HOME} replace />;
         case "error":
             return <div>ERROR: {state.error.message}</div>;
         case "authenticated":
