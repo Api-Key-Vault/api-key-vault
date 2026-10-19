@@ -348,7 +348,7 @@ function TeamKeyRow({ apiKey, isBusy, isOwner, teamId, onManage }: TeamKeyRowPro
                 onClick={() => onManage(apiKey)}
                 type="button"
               >
-                <span aria-hidden="true" className="pixelart-icons-font-settings-2 text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!" />
+                <span aria-hidden="true" className="pixelart-icons-font-settings-cog text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!" />
               </button>
             )}
           </div>

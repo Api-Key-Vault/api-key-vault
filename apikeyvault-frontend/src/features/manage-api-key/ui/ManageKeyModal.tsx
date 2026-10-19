@@ -63,7 +63,7 @@ export function ManageKeyModal({
           <div className="flex items-center gap-2.5 pr-7">
             <span
               aria-hidden="true"
-              className="pixelart-icons-font-settings-2 text-2xl! leading-none! text-secondary-accent!"
+              className="pixelart-icons-font-settings-cog text-2xl! leading-none! text-secondary-accent!"
             />
             <h2 className="text-xl! leading-tight! text-text! max-[599px]:text-base!" id="manage-key-title">
               Manage API key
