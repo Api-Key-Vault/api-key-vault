@@ -1,9 +1,10 @@
 export type CreateTeamRequest = {
-    name: string
-}
+	name: string;
+};
 
-export type GetTeamResponse = {
-    id: number,
-    name: string,
-    createdAt: Date
-}
+export type TeamResponse = {
+	id: number;
+	name: string;
+	members: number;
+	keys: number;
+};

@@ -1,0 +1,1 @@
+export type { TeamResponse } from './model/types'
