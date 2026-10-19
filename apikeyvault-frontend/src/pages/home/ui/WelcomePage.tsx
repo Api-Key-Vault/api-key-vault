@@ -1,6 +1,8 @@
 import { Card, PrimaryButton } from "@/shared/ui";
+import { loginWithGithub } from "@/features/auth";
 
 export function WelcomePage() {
+
   return (
     <section className="flex flex-col items-center justify-center min-h-screen gap-4 md:gap-10 px-6 py-6">
       <div className="flex items-center justify-center md:justify-between gap-3 md:gap-0 w-full max-w-3xl">
@@ -43,10 +45,11 @@ export function WelcomePage() {
         </Card>
       </div>
 
-      <PrimaryButton>
-        <span className="flex items-center justify-center gap-5">
-          Get Started
-          <span className="pixelart-icons-font-arrow-right text-[24px]!"></span>
+      <PrimaryButton className="px-8 py-1!"
+        onClick={() => loginWithGithub() }
+      >
+        <span className="flex items-center justify-center gap-2 pixelart-icons-font-github text-xl!">
+          Sign in with Github
         </span>
       </PrimaryButton>
     </section>
