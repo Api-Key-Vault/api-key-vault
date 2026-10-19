@@ -38,6 +38,15 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             await _dbContext.ApiKeys.AddAsync(apiKey);
         }
 
+        public async Task RemoveByTeamAsync(int teamId)
+        {
+            var apiKeys = await _dbContext.ApiKeys
+                .Where(apiKey => apiKey.TeamId == teamId)
+                .ToListAsync();
+
+            _dbContext.ApiKeys.RemoveRange(apiKeys);
+        }
+
         public void Update(ApiKey apiKey)
         {
             _dbContext.ApiKeys.Update(apiKey);

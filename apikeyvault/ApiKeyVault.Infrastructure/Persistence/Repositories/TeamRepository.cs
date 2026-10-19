@@ -20,6 +20,16 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 				.ThenInclude(m => m.Role)
 				.SingleOrDefaultAsync(team => team.Id == teamId && team.Members.Any(m => m.UserId == userId)); 
 		}
+
+		public async Task<Team?> GetTeamForDeletionAsync(int teamId, string userId)
+		{
+			return await _dbContext.Teams
+				.SingleOrDefaultAsync(team =>
+					team.Id == teamId &&
+					team.Members.Any(member =>
+						member.UserId == userId &&
+						member.Role.Name == "Owner"));
+		}
 		public async Task<List<Team>> GetAllTeamsByUserIdAsync(string userId)
 		{
 			return await _dbContext.TeamMembers
@@ -36,7 +46,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             await _dbContext.Teams.AddAsync(teamToAdd);
 		}
 
-		public async Task DeleteTeamAsync(Team teamToDelete)
+		public void DeleteTeam(Team teamToDelete)
 		{
 			_dbContext.Teams.Remove(teamToDelete);
 		}

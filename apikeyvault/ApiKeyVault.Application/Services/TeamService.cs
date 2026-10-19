@@ -10,13 +10,16 @@ namespace ApiKeyVault.Application.Services
 		private const string OwnerRoleName = "Owner";
 		private readonly ITeamRepository _teamRepository;
 		private readonly ITeamRoleRepository _teamRoleRepository;
+		private readonly IApiKeyRepository _apiKeyRepository;
+		private readonly ITeamInviteRepository _teamInviteRepository;
 
-		public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository)
+		public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository, IApiKeyRepository apiKeyRepository, ITeamInviteRepository teamInviteRepository)
 		{
 			_teamRepository = teamRepository;
 			_teamRoleRepository = teamRoleRepository;
+			_apiKeyRepository = apiKeyRepository;
+			_teamInviteRepository = teamInviteRepository;
 		}
-
 
 		public async Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId)
 		{
@@ -90,29 +93,19 @@ namespace ApiKeyVault.Application.Services
 
 		public async Task<bool> DeleteTeamAsync(int teamId, string userId)
 		{
-			var successfulDelete = false;
-
-			var teamToDelete = await _teamRepository.GetTeamByIdAsync(teamId, userId);
+			var teamToDelete = await _teamRepository.GetTeamForDeletionAsync(teamId, userId);
 
 			if (teamToDelete is null)
 			{
-				return successfulDelete;
+				return false;
 			}
 
-			var owner = teamToDelete.Members.SingleOrDefault(m => m.Role.Name == "Owner");
-			if (owner == null || owner.UserId != userId)
-			{
-				return successfulDelete;
-			}
-
-			await _teamRepository.DeleteTeamAsync(teamToDelete);
+			await _apiKeyRepository.RemoveByTeamAsync(teamId);
+			await _teamInviteRepository.RemoveByTeamAsync(teamId);
+			_teamRepository.DeleteTeam(teamToDelete);
 			await _teamRepository.SaveChangesAsync();
 
-			successfulDelete = true;
-
-			return successfulDelete;
+			return true;
 		}
-
 	}
-
 }
