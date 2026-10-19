@@ -715,16 +715,16 @@ function TeamDashboardContent({
   return (
     <main className="min-h-screen p-4! text-text min-[600px]:px-12! min-[600px]:pb-5! min-[600px]:pt-[22px]!">
       <div className="mx-auto w-full max-w-[900px]">
-        <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="mb-5 flex items-center justify-between gap-3 px-1.5">
           <PrimaryButton
-            className="m-0! inline-flex! h-[19px]! min-h-[19px]! items-center justify-center gap-2 whitespace-nowrap border! border-border! px-1.5! py-0.5! text-[10px]! leading-none! shadow-[2px_2px_0_var(--shadow)]! min-[900px]:h-[26px]! min-[900px]:min-h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
+            className="m-0! inline-flex! h-[19px]! min-h-[19px]! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-[26px]! min-[900px]:min-h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
             onClick={onBack}
           >
             <span aria-hidden="true" className="pixelart-icons-font-arrow-left text-[10px]! leading-none! min-[900px]:text-[15px]!" />
             <span className="hidden min-[600px]:inline">Back to dashboard</span>
             <span className="min-[600px]:hidden">Back</span>
           </PrimaryButton>
-          <PrimaryButton className="m-0! inline-flex! h-[19px]! min-h-[19px]! items-center justify-center gap-2 whitespace-nowrap border! border-border! px-1.5! py-0.5! text-[10px]! leading-none! shadow-[2px_2px_0_var(--shadow)]! min-[900px]:h-[26px]! min-[900px]:min-h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!">
+          <PrimaryButton className="m-0! inline-flex! h-[19px]! min-h-[19px]! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-[26px]! min-[900px]:min-h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!">
             <span aria-hidden="true" className="pixelart-icons-font-logout text-[10px]! leading-none! min-[900px]:text-[15px]!" />
             <span>Logout</span>
           </PrimaryButton>
@@ -774,11 +774,11 @@ function TeamDashboardContent({
               )}
             </Card>
 
-            <div className="mb-3 flex items-center justify-between gap-3 px-1 min-[600px]:mb-6 min-[900px]:mb-8!">
+            <div className="mb-3 flex items-center justify-between gap-3 pl-1 pr-1.5 min-[600px]:mb-6 min-[900px]:mb-8!">
               <h2 className="text-base! text-primary-accent! min-[900px]:text-xl! min-[900px]:leading-tight!">Keys</h2>
               {isOwner && (
                 <PrimaryButton
-                  className="m-0! inline-flex h-[23px]! min-h-[23px]! items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[0_4px_4px_rgba(0,0,0,0.25)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  className="m-0! inline-flex h-[23px]! min-h-[23px]! items-center justify-center gap-1 whitespace-nowrap px-1.5! py-[3px]! text-[10px]! leading-none! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
                   onClick={handleOpenAddKey}
                 >
                   <span>Add key</span>
