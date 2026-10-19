@@ -21,7 +21,7 @@ namespace ApiKeyVault.Application.Services
 			_teamInviteRepository = teamInviteRepository;
 		}
 
-		public async Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId)
+		public async Task<TeamResponse?> GetByIdAsync(int teamId, string userId)
 		{
 			var team = await _teamRepository.GetTeamByIdAsync(teamId, userId);
 
@@ -30,25 +30,27 @@ namespace ApiKeyVault.Application.Services
 				return null;
 			}
 
-			var getTeamResponse = new GetTeamResponse
+			var getTeamResponse = new TeamResponse
 			{
 				Id = team.Id,
 				Name = team.Name,
-				CreatedAt = team.CreatedAt
+				Members = team.Members.Count,
+				Keys = team.ApiKeys.Count //TODO: update logic to only include keys assigned to member
 			};
 
 			return getTeamResponse;
 		}
 
-		public async Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId)
+		public async Task<List<TeamResponse>> GetAllTeamsAsync(string userId)
 		{
 			List<Team> teams = await _teamRepository.GetAllTeamsByUserIdAsync(userId);
 
-			List<GetTeamResponse> responseList = teams.Select(team => new GetTeamResponse
+			List<TeamResponse> responseList = teams.Select(team => new TeamResponse
 			{
 				Id = team.Id,
 				Name = team.Name,
-				CreatedAt = team.CreatedAt
+				Members = team.Members.Count,
+				Keys = team.ApiKeys.Count //TODO: update logic to only include keys assigned to member
 			}).ToList();
 
 			return responseList;
