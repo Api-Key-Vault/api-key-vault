@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import type { ManageKeyModalProps } from "../model/types";
 
@@ -10,6 +10,26 @@ export function ManageKeyModal({
   isSubmitting = false,
   error,
 }: ManageKeyModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    if (dialog !== null && !dialog.open) {
+      dialog.showModal();
+    }
+
+    return () => {
+      if (dialog?.open) {
+        dialog.close();
+      }
+      if (opener?.isConnected) {
+        opener.focus();
+      }
+    };
+  }, []);
+
   const [category, setCategory] = useState(apiKey.category ?? "");
   const initialExpiresAt = apiKey.expiresAt?.slice(0, 10) ?? "";
   const [expiresAt, setExpiresAt] = useState(initialExpiresAt);
@@ -50,22 +70,26 @@ export function ManageKeyModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+    <dialog
+      aria-labelledby="manage-key-title"
+      className="fixed inset-0 z-50 m-0! h-[100dvh] w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!isSubmitting) {
+          onClose();
+        }
+      }}
       onClick={(event) => {
         if (!isSubmitting && event.target === event.currentTarget) {
           onClose();
         }
       }}
+      ref={dialogRef}
     >
-      <div
-        aria-labelledby="manage-key-title"
-        aria-modal="true"
-        className="w-full max-w-[32rem]"
-        role="dialog"
-      >
+      <div className="w-full max-w-[32rem]">
         <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! min-[900px]:px-12!">
           <button
+            autoFocus
             aria-label="Close manage key modal"
             className="absolute right-2 top-2 inline-flex h-6 w-6 cursor-pointer items-center justify-center border-0! bg-transparent! text-text! hover:text-primary-accent disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isSubmitting}
@@ -258,6 +282,6 @@ export function ManageKeyModal({
           </form>
         </Card>
       </div>
-    </div>
+    </dialog>
   );
 }

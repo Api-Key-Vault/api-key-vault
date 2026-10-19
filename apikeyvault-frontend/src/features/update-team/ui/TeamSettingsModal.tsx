@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import type { Team, TeamMember } from "@/entities/team";
 
@@ -7,6 +8,26 @@ type TeamSettingsModalProps = {
 };
 
 export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    if (dialog !== null && !dialog.open) {
+      dialog.showModal();
+    }
+
+    return () => {
+      if (dialog?.open) {
+        dialog.close();
+      }
+      if (opener?.isConnected) {
+        opener.focus();
+      }
+    };
+  }, []);
+
   function handleRemoveMember() {
     // Member removal is not wired yet.
   }
@@ -20,22 +41,24 @@ export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+    <dialog
+      aria-labelledby="team-settings-title"
+      className="fixed inset-0 z-50 m-0! h-[100dvh] w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
         }
       }}
+      ref={dialogRef}
     >
-      <div
-        aria-labelledby="team-settings-title"
-        aria-modal="true"
-        className="w-full max-w-[32rem]"
-        role="dialog"
-      >
+      <div className="w-full max-w-[32rem]">
         <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! min-[900px]:px-12!">
           <button
+            autoFocus
             aria-label="Close team settings modal"
             className="absolute right-2 top-2 inline-flex h-6 w-6 cursor-pointer items-center justify-center border-0! bg-transparent! text-text! hover:text-primary-accent"
             onClick={onClose}
@@ -140,6 +163,6 @@ export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
           </form>
         </Card>
       </div>
-    </div>
+    </dialog>
   );
 }
