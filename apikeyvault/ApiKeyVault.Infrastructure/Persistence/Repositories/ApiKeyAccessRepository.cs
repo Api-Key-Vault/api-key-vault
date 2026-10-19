@@ -61,7 +61,8 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                         ApiKeyId = access.ApiKeyId,
                         TeamMemberId = access.TeamMemberId,
                         DisplayName = user.DisplayName,
-                        AssignedAt = access.AssignedAt
+                        AssignedAt = access.AssignedAt,
+                        GrantedByMemberId = access.GrantedByMemberId
                     })
                 .ToListAsync();
         }

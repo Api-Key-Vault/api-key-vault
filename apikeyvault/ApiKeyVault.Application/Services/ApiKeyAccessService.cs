@@ -83,7 +83,7 @@ namespace ApiKeyVault.Application.Services
             response.Data = new ApiKeyAccessResponse
             {
                 ApiKeyId = apiKeyAccess.ApiKeyId,
-                TeamMemberId = apiKeyAccess.TeamMemberId,
+                TeamMemberId = apiKeyAccess.TeamMemberId,                
                 GrantedByMemberId = apiKeyAccess.GrantedByMemberId
             };
 
@@ -126,7 +126,7 @@ namespace ApiKeyVault.Application.Services
             return true;
         }
 
-        public async Task<List<ApiKeyAccessReadModel>?> GetByApiKeyAsync(int teamId, string userId, int apiKeyId)
+        public async Task<List<ApiKeyAccessResponse>?> GetByApiKeyAsync(int teamId, string userId, int apiKeyId)
         {
             var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
 
@@ -145,7 +145,17 @@ namespace ApiKeyVault.Application.Services
             var apiKeyAccesses = await _apiKeyAccessRepository
                 .GetByApiKeyAsync(apiKeyId);
 
-            return apiKeyAccesses;
+            var dtoList = apiKeyAccesses.Select(apiKeyAccess => 
+                new ApiKeyAccessResponse
+                {
+                    ApiKeyId = apiKeyAccess.ApiKeyId,
+                    TeamMemberId = apiKeyAccess.TeamMemberId,
+                    DisplayName = apiKeyAccess.DisplayName,
+                    GrantedByMemberId = apiKeyAccess.GrantedByMemberId
+                })
+                .ToList();
+
+            return dtoList;
         }
 
         private static bool IsOwner(TeamMember member)
