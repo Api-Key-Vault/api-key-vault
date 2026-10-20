@@ -55,7 +55,6 @@ export function UserDashboardPage() {
 
 				{/* STATS BOXES */}
 				<div className="flex mt-8 flex-row gap-50 w-4/5 justify-center">
-					{/*TODO: Replace hardcoded number with real team count.*/}
 					<StatsBox
 						icon={
 							<span className="pixelart-icons-font-users text-text text-[35px]!" />
@@ -64,7 +63,6 @@ export function UserDashboardPage() {
 						label="Teams"
 					/>
 
-					{/*TODO: Replace hardcoded number with real API key count.*/}
 					<StatsBox
 						icon={
 							<span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />
@@ -73,7 +71,6 @@ export function UserDashboardPage() {
 						label="API Keys"
 					/>
 
-					{/*TODO: Replace hardcoded number with real member count.*/}
 					<StatsBox
 						icon={
 							<span className="pixelart-icons-font-user-plus text-text text-[35px]!" />
