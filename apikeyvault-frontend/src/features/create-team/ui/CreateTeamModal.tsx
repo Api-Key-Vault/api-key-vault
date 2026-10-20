@@ -2,7 +2,6 @@ import { Card, PrimaryButton } from "@/shared/ui";
 import { useState } from "react";
 import { createTeam } from "../api/createTeam";
 import type { TeamResponse } from "@/features/get-team";
-import { apiClient } from "@/shared/api";
 import axios from "axios";
 
 type CreateTeamModalProps = {
