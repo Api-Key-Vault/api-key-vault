@@ -16,7 +16,7 @@ namespace ApiKeyVault.Application.Services
 
         public string GetLoginUrl(string? error = null)
         {
-            var loginUrl = $"{_frontendOptions.Origin}{_frontendOptions.LoginPath}";
+            var loginUrl = $"{_frontendOptions.Origin}";
 
             if (!string.IsNullOrWhiteSpace(error))
             {
@@ -30,6 +30,12 @@ namespace ApiKeyVault.Application.Services
         public string GetDashboardUrl()
         {
             return $"{_frontendOptions.Origin}{_frontendOptions.DashboardPath}";
+        }
+
+        public string GetInviteUrl(string token)
+        {
+            var encodedToken = Uri.EscapeDataString(token);
+            return $"{_frontendOptions.Origin}{_frontendOptions.InvitePath}?token={encodedToken}";
         }
     }
 }

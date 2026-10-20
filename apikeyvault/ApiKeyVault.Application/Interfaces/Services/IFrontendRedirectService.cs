@@ -4,5 +4,6 @@
     {
         string GetDashboardUrl();
         string GetLoginUrl(string? error = null);
+        string GetInviteUrl(string token);
     }
 }
