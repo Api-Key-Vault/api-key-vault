@@ -1,4 +1,5 @@
-﻿using ApiKeyVault.Application.Interfaces.Repositories;
+﻿using ApiKeyVault.Application.Dtos.Team;
+using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,15 +31,20 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 						member.UserId == userId &&
 						member.Role.Name == "Owner"));
 		}
-		public async Task<List<Team>> GetAllTeamsByUserIdAsync(string userId)
+		public async Task<List<TeamResponse>> GetAllTeamsByUserIdAsync(string userId)
 		{
 			return await _dbContext.TeamMembers
 				.AsNoTracking()
-				.Include(tm => tm.Team)
 				.Where(tm => tm.UserId == userId)
-				.Select(tm => tm.Team)
-				.OrderByDescending(t => t.CreatedAt)
-				.ToListAsync();
+				.OrderByDescending(tm => tm.Team.CreatedAt)
+				.Select(tm => new TeamResponse
+				{
+					Id = tm.Team.Id,
+					Name = tm.Team.Name,
+					Members = tm.Team.Members.Count,
+					Keys = tm.Team.ApiKeys
+						.Count(ak => ak.ApiKeyAccesses.Any(a => a.TeamMemberId == tm.Id))
+				}).ToListAsync();
 		}
 
 		public async Task AddTeamAsync(Team teamToAdd)

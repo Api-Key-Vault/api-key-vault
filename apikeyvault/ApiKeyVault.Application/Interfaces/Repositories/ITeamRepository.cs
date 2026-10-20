@@ -1,4 +1,5 @@
-﻿using ApiKeyVault.Domain.Entities;
+﻿using ApiKeyVault.Application.Dtos.Team;
+using ApiKeyVault.Domain.Entities;
 
 namespace ApiKeyVault.Application.Interfaces.Repositories
 {
@@ -6,7 +7,7 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
     {
 		Task<Team?> GetTeamByIdAsync(int teamId, string userId);
 		Task<Team?> GetTeamForDeletionAsync(int teamId, string userId);
-		Task<List<Team>> GetAllTeamsByUserIdAsync(string userId);
+		Task<List<TeamResponse>> GetAllTeamsByUserIdAsync(string userId);
 		Task AddTeamAsync(Team teamToAdd);
 		void DeleteTeam(Team teamToDelete);
 
