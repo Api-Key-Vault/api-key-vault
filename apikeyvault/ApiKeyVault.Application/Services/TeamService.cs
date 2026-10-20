@@ -30,15 +30,31 @@ namespace ApiKeyVault.Application.Services
 				return null;
 			}
 
-			var getTeamResponse = new TeamResponse
+			var teamMember = team.Members.FirstOrDefault(m => m.UserId == userId);
+
+			if (teamMember is null)
+			{
+				return null;
+			}
+
+			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync(OwnerRoleName);
+
+			if (ownerRole is null)
+			{
+				throw new InvalidOperationException("The 'Owner' role does not exist.");
+			}
+
+			int keys = teamMember.Role.Name == ownerRole.Name
+				? team.ApiKeys.Count
+				: team.ApiKeys.Count(ak => ak.ApiKeyAccesses.Any(a => a.TeamMemberId == teamMember.Id));
+
+			return new TeamResponse
 			{
 				Id = team.Id,
 				Name = team.Name,
 				Members = team.Members.Count,
-				Keys = team.ApiKeys.Count //TODO: update logic to only include keys assigned to member
+				Keys = keys
 			};
-
-			return getTeamResponse;
 		}
 
 		public async Task<List<TeamResponse>> GetAllTeamsAsync(string userId)

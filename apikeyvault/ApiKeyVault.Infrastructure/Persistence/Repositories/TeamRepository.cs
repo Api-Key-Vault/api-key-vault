@@ -18,7 +18,9 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 		{
 			return await _dbContext.Teams
 				.Include(t => t.Members)
-				.ThenInclude(m => m.Role)
+					.ThenInclude(m => m.Role)
+				.Include(t => t.ApiKeys)
+					.ThenInclude(ak => ak.ApiKeyAccesses)
 				.SingleOrDefaultAsync(team => team.Id == teamId && team.Members.Any(m => m.UserId == userId)); 
 		}
 
