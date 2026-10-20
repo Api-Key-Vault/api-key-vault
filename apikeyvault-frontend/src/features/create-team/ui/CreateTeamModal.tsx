@@ -2,6 +2,8 @@ import { Card, PrimaryButton } from "@/shared/ui";
 import { useState } from "react";
 import { createTeam } from "../api/createTeam";
 import type { TeamResponse } from "@/features/get-team";
+import { apiClient } from "@/shared/api";
+import axios from "axios";
 
 type CreateTeamModalProps = {
 	onClose: () => void;
@@ -14,16 +16,37 @@ export function CreateTeamModal({
 }: CreateTeamModalProps) {
 	const [teamName, setTeamName] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleSubmit = async () => {
-		if (!teamName.trim()) return;
+		setErrorMessage("");
+
+		const trimmedName = teamName.trim();
+		if (!trimmedName) {
+			setErrorMessage("Name is mandatory");
+			return;
+		}
+		if (trimmedName.length < 3 || trimmedName.length > 50) {
+			setErrorMessage("Name must be between 3 to 50 characters.");
+			return;
+		}
+
 		setIsLoading(true);
 		try {
 			const newTeam = await createTeam({ name: teamName });
 			onTeamCreated(newTeam);
 			onClose();
 		} catch (error) {
-			console.error(error);
+			if (axios.isAxiosError(error) && error.response?.status === 400) {
+				const data = error.response.data;
+				setErrorMessage(
+					typeof data === "string"
+						? data
+						: data.errors?.Name?.[0] || "Failed to create team",
+				);
+			} else {
+				setErrorMessage("Failed to create team");
+			}
 		} finally {
 			setIsLoading(false);
 		}
@@ -52,6 +75,9 @@ export function CreateTeamModal({
 						type="text"
 						className="w-full border-2! border-border! bg-surface-elevated text-text px-2 py-1"
 					/>
+					{errorMessage && (
+						<p className="text-error text-sm mt-1">{errorMessage}</p>
+					)}
 				</div>
 				<PrimaryButton onClick={handleSubmit} className="w-[90%]">
 					{isLoading ? "Creating..." : "Create"}
