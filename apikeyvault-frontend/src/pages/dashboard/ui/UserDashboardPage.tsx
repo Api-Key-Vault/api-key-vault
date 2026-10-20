@@ -100,6 +100,10 @@ export function UserDashboardPage() {
 							<div className="text-error text-2xl">{errorMessage}</div>
 						) : isLoading ? (
 							<div className="text-text text-2xl">Loading teams...</div>
+						) : userTeams.length === 0 ? (
+							<div className="text-text text-2xl">
+								You are not a member of any teams yet.
+							</div>
 						) : (
 							userTeams.map((team) => (
 								<TeamCard
