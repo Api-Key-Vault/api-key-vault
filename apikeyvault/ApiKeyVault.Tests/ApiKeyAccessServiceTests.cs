@@ -170,5 +170,48 @@ namespace ApiKeyVault.Tests
             //Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public async Task GetByApiKeyAsync_CrossTeamAccess_ReturnsNull()
+        {
+            //Arrange
+            var owner = new TeamMember
+            {
+                Id = 1,
+                TeamId = 1,
+                UserId = "owner",
+                Role = new TeamRole { Name = "Owner" }
+            };
+
+            var apiKey = new ApiKey
+            {
+                Id = 1,
+                TeamId = 2
+            };
+
+            var apiKeyAccessRepository = new Mock<IApiKeyAccessRepository>();
+            var membersRepository = new Mock<ITeamMemberRepository>();
+            var apiKeyRepository = new Mock<IApiKeyRepository>();
+
+            membersRepository.Setup(repo => 
+                repo.GetByTeamAndUserAsync(owner.TeamId, owner.UserId))
+                .ReturnsAsync(owner);
+         
+            apiKeyRepository.Setup(repo => 
+                repo.GetByIdAsync(owner.TeamId, apiKey.Id))
+                .ReturnsAsync((ApiKey?)null);
+
+            var apiKeyService = new ApiKeyAccessService(
+                apiKeyAccessRepository.Object, 
+                membersRepository.Object, 
+                apiKeyRepository.Object
+                );
+
+            //Act
+            var result = await apiKeyService.GetByApiKeyAsync(owner.TeamId, owner.UserId, apiKey.Id);
+
+            //Assert
+            Assert.Null(result);
+        }
     }
 }
