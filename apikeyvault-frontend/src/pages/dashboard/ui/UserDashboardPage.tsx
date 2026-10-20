@@ -95,14 +95,19 @@ export function UserDashboardPage() {
 						Create team
 					</PrimaryButton>
 				</div>
-				<div className="flex flex-col gap-8 w-fit">
-					<div className="flex flex-row gap-50 justify-center">
+
+				<section className="w-4/5">
+					<div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
 						{errorMessage ? (
-							<div className="text-error text-2xl">{errorMessage}</div>
+							<div className="text-center text-error text-2xl">
+								{errorMessage}
+							</div>
 						) : isLoading ? (
-							<div className="text-text text-2xl">Loading teams...</div>
+							<div className="text-center text-text text-2xl">
+								Loading teams...
+							</div>
 						) : userTeams.length === 0 ? (
-							<div className="text-text text-2xl">
+							<div className="text-center text-text text-2xl">
 								You are not a member of any teams yet.
 							</div>
 						) : (
@@ -116,7 +121,7 @@ export function UserDashboardPage() {
 							))
 						)}
 					</div>
-				</div>
+				</section>
 				{isCreateTeamOpen && (
 					<CreateTeamModal
 						onClose={() => setIsCreateTeamOpen(false)}
