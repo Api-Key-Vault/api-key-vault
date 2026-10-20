@@ -1,16 +1,16 @@
 import axios from "axios";
-import { apiClient }  from '@/shared/api/apiClient'
+import { apiClient } from '@/shared/api';
 import type { User } from '@/entities/user';
 
-
-export async function login() {
+export function loginWithGithub(): void {
     const fullUrl = apiClient.getUri({
-        url: 'Auth/github'
+        url: 'Auth/github',
     });
+
     window.location.assign(fullUrl);
 }
 
-export async function getCurrentUser() : Promise<User | null> {
+export async function getCurrentUser(): Promise<User | null> {
     try {
         const response = await apiClient.get<User>("Auth/me");
         return response.data;
@@ -22,7 +22,7 @@ export async function getCurrentUser() : Promise<User | null> {
     }
 }
 
-export async function logout() {
+export async function logout(): Promise<void> {
     await apiClient.post("Auth/logout");
 }
 

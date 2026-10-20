@@ -1,5 +1,5 @@
 
-export default function Loading(){
+export function Loading(){
 
     return(
         <section className="flex justify-center items-center w-full min-h-screen">
