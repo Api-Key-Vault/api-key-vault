@@ -42,8 +42,10 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 					Id = tm.Team.Id,
 					Name = tm.Team.Name,
 					Members = tm.Team.Members.Count,
-					Keys = tm.Team.ApiKeys
-						.Count(ak => ak.ApiKeyAccesses.Any(a => a.TeamMemberId == tm.Id))
+					Keys = tm.Role.Name == "Owner"
+						? tm.Team.ApiKeys.Count
+						: tm.Team.ApiKeys.Count(ak => ak.ApiKeyAccesses.Any(a =>
+						a.TeamMemberId == tm.Id))
 				}).ToListAsync();
 		}
 
