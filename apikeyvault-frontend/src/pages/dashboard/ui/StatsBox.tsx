@@ -12,13 +12,13 @@ export function StatsBox({
     count,
     label
 }: StatsBoxProps){
-    return(
-        <Card className="p-4 w-75 flex flex-row items-center gap-5">
-            {icon}
-            <p className="text-text text-xl">
-                <span className="font-bold">{count}</span>{" "}
-                <span className="text-text-muted">{label}</span>
-            </p>
-        </Card>
-    );
+    return (
+			<Card className="p-4 min-w-full md:min-w-40 flex flex-row items-center gap-5">
+				{icon}
+				<p className="text-text text-base xl:text-xl">
+					<span className="font-bold">{count}</span>{" "}
+					<span className="text-text-muted">{label}</span>
+				</p>
+			</Card>
+		);
 }
