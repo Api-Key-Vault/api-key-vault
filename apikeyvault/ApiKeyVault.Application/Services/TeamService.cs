@@ -21,7 +21,7 @@ namespace ApiKeyVault.Application.Services
 			_teamInviteRepository = teamInviteRepository;
 		}
 
-		public async Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId)
+		public async Task<TeamResponse?> GetByIdAsync(int teamId, string userId)
 		{
 			var team = await _teamRepository.GetTeamByIdAsync(teamId, userId);
 
@@ -30,28 +30,36 @@ namespace ApiKeyVault.Application.Services
 				return null;
 			}
 
-			var getTeamResponse = new GetTeamResponse
+			var teamMember = team.Members.FirstOrDefault(m => m.UserId == userId);
+
+			if (teamMember is null)
+			{
+				return null;
+			}
+
+			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync(OwnerRoleName);
+
+			if (ownerRole is null)
+			{
+				throw new InvalidOperationException("The 'Owner' role does not exist.");
+			}
+
+			int keys = teamMember.Role.Name == ownerRole.Name
+				? team.ApiKeys.Count
+				: team.ApiKeys.Count(ak => ak.ApiKeyAccesses.Any(a => a.TeamMemberId == teamMember.Id));
+
+			return new TeamResponse
 			{
 				Id = team.Id,
 				Name = team.Name,
-				CreatedAt = team.CreatedAt
+				Members = team.Members.Count,
+				Keys = keys
 			};
-
-			return getTeamResponse;
 		}
 
-		public async Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId)
+		public async Task<List<TeamResponse>> GetAllTeamsAsync(string userId)
 		{
-			List<Team> teams = await _teamRepository.GetAllTeamsByUserIdAsync(userId);
-
-			List<GetTeamResponse> responseList = teams.Select(team => new GetTeamResponse
-			{
-				Id = team.Id,
-				Name = team.Name,
-				CreatedAt = team.CreatedAt
-			}).ToList();
-
-			return responseList;
+			return await _teamRepository.GetAllTeamsByUserIdAsync(userId);
 		}
 
 		public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)

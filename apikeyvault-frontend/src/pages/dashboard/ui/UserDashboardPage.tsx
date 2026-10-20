@@ -1,82 +1,137 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { TeamCard } from "./TeamCard";
 import { StatsBox } from "./StatsBox";
 import { AvatarButton } from "@/shared/ui/AvatarButton";
 import { CreateTeamModal } from "@/features/create-team";
 import { AccountModal } from "./AccountModal";
+import type { TeamResponse } from "@/features/get-team";
+import { getAllTeams } from "@/features/get-team/api/getTeam";
 
-export function UserDashboardPage(){
+export function UserDashboardPage() {
+	const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
+	const [isAccountOpen, setIsAccountOpen] = useState(false);
+    const [userTeams, setUserTeams] = useState<TeamResponse[]>([]);
+		const [isLoading, setIsLoading] = useState(true);
+		const [errorMessage, setErrorMessage] = useState("");
 
-    const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
-    const [isAccountOpen, setIsAccountOpen] = useState(false);
+		useEffect(() => {
+			const fetchTeams = async () => {
+				try {
+					const teams = await getAllTeams();
+					setUserTeams(teams);
+				} catch {
+					setErrorMessage("Failed to fetch teams");
+				} finally {
+					setIsLoading(false);
+				}
+			};
+			fetchTeams();
+		}, []);
 
-    return (
-        <section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
+		const handleTeamCreated = (newTeam: TeamResponse) => {
+			setUserTeams((prev) => [...prev, newTeam]);
+		};
 
-            {/* HEADERN */}
-            <Card className="p-4 w-[83rem] flex flex-row items-center justify-between">
-                <div className="flex flex-row items-center gap-8">
-                    <span className="pixelart-icons-font-key text-secondary-accent text-[50px]!" />
-                    <div className="text-left flex flex-col gap-1">
-                        <h1 className="text-text text-2xl">API Key Vault</h1>
-                        <p className="text-text-muted text-2xl">Your teams</p>
-                    </div>
-                </div>
+		const totalKeys = userTeams.reduce((sum, team) => sum + team.keys, 0);
+		const totalMembers = userTeams.reduce((sum, team) => sum + team.members, 0);
 
-                <div className="flex flex-row items-center gap-6">
-                    <AvatarButton onClick={() => setIsAccountOpen(true)} />
-                    {/*TODO: Add logout function.*/}
-                    <PrimaryButton className="text-xl px-4! py-1!">Logout</PrimaryButton>
-                </div>
-            </Card>
+		return (
+			<section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
+				{/* HEADERN */}
+				<Card className="p-4 w-4/5 flex flex-col gap-5 md:flex-row items-center justify-between">
+					<div className="flex flex-row items-center gap-8">
+						<span className="pixelart-icons-font-key text-secondary-accent text-[50px]!" />
+						<div className="text-left flex flex-col gap-1">
+							<h1 className="text-text text-xl md:text-2xl">API Key Vault</h1>
+							<p className="text-text-muted text-base md:text-2xl">
+								Your teams
+							</p>
+						</div>
+					</div>
 
-            {/* STATS BOXES */}
-            <div className="flex mt-8 flex-row gap-50 w-4/5 justify-center">
-                {/*TODO: Replace hardcoded number with real team count.*/}
-               <StatsBox 
-                icon={<span className="pixelart-icons-font-users text-text text-[35px]!" />}
-                count={3}
-	            label="Teams"
-               />
+					<div className="flex flex-row items-center gap-6">
+						<AvatarButton onClick={() => setIsAccountOpen(true)} />
+						{/*TODO: Add logout function.*/}
+						<PrimaryButton className="text-xl px-4! py-1!">
+							Logout
+						</PrimaryButton>
+					</div>
+				</Card>
 
-	            {/*TODO: Replace hardcoded number with real API key count.*/}
-                <StatsBox 
-                icon={<span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />}
-                count={16}
-                label="API Keys"
-                />
+				{/* STATS BOXES */}
+				<div className="flex mt-8 flex-col md:flex-row w-4/5 justify-between items-center">
+					<StatsBox
+						icon={
+							<span className="pixelart-icons-font-users text-text text-[35px]!" />
+						}
+						count={userTeams.length}
+						label="Teams"
+					/>
 
-	            {/*TODO: Replace hardcoded number with real member count.*/}
-                <StatsBox 
-                icon={<span className="pixelart-icons-font-user-plus text-text text-[35px]!" />}
-                count={15}
-                label="Members"
-                />
-            </div>
+					<StatsBox
+						icon={
+							<span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />
+						}
+						count={totalKeys}
+						label="Keys"
+					/>
 
-            <div className="flex flex-col gap-8 w-fit">
-                <div className="flex flex-row items-center justify-between w-full">
-                    <h2 className="text-primary-accent text-2xl">Teams</h2>
-                    <PrimaryButton 
-                        className="text-xl px-4! py-1!"
-                        onClick={() => setIsCreateTeamOpen(true)}>Create team</PrimaryButton>
-                </div>
-                
-                <div className="flex flex-row gap-50 justify-center">
-                    {/* TODO: Replace hardcoded team data with real teams (name, key count, member count) from the API. */}
-                    <TeamCard name="Team 1" keyCount={12} memberCount={3} />
-                    <TeamCard name="Team 2" keyCount={4} memberCount={5} />
-                    <TeamCard name="Team 3" keyCount={6} memberCount={7} />
-                </div>
-            </div>
-            {isCreateTeamOpen && (
-	            <CreateTeamModal onClose={() => setIsCreateTeamOpen(false)} />
-            )}
+					<StatsBox
+						icon={
+							<span className="pixelart-icons-font-user-plus text-text text-[35px]!" />
+						}
+						count={totalMembers}
+						label="Members"
+					/>
+				</div>
 
-            {isAccountOpen && (
-                <AccountModal onClose={() => setIsAccountOpen(false)} />
-            )}
-        </section>
-    );
+				<div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 w-4/5">
+					<h2 className="text-primary-accent text-2xl">Teams</h2>
+					<PrimaryButton
+						className="text-xl px-4! py-1!"
+						onClick={() => setIsCreateTeamOpen(true)}
+					>
+						Create team
+					</PrimaryButton>
+				</div>
+
+				<section className="w-4/5">
+					<div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
+						{errorMessage ? (
+							<div className="text-center text-error text-2xl">
+								{errorMessage}
+							</div>
+						) : isLoading ? (
+							<div className="text-center text-text text-2xl">
+								Loading teams...
+							</div>
+						) : userTeams.length === 0 ? (
+							<div className="text-center text-text text-2xl">
+								You are not a member of any teams yet.
+							</div>
+						) : (
+							userTeams.map((team) => (
+								<TeamCard
+									key={team.id}
+									name={team.name}
+									keyCount={team.keys}
+									memberCount={team.members}
+								/>
+							))
+						)}
+					</div>
+				</section>
+				{isCreateTeamOpen && (
+					<CreateTeamModal
+						onClose={() => setIsCreateTeamOpen(false)}
+						onTeamCreated={handleTeamCreated}
+					/>
+				)}
+
+				{isAccountOpen && (
+					<AccountModal onClose={() => setIsAccountOpen(false)} />
+				)}
+			</section>
+		);
 }
