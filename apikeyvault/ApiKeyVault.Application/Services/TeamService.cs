@@ -1,5 +1,4 @@
-﻿using ApiKeyVault.Application.Dtos.ApiKey;
-using ApiKeyVault.Application.Dtos.Team;
+﻿using ApiKeyVault.Application.Dtos.Team;
 using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Domain.Entities;
@@ -8,22 +7,21 @@ namespace ApiKeyVault.Application.Services
 {
     public class TeamService : ITeamService
     {
+        private const string OwnerRoleName = "Owner";
 
         private readonly ITeamRepository _teamRepository;
         private readonly ITeamRoleRepository _teamRoleRepository;
-        private readonly ITeamMemberRepository _teamMemberRepository;
 
-        public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository, ITeamMemberRepository teamMemberRepository)
+        public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository)
         {
             _teamRepository = teamRepository;
             _teamRoleRepository = teamRoleRepository;
-            _teamMemberRepository = teamMemberRepository;
         }
 
 
 		public async Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId)
 		{
-			var team = await _teamRepository.GetTeamByIdAsync(teamId,userId);
+			var team = await _teamRepository.GetTeamByIdAsync(teamId, userId);
 
 			if (team is null)
 			{
@@ -51,14 +49,14 @@ namespace ApiKeyVault.Application.Services
 				CreatedAt = team.CreatedAt
 			}).ToList();
 
-			return responseList ;
+			return responseList;
 		}
 
 		public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
         {
 
 			// set team-role as owner here
-			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync("Owner");
+			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync(OwnerRoleName);
 
 			if (ownerRole is null)
 			{
@@ -74,7 +72,7 @@ namespace ApiKeyVault.Application.Services
 			var newTeam = new Team
             {
                 Name = request.Name,
-                CreatedAt = DateTime.UtcNow  // set time here instead of inside the class
+                CreatedAt = DateTime.UtcNow
 			};
 
 			newTeam.Members.Add(setOwnerOfThisTeam);
@@ -98,6 +96,12 @@ namespace ApiKeyVault.Application.Services
 			var teamToUpdate = await _teamRepository.GetTeamByIdAsync(updateTeamRequest.Id, userId);
 
 			if (teamToUpdate is null)
+			{
+				return null;
+			}
+
+			var owner = teamToUpdate.Members.SingleOrDefault(m => m.Role.Name == "Owner");
+			if (owner == null || owner.UserId != userId)
 			{
 				return null;
 			}
