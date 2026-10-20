@@ -93,5 +93,27 @@ namespace ApiKeyVault.Api.Controllers
 			return Ok(updatedTeam);
 		}
 
+
+
+		[HttpDelete("{teamId:int}")]
+		public async Task<ActionResult> DeleteTeam(int teamId)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (userId is null)
+			{
+				return Unauthorized();
+			}
+
+			var sucessfullDelete = await _teamService.DeleteTeamAsync(teamId, userId);
+
+			if (sucessfullDelete is false)
+			{
+				return Forbid();
+			}
+
+			return NoContent();
+
+		}
     }
 }

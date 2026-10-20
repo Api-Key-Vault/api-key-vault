@@ -1,1 +1,1 @@
-export { InviteLanding } from './ui/InviteLanding';
+export { InviteLandingPage } from "./ui/InviteLandingPage";

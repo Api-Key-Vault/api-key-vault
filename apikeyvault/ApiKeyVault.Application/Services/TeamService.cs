@@ -5,19 +5,21 @@ using ApiKeyVault.Domain.Entities;
 
 namespace ApiKeyVault.Application.Services
 {
-    public class TeamService : ITeamService
-    {
-        private const string OwnerRoleName = "Owner";
+	public class TeamService : ITeamService
+	{
+		private const string OwnerRoleName = "Owner";
+		private readonly ITeamRepository _teamRepository;
+		private readonly ITeamRoleRepository _teamRoleRepository;
+		private readonly IApiKeyRepository _apiKeyRepository;
+		private readonly ITeamInviteRepository _teamInviteRepository;
 
-        private readonly ITeamRepository _teamRepository;
-        private readonly ITeamRoleRepository _teamRoleRepository;
-
-        public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository)
-        {
-            _teamRepository = teamRepository;
-            _teamRoleRepository = teamRoleRepository;
-        }
-
+		public TeamService(ITeamRepository teamRepository, ITeamRoleRepository teamRoleRepository, IApiKeyRepository apiKeyRepository, ITeamInviteRepository teamInviteRepository)
+		{
+			_teamRepository = teamRepository;
+			_teamRoleRepository = teamRoleRepository;
+			_apiKeyRepository = apiKeyRepository;
+			_teamInviteRepository = teamInviteRepository;
+		}
 
 		public async Task<GetTeamResponse?> GetByIdAsync(int teamId, string userId)
 		{
@@ -40,7 +42,7 @@ namespace ApiKeyVault.Application.Services
 
 		public async Task<List<GetTeamResponse>> GetAllTeamsAsync(string userId)
 		{
-			List<Team> teams= await _teamRepository.GetAllTeamsByUserIdAsync(userId);
+			List<Team> teams = await _teamRepository.GetAllTeamsByUserIdAsync(userId);
 
 			List<GetTeamResponse> responseList = teams.Select(team => new GetTeamResponse
 			{
@@ -53,7 +55,7 @@ namespace ApiKeyVault.Application.Services
 		}
 
 		public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
-        {
+		{
 
 			// set team-role as owner here
 			var ownerRole = await _teamRoleRepository.GetRoleByNameAsync(OwnerRoleName);
@@ -88,6 +90,24 @@ namespace ApiKeyVault.Application.Services
 
 			return response;
 		}
+
+		public async Task<bool> DeleteTeamAsync(int teamId, string userId)
+		{
+			var teamToDelete = await _teamRepository.GetTeamForDeletionAsync(teamId, userId);
+
+			if (teamToDelete is null)
+			{
+				return false;
+			}
+
+			await _apiKeyRepository.RemoveByTeamAsync(teamId);
+			await _teamInviteRepository.RemoveByTeamAsync(teamId);
+			_teamRepository.DeleteTeam(teamToDelete);
+			await _teamRepository.SaveChangesAsync();
+
+			return true;
+		}
+	}
 
 
 

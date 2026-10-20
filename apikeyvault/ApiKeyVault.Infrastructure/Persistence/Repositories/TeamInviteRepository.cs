@@ -38,6 +38,15 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             return rowsAffected > 0;
         }
 
+        public async Task RemoveByTeamAsync(int teamId)
+        {
+            var invites = await _dbContext.TeamInvites
+                .Where(invite => invite.TeamId == teamId)
+                .ToListAsync();
+
+            _dbContext.TeamInvites.RemoveRange(invites);
+        }
+
         public async Task RemoveUsedInvitesAsync(int teamMemberId)
         {
             var invites = await _dbContext.TeamInvites
