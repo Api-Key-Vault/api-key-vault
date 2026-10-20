@@ -11,15 +11,19 @@ import { getAllTeams } from "@/features/get-team/api/getTeam";
 export function UserDashboardPage() {
 	const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
 	const [isAccountOpen, setIsAccountOpen] = useState(false);
-	const [userTeams, setUserTeams] = useState<TeamResponse[]>([]);
+    const [userTeams, setUserTeams] = useState<TeamResponse[]>([]);
+		const [isLoading, setIsLoading] = useState(true);
+		const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
+		useEffect(() => {
 			const fetchTeams = async () => {
 				try {
 					const teams = await getAllTeams();
 					setUserTeams(teams);
-				} catch (error) {
-					console.error("Failed to fetch teams:", error);
+				} catch {
+					setErrorMessage("Failed to fetch teams");
+				} finally {
+					setIsLoading(false);
 				}
 			};
 			fetchTeams();
@@ -35,7 +39,7 @@ export function UserDashboardPage() {
 		return (
 			<section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
 				{/* HEADERN */}
-				<Card className="p-4 w-[83rem] flex flex-row items-center justify-between">
+				<Card className="p-4 w-332 flex flex-row items-center justify-between">
 					<div className="flex flex-row items-center gap-8">
 						<span className="pixelart-icons-font-key text-secondary-accent text-[50px]!" />
 						<div className="text-left flex flex-col gap-1">
@@ -92,14 +96,20 @@ export function UserDashboardPage() {
 					</div>
 
 					<div className="flex flex-row gap-50 justify-center">
-						{userTeams.map((team) => (
-							<TeamCard
-								key={team.id}
-								name={team.name}
-								keyCount={team.keys}
-								memberCount={team.members}
-							/>
-						))}
+						{errorMessage ? (
+							<div className="text-error text-2xl">{errorMessage}</div>
+						) : isLoading ? (
+							<div className="text-text text-2xl">Loading teams...</div>
+						) : (
+							userTeams.map((team) => (
+								<TeamCard
+									key={team.id}
+									name={team.name}
+									keyCount={team.keys}
+									memberCount={team.members}
+								/>
+							))
+						)}
 					</div>
 				</div>
 				{isCreateTeamOpen && (
