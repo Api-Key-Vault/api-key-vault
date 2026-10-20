@@ -1,4 +1,5 @@
 ﻿using ApiKeyVault.Application.Interfaces.Repositories;
+using ApiKeyVault.Application.ReadModels;
 using ApiKeyVault.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,9 +41,31 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             return _dbContext.SaveChangesAsync();
         }
 
-        public Task<List<ApiKeyAccess>> GetByTeamMemberIdAsync(int teamMemberId)
+        public async Task<List<ApiKeyAccess>> GetByTeamMemberIdAsync(int teamMemberId)
         {
-            throw new NotImplementedException();
+            return await _dbContext.ApiKeyAccesses
+                .Where(aka => aka.TeamMemberId == teamMemberId)
+                .ToListAsync();
+        }
+
+        public async Task<List<ApiKeyAccessReadModel>> GetByApiKeyAsync(int apiKeyId)
+        {
+            return await _dbContext.ApiKeyAccesses
+                .AsNoTracking()
+                .Where(access => access.ApiKeyId == apiKeyId)                
+                .Join(_dbContext.Users,
+                    access => access.Member.UserId,
+                    user => user.Id,
+                    (access, user) => new ApiKeyAccessReadModel
+                    {
+                        ApiKeyId = access.ApiKeyId,
+                        TeamMemberId = access.TeamMemberId,
+                        DisplayName = user.DisplayName,
+                        AssignedAt = access.AssignedAt,
+                        GrantedByMemberId = access.GrantedByMemberId
+                    })
+                .ToListAsync();
         }
     }
+    
 }
