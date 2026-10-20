@@ -43,17 +43,7 @@ namespace ApiKeyVault.Application.Services
 
 		public async Task<List<TeamResponse>> GetAllTeamsAsync(string userId)
 		{
-			List<Team> teams = await _teamRepository.GetAllTeamsByUserIdAsync(userId);
-
-			List<TeamResponse> responseList = teams.Select(team => new TeamResponse
-			{
-				Id = team.Id,
-				Name = team.Name,
-				Members = team.Members.Count,
-				Keys = team.ApiKeys.Count //TODO: update logic to only include keys assigned to member
-			}).ToList();
-
-			return responseList;
+			return await _teamRepository.GetAllTeamsByUserIdAsync(userId);
 		}
 
 		public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
