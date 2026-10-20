@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import axios from "axios";
 import { AddKeyModal, type AddKeyRequest } from "@/features/create-api-key";
 import { ManageKeyModal, type ManageKeyUpdate } from "@/features/manage-api-key";
 import { useAuth } from "@/features/auth";
@@ -26,44 +25,6 @@ import "./TeamDashboardPage.css";
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
 const COPY_FEEDBACK_TIMEOUT_MS = 5000;
-
-function getResponseStatus(error: unknown): number | undefined {
-  if (!axios.isAxiosError(error)) {
-    return undefined;
-  }
-
-  return error.response?.status;
-}
-
-function getSafeErrorMessage(error: unknown, fallback: string): string {
-  switch (getResponseStatus(error)) {
-    case 401:
-      return "Your session has expired. Please sign in again.";
-    case 403:
-      return "You do not have permission to access this team.";
-    case 404:
-      return "The requested team or API key could not be found.";
-    case 409:
-      return "This API key cannot be changed in its current state.";
-    default:
-      return fallback;
-  }
-}
-
-function getRevealErrorMessage(error: unknown): string {
-  switch (getResponseStatus(error)) {
-    case 401:
-      return "Your session has expired. Please sign in again.";
-    case 403:
-      return "You do not have permission to reveal this API key.";
-    case 404:
-      return "This API key is no longer available.";
-    case 409:
-      return "This API key is expired or revoked and cannot be revealed.";
-    default:
-      return "The API key could not be revealed.";
-  }
-}
 
 function normaliseExpiry(value: string): string | null {
   const trimmedValue = value.trim();
@@ -102,7 +63,7 @@ function formatDate(value: string | null): string {
   return Number.isNaN(date.getTime()) ? "Unknown" : date.toLocaleDateString();
 }
 
-type CopyAttempt = {
+type CopyFeedback = {
   keyId: number;
 };
 
@@ -131,7 +92,6 @@ function TeamKeyRow({
   const [isKeyActionPending, setIsKeyActionPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLocallyExpired, setIsLocallyExpired] = useState(() => hasExpired(apiKey.expiresAt));
-  const requestVersionRef = useRef(0);
   const mountedRef = useRef(false);
   const isInactive = apiKey.status !== "Active" || isLocallyExpired;
   const isPending = isKeyActionPending || isBusy;
@@ -143,7 +103,6 @@ function TeamKeyRow({
 
     return () => {
       mountedRef.current = false;
-      requestVersionRef.current += 1;
       onCopyReset(apiKey.id);
     };
   }, [apiKey.id, onCopyReset]);
@@ -168,7 +127,6 @@ function TeamKeyRow({
       }
 
       if (mountedRef.current) {
-        requestVersionRef.current += 1;
         setIsLocallyExpired(true);
         setIsKeyActionPending(false);
         setRevealedValue(null);
@@ -208,14 +166,13 @@ function TeamKeyRow({
       return;
     }
 
-    const requestVersion = ++requestVersionRef.current;
     setIsKeyActionPending(true);
     setErrorMessage(null);
 
     try {
       const response = await revealApiKey(teamId, apiKey.id);
 
-      if (!mountedRef.current || requestVersion !== requestVersionRef.current) {
+      if (!mountedRef.current) {
         return;
       }
 
@@ -233,13 +190,13 @@ function TeamKeyRow({
       }
 
       setRevealedValue(response.value);
-    } catch (error) {
-      if (mountedRef.current && requestVersion === requestVersionRef.current) {
+    } catch {
+      if (mountedRef.current && !hasExpired(apiKey.expiresAt)) {
         setRevealedValue(null);
-        setErrorMessage(getRevealErrorMessage(error));
+        setErrorMessage("The API key could not be revealed.");
       }
     } finally {
-      if (mountedRef.current && requestVersion === requestVersionRef.current) {
+      if (mountedRef.current) {
         setIsKeyActionPending(false);
       }
     }
@@ -250,24 +207,22 @@ function TeamKeyRow({
       return;
     }
 
-    const requestVersion = ++requestVersionRef.current;
     setIsKeyActionPending(true);
     setErrorMessage(null);
 
     try {
       const copyError = await onCopy(apiKey, () => (
         mountedRef.current
-        && requestVersionRef.current === requestVersion
         && apiKey.status === "Active"
         && !isLocallyExpired
         && !hasExpired(apiKey.expiresAt)
       ));
 
-      if (mountedRef.current && requestVersionRef.current === requestVersion && copyError !== null) {
+      if (mountedRef.current && copyError !== null) {
         setErrorMessage(copyError);
       }
     } finally {
-      if (mountedRef.current && requestVersionRef.current === requestVersion) {
+      if (mountedRef.current) {
         setIsKeyActionPending(false);
       }
     }
@@ -403,54 +358,43 @@ function TeamDashboardContent({
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [refreshError, setRefreshError] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isAddKeyOpen, setIsAddKeyOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
   const [isMutating, setIsMutating] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [copiedFeedback, setCopiedFeedback] = useState<CopyAttempt | null>(null);
+  const [copiedFeedback, setCopiedFeedback] = useState<CopyFeedback | null>(null);
   const mountedRef = useRef(false);
-  const loadRequestRef = useRef(0);
-  const toastTimerRef = useRef<number | null>(null);
-  const latestCopyRef = useRef<CopyAttempt | null>(null);
-  const copyWriteQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   const currentMember = members.find((member) => member.userId === authUserId);
   const isOwner = currentMember?.roleName === "Owner";
   const roleLabel = currentMember?.roleName ?? (isLoading ? "Loading..." : "Unknown");
 
   const clearCopyForKey = useCallback((apiKeyId: number) => {
-    if (latestCopyRef.current?.keyId === apiKeyId) {
-      latestCopyRef.current = null;
-    }
-
     if (mountedRef.current) {
       setCopiedFeedback((current) => current?.keyId === apiKeyId ? null : current);
     }
   }, []);
 
   async function handleCopyKey(apiKey: ApiKey, isRowValid: () => boolean): Promise<string | null> {
-    const attempt: CopyAttempt = { keyId: apiKey.id };
-    latestCopyRef.current = attempt;
-    setCopiedFeedback(null);
-
-    const isCurrentCopy = () => mountedRef.current && latestCopyRef.current === attempt && isRowValid();
+    if (!mountedRef.current || !isRowValid()) {
+      return null;
+    }
 
     if (!navigator.clipboard) {
       return "The API key could not be copied.";
     }
 
+    setCopiedFeedback(null);
+
     let response: { value: string };
     try {
       response = await revealApiKey(teamId, apiKey.id);
-    } catch (error) {
-      return isCurrentCopy() ? getRevealErrorMessage(error) : null;
+    } catch {
+      return mountedRef.current && isRowValid() ? "The API key could not be revealed." : null;
     }
 
-    if (!isCurrentCopy()) {
+    if (!mountedRef.current || !isRowValid()) {
       return null;
     }
 
@@ -458,31 +402,20 @@ function TeamDashboardContent({
       return "The API key could not be revealed.";
     }
 
-    const writeCopy = async (): Promise<string | null> => {
-      if (!isCurrentCopy()) {
-        return null;
-      }
+    try {
+      await navigator.clipboard.writeText(response.value);
+    } catch {
+      return mountedRef.current && isRowValid()
+        ? "The API key could not be copied."
+        : null;
+    }
 
-      try {
-        await navigator.clipboard.writeText(response.value);
-      } catch {
-        return isCurrentCopy()
-          ? "The API key could not be copied."
-          : null;
-      }
-
-      if (!isCurrentCopy()) {
-        return null;
-      }
-
-      setCopiedFeedback(attempt);
+    if (!mountedRef.current || !isRowValid()) {
       return null;
-    };
+    }
 
-    // Keep writes ordered so an older clipboard operation cannot finish last.
-    const queuedWrite = copyWriteQueueRef.current.then(writeCopy);
-    copyWriteQueueRef.current = queuedWrite.then(() => undefined, () => undefined);
-    return queuedWrite;
+    setCopiedFeedback({ keyId: apiKey.id });
+    return null;
   }
 
   useEffect(() => {
@@ -502,32 +435,19 @@ function TeamDashboardContent({
 
     return () => {
       mountedRef.current = false;
-      if (toastTimerRef.current !== null) {
-        window.clearTimeout(toastTimerRef.current);
-      }
-      latestCopyRef.current = null;
     };
   }, []);
 
   useEffect(() => {
-    const requestId = ++loadRequestRef.current;
     let cancelled = false;
 
-    const canApply = () => (
-      !cancelled
-      && mountedRef.current
-      && loadRequestRef.current === requestId
-    );
-
     if (!hasValidTeamId || authUserId === null) {
-      return () => {
-        cancelled = true;
-      };
+      return;
     }
 
     Promise.all([getTeam(teamId), getTeamMembers(teamId), getApiKeys(teamId)])
       .then(([loadedTeam, loadedMembers, loadedKeys]) => {
-        if (!canApply()) {
+        if (cancelled) {
           return;
         }
 
@@ -535,97 +455,30 @@ function TeamDashboardContent({
         setMembers(loadedMembers);
         setKeys(loadedKeys);
       })
-      .catch((error: unknown) => {
-        if (!canApply()) {
+      .catch(() => {
+        if (cancelled) {
           return;
         }
 
-        setLoadError(getSafeErrorMessage(error, "The team could not be loaded."));
+        setLoadError("The team could not be loaded.");
       })
       .finally(() => {
-        if (canApply()) {
+        if (!cancelled) {
           setIsLoading(false);
         }
       });
 
     return () => {
       cancelled = true;
-      if (loadRequestRef.current === requestId) {
-        loadRequestRef.current += 1;
-      }
     };
   }, [authUserId, hasValidTeamId, teamId]);
-
-  function isCurrentTeam(): boolean {
-    return mountedRef.current;
-  }
-
-  function showToast(message: string) {
-    if (!mountedRef.current) {
-      return;
-    }
-
-    if (toastTimerRef.current !== null) {
-      window.clearTimeout(toastTimerRef.current);
-    }
-
-    setToastMessage(message);
-    toastTimerRef.current = window.setTimeout(() => {
-      if (mountedRef.current) {
-        setToastMessage(null);
-      }
-      toastTimerRef.current = null;
-    }, 2500);
-  }
-
-  async function refreshKeyMetadata(): Promise<boolean> {
-    if (!hasValidTeamId) {
-      return false;
-    }
-
-    try {
-      const latestKeys = await getApiKeys(teamId);
-
-      if (!isCurrentTeam()) {
-        return false;
-      }
-
-      setKeys(latestKeys);
-      setRefreshError(null);
-      return true;
-    } catch (error: unknown) {
-      if (!isCurrentTeam()) {
-        return false;
-      }
-
-      setRefreshError(getSafeErrorMessage(error, "The API key list could not be refreshed."));
-      return false;
-    }
-  }
-
-  async function handleRetryRefresh() {
-    if (isRefreshing || isMutating) {
-      return;
-    }
-
-    setIsRefreshing(true);
-    await refreshKeyMetadata();
-    if (isCurrentTeam()) {
-      setIsRefreshing(false);
-    }
-  }
 
   async function handleAddKey(request: AddKeyRequest) {
     if (!isOwner || !hasValidTeamId || isMutating) {
       return;
     }
 
-    const name = request.name.trim();
-    const value = request.value.trim();
-    if (name.length === 0 || value.length === 0) {
-      setModalError("Enter a name and API key value.");
-      return;
-    }
+    const { category, name, value } = request;
 
     setIsMutating(true);
     setModalError(null);
@@ -634,24 +487,22 @@ function TeamDashboardContent({
       const createdKey = await createApiKey(teamId, {
         name,
         value,
-        category: request.category.trim() || null,
+        category: category || null,
         expiresAt: normaliseExpiry(request.expiresAt),
       });
 
-      if (!isCurrentTeam()) {
+      if (!mountedRef.current) {
         return;
       }
 
       setKeys((currentKeys) => [...currentKeys, createdKey]);
       setIsAddKeyOpen(false);
-      setModalError(null);
-      showToast("API key added");
-    } catch (error: unknown) {
-      if (isCurrentTeam()) {
-        setModalError(getSafeErrorMessage(error, "The API key could not be added."));
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The API key could not be added.");
       }
     } finally {
-      if (isCurrentTeam()) {
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
@@ -663,11 +514,7 @@ function TeamDashboardContent({
     }
 
     const selectedKeyId = selectedKey.id;
-    const name = update.name.trim();
-    if (name.length === 0) {
-      setModalError("Enter a name for the API key.");
-      return;
-    }
+    const { category, expiresAt, name, value } = update;
 
     setIsMutating(true);
     setModalError(null);
@@ -675,12 +522,12 @@ function TeamDashboardContent({
     try {
       const updatedKey = await updateApiKey(teamId, selectedKeyId, {
         name,
-        value: update.value.trim() || null,
-        category: update.category.trim() || null,
-        expiresAt: normaliseExpiry(update.expiresAt),
+        value: value || null,
+        category: category || null,
+        expiresAt: normaliseExpiry(expiresAt),
       });
 
-      if (!isCurrentTeam()) {
+      if (!mountedRef.current) {
         return;
       }
 
@@ -688,14 +535,12 @@ function TeamDashboardContent({
         key.id === selectedKeyId ? updatedKey : key
       )));
       setSelectedKey(null);
-      setModalError(null);
-      showToast("API key updated");
-    } catch (error: unknown) {
-      if (isCurrentTeam()) {
-        setModalError(getSafeErrorMessage(error, "The API key could not be updated."));
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The API key could not be updated.");
       }
     } finally {
-      if (isCurrentTeam()) {
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
@@ -713,29 +558,30 @@ function TeamDashboardContent({
     try {
       await revokeApiKey(teamId, selectedKeyId);
 
-      if (!isCurrentTeam()) {
+      if (!mountedRef.current) {
         return;
       }
 
-      const revokedAt = new Date().toISOString();
-      setKeys((currentKeys) => currentKeys.map((key) => (
-        key.id === selectedKeyId
-          ? { ...key, revokedAt, status: "Revoked" as const }
-          : key
-      )));
       setSelectedKey(null);
-      setModalError(null);
 
-      const refreshed = await refreshKeyMetadata();
-      if (isCurrentTeam()) {
-        showToast(refreshed ? "API key revoked" : "API key revoked. Refresh the list to update it.");
+      try {
+        const latestKeys = await getApiKeys(teamId);
+        if (!mountedRef.current) {
+          return;
+        }
+
+        setKeys(latestKeys);
+      } catch {
+        if (mountedRef.current) {
+          setLoadError("The API key was deactivated, but the key list could not be refreshed. Please retry.");
+        }
       }
-    } catch (error: unknown) {
-      if (isCurrentTeam()) {
-        setModalError(getSafeErrorMessage(error, "The API key could not be revoked."));
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The API key could not be revoked.");
       }
     } finally {
-      if (isCurrentTeam()) {
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
@@ -748,20 +594,11 @@ function TeamDashboardContent({
 
   function handleCloseAddKey() {
     if (!isMutating) {
-      setModalError(null);
       setIsAddKeyOpen(false);
     }
   }
 
-  function handleOpenSettings() {
-    setIsSettingsOpen(true);
-  }
-
   function handleSelectKey(apiKey: ApiKey) {
-    if (isMutating) {
-      return;
-    }
-
     setModalError(null);
     setSelectedKey(apiKey);
   }
@@ -836,7 +673,7 @@ function TeamDashboardContent({
               {isOwner && (
                 <button
                   className="inline-flex! h-5! cursor-pointer items-center justify-center self-end border! border-border! bg-surface-elevated! px-1.5! py-0.5! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:[transform:translateY(2px)]! min-[600px]:self-auto min-[900px]:h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
-                  onClick={handleOpenSettings}
+                  onClick={() => setIsSettingsOpen(true)}
                   type="button"
                 >
                   Settings
@@ -855,20 +692,6 @@ function TeamDashboardContent({
                 </PrimaryButton>
               )}
             </div>
-
-            {refreshError !== null && (
-              <div className="mb-3 flex items-center justify-between gap-3 border-2! border-error! bg-surface-elevated! px-2! py-2! text-[10px]! text-error!" role="alert">
-                <span>{refreshError}</span>
-                <button
-                  className="shrink-0 cursor-pointer border-2! border-border! bg-surface! px-1.5! py-1! text-[10px]! text-text! shadow-[2px_2px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={isRefreshing || isMutating}
-                  onClick={() => void handleRetryRefresh()}
-                  type="button"
-                >
-                  {isRefreshing ? "Retrying…" : "Retry"}
-                </button>
-              </div>
-            )}
 
             {keys.length === 0 ? (
               <Card className="dashboard-card m-0! border-2! border-border! p-5! text-center text-[12px]! text-text-muted! shadow-[3px_3px_0_var(--shadow)]!">
@@ -906,7 +729,6 @@ function TeamDashboardContent({
           isSubmitting={isMutating}
           onClose={() => {
             if (!isMutating) {
-              setModalError(null);
               setSelectedKey(null);
             }
           }}
@@ -920,16 +742,6 @@ function TeamDashboardContent({
           onClose={() => setIsSettingsOpen(false)}
           team={{ name: team.name, members }}
         />
-      )}
-
-      {toastMessage !== null && (
-        <div
-          aria-live="polite"
-          className="fixed inset-x-0 bottom-4 z-[60] mx-auto w-fit max-w-[calc(100%-2rem)] border-2! border-border! bg-surface-elevated! px-3! py-2! text-center text-[11px]! text-text! shadow-[3px_3px_0_var(--shadow)]!"
-          role="status"
-        >
-          {toastMessage}
-        </div>
       )}
     </main>
   );
