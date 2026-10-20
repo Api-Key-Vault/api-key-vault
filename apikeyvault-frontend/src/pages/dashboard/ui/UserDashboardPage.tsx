@@ -39,12 +39,14 @@ export function UserDashboardPage() {
 		return (
 			<section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
 				{/* HEADERN */}
-				<Card className="p-4 w-332 flex flex-row items-center justify-between">
+				<Card className="p-4 w-4/5 flex flex-col gap-5 md:flex-row items-center justify-between">
 					<div className="flex flex-row items-center gap-8">
 						<span className="pixelart-icons-font-key text-secondary-accent text-[50px]!" />
 						<div className="text-left flex flex-col gap-1">
-							<h1 className="text-text text-2xl">API Key Vault</h1>
-							<p className="text-text-muted text-2xl">Your teams</p>
+							<h1 className="text-text text-xl md:text-2xl">API Key Vault</h1>
+							<p className="text-text-muted text-base md:text-2xl">
+								Your teams
+							</p>
 						</div>
 					</div>
 
@@ -58,7 +60,7 @@ export function UserDashboardPage() {
 				</Card>
 
 				{/* STATS BOXES */}
-				<div className="flex mt-8 flex-row gap-50 w-4/5 justify-center">
+				<div className="flex mt-8 flex-col md:flex-row w-4/5 justify-between items-center">
 					<StatsBox
 						icon={
 							<span className="pixelart-icons-font-users text-text text-[35px]!" />
@@ -72,7 +74,7 @@ export function UserDashboardPage() {
 							<span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />
 						}
 						count={totalKeys}
-						label="API Keys"
+						label="Keys"
 					/>
 
 					<StatsBox
@@ -84,17 +86,16 @@ export function UserDashboardPage() {
 					/>
 				</div>
 
+				<div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 w-4/5">
+					<h2 className="text-primary-accent text-2xl">Teams</h2>
+					<PrimaryButton
+						className="text-xl px-4! py-1!"
+						onClick={() => setIsCreateTeamOpen(true)}
+					>
+						Create team
+					</PrimaryButton>
+				</div>
 				<div className="flex flex-col gap-8 w-fit">
-					<div className="flex flex-row items-center justify-between w-full">
-						<h2 className="text-primary-accent text-2xl">Teams</h2>
-						<PrimaryButton
-							className="text-xl px-4! py-1!"
-							onClick={() => setIsCreateTeamOpen(true)}
-						>
-							Create team
-						</PrimaryButton>
-					</div>
-
 					<div className="flex flex-row gap-50 justify-center">
 						{errorMessage ? (
 							<div className="text-error text-2xl">{errorMessage}</div>
