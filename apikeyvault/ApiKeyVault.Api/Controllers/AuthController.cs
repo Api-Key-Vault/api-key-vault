@@ -31,7 +31,7 @@ namespace ApiKeyVault.Api.Controllers
 
             if (callbackUrl is null)
             {
-                return Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed));
+                return Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LoginFailed));
             }
 
             var authenticationProperties = _signInManager.ConfigureExternalAuthenticationProperties("GitHub", callbackUrl);
@@ -49,7 +49,7 @@ namespace ApiKeyVault.Api.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                return Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed));
+                return Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LoginFailed));
             }
 
             var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
@@ -78,12 +78,12 @@ namespace ApiKeyVault.Api.Controllers
                 ExternalLoginResult.Success
                     => Redirect(redirectUrl),
                 ExternalLoginResult.Invalid
-                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.InvalidLogin)),
+                    => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.InvalidLogin)),
                 ExternalLoginResult.LockedOut
-                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LockedOut)),
+                    => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LockedOut)),
                 ExternalLoginResult.NotAllowed
-                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.NotAllowed)),
-                _ => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed))
+                    => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.NotAllowed)),
+                _ => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LoginFailed))
             };
         }
 

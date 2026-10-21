@@ -3,7 +3,7 @@
     public interface IFrontendRedirectService
     {
         string GetDashboardUrl();
-        string GetLoginUrl(string? error = null);
+        string GetHomeUrl(string? error = null);
         string GetInviteUrl(string token);
     }
 }
