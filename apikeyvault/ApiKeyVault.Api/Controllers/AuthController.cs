@@ -25,16 +25,21 @@ namespace ApiKeyVault.Api.Controllers
         }
 
         [HttpGet("github")]
-        public IActionResult Login()
+        public IActionResult Login([FromQuery] string? token = null)
         {
             var callbackUrl = Url.Action(nameof(GitHubCallback), "Auth");
 
             if (callbackUrl is null)
             {
-                return Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed));
+                return Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LoginFailed));
             }
 
             var authenticationProperties = _signInManager.ConfigureExternalAuthenticationProperties("GitHub", callbackUrl);
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                authenticationProperties.Items["invite_token"] = token;
+            }
 
             return Challenge(authenticationProperties, "GitHub");
         }
@@ -44,22 +49,41 @@ namespace ApiKeyVault.Api.Controllers
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                return Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed));
+                return Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LoginFailed));
+            }
+
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+
+            string? token = null;
+
+            if (externalLoginInfo?.AuthenticationProperties != null)
+            {
+                externalLoginInfo.AuthenticationProperties.Items.TryGetValue(
+                        "invite_token",
+                        out token
+                    );
             }
 
             var result = await _gitHubAuthenticationService.GitHubLoginAsync();
 
+            var redirectUrl = _frontendRedirectService.GetDashboardUrl();
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                redirectUrl = _frontendRedirectService.GetInviteUrl(token);
+            }
+
             return result switch
             {
                 ExternalLoginResult.Success
-                    => Redirect(_frontendRedirectService.GetDashboardUrl()),
+                    => Redirect(redirectUrl),
                 ExternalLoginResult.Invalid
-                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.InvalidLogin)),
+                    => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.InvalidLogin)),
                 ExternalLoginResult.LockedOut
-                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LockedOut)),
+                    => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LockedOut)),
                 ExternalLoginResult.NotAllowed
-                    => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.NotAllowed)),
-                _ => Redirect(_frontendRedirectService.GetLoginUrl(LoginRedirectErrors.LoginFailed))
+                    => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.NotAllowed)),
+                _ => Redirect(_frontendRedirectService.GetHomeUrl(LoginRedirectErrors.LoginFailed))
             };
         }
 

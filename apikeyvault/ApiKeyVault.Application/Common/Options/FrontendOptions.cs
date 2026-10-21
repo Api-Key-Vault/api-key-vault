@@ -11,8 +11,8 @@ namespace ApiKeyVault.Application.Common.Options
         [Required(ErrorMessage = "Frontend:DashboardPath configuration is required.")]
         public required string DashboardPath { get; init; }
 
-        [Required(ErrorMessage = "Frontend:LoginPath configuration is required.")]
-        public required string LoginPath { get; init; }
+        [Required(ErrorMessage = "Frontend:InvitePath configuration is required.")]
+        public required string InvitePath { get; init; }
 
     }
 }
