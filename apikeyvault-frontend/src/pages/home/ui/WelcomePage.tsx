@@ -1,5 +1,6 @@
 import { Card, PrimaryButton } from "@/shared/ui";
 import { loginWithGithub } from "@/features/auth";
+import { LoginError } from "@/features/auth";
 
 export function WelcomePage() {
   return (
@@ -43,7 +44,7 @@ export function WelcomePage() {
           </div>
         </Card>
       </div>
-
+      <LoginError />
       <PrimaryButton className="px-8 py-1!" onClick={() => loginWithGithub()}>
         <span className="flex items-center justify-center gap-2 pixelart-icons-font-github text-xl!">
           Sign in with Github

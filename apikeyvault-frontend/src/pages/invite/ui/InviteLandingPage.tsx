@@ -2,6 +2,7 @@ import { Bubble } from "pixel-retroui";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { useSearchParams } from "react-router";
 import { loginWithGithub } from "@/features/auth";
+import { LoginError } from "@/features/auth";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
@@ -27,12 +28,13 @@ export function InviteLandingPage() {
           <p className="text-text-muted">
             You have been invited to join team: {"TEAM"}
           </p>
+          <LoginError/>
           <PrimaryButton
             className="flex align-middle items-center justify-center gap-5"
             onClick={() => loginWithGithub(token ?? undefined)}
           >
             <span className="pixelart-icons-font-github text-[30px]!" />
-            Login with Github
+            Sign in with Github
           </PrimaryButton>
           <p className="text-text-muted text-sm">
             We use your Github account for login. We do not save your password.
