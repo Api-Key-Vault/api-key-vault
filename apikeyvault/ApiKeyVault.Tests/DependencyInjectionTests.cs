@@ -13,7 +13,7 @@ namespace ApiKeyVault.Tests
         public void RedirectToFrontend_EventWithAccessDeniedFromGitHub_ReturnsRedirectUrlWithErrorParam()
         {
             //Arrange
-            string redirectUrl = "http://localhost:5173//login/?error=access_denied";
+            string redirectUrl = "http://localhost:5173/?error=access_denied";
             var loginRedirectError = LoginRedirectErrors.AccessDenied; 
             
             var frontendRedirectService = new Mock<IFrontendRedirectService>();
@@ -22,7 +22,7 @@ namespace ApiKeyVault.Tests
             var httpResponse = new Mock<HttpResponse>();           
 
             frontendRedirectService
-                .Setup(service => service.GetLoginUrl(loginRedirectError))
+                .Setup(service => service.GetHomeUrl(loginRedirectError))
                 .Returns(redirectUrl);
 
             serviceProvider
