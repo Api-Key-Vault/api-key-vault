@@ -304,19 +304,6 @@ function TeamKeyRow({
   );
 }
 
-function getTeamKeyRowKey(apiKey: ApiKey, isBusy: boolean): string {
-  return [
-    apiKey.id,
-    apiKey.name,
-    apiKey.category ?? "",
-    apiKey.createdAt,
-    apiKey.expiresAt ?? "",
-    apiKey.revokedAt ?? "",
-    apiKey.status,
-    isBusy ? "busy" : "idle",
-  ].join(":");
-}
-
 type TeamDashboardContentProps = {
   authUserId: string | null;
   hasValidTeamId: boolean;
@@ -705,7 +692,7 @@ function TeamDashboardContent({
                     isCopied={copiedFeedback?.keyId === apiKey.id}
                     isBusy={isMutating}
                     isOwner={isOwner}
-                    key={getTeamKeyRowKey(apiKey, isMutating)}
+                    key={apiKey.id}
                     onCopy={handleCopyKey}
                     onCopyReset={clearCopyForKey}
                     onManage={handleSelectKey}
