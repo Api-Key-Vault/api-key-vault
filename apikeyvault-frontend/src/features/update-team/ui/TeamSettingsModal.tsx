@@ -3,11 +3,13 @@ import { Card, PrimaryButton } from "@/shared/ui";
 import type { Team, TeamMember } from "@/entities/team";
 
 type TeamSettingsModalProps = {
+  isOwner?: boolean;
   onClose: () => void;
+  onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "name"> & { members: TeamMember[] };
 };
 
-export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
+export function TeamSettingsModal({ isOwner = false, onClose, onRemoveMember, team }: TeamSettingsModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -27,10 +29,6 @@ export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
       }
     };
   }, []);
-
-  function handleRemoveMember() {
-    // Member removal is not wired yet.
-  }
 
   function handleGenerateInviteLink() {
     // Invite link generation is not wired yet.
@@ -98,42 +96,24 @@ export function TeamSettingsModal({ onClose, team }: TeamSettingsModalProps) {
             </PrimaryButton>
 
             <section aria-label="Team members" className="flex shrink-0 flex-col gap-1.5 border-t-2! border-dashed! border-text-muted! pt-2.5">
-              <div className="flex items-center gap-1.5 border-2! border-border! bg-surface-elevated! px-2! py-1!">
-                <span className="text-[11px]! leading-tight! text-text!">Theo</span>
-                <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">Member</span>
-                <button
-                  aria-label="Remove Theo"
-                  className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                  onClick={handleRemoveMember}
-                  type="button"
+              {team.members.map((member) => (
+                <div className="flex items-center gap-1.5 border-2! border-border! bg-surface-elevated! px-2! py-1!"
+                key={member.id}
                 >
-                  <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5 border-2! border-border! bg-surface-elevated! px-2! py-1!">
-                <span className="text-[11px]! leading-tight! text-text!">Victoria</span>
-                <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">Member</span>
-                <button
-                  aria-label="Remove Victoria"
-                  className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                  onClick={handleRemoveMember}
-                  type="button"
-                >
-                  <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5 border-2! border-border! bg-surface-elevated! px-2! py-1!">
-                <span className="text-[11px]! leading-tight! text-text!">Aldor</span>
-                <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">Invite pending</span>
-                <button
-                  aria-label="Remove Aldor"
-                  className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                  onClick={handleRemoveMember}
-                  type="button"
-                >
-                  <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
-                </button>
-              </div>
+                  <span className="text-[11px]! leading-tight! text-text!">{member.userId}</span>
+                  <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">{member.roleName}</span>
+                  {isOwner && member.roleName === "Member" && (
+                  <button
+                    aria-label={`Remove ${member.userId}`}
+                    className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
+                    onClick={() => onRemoveMember?.(member.id)}
+                    type="button"
+                  >
+                    <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
+                  </button>
+                )}
+                </div>
+              ))}
 
               <button
                 aria-label="Generate invite link"
