@@ -12,4 +12,6 @@ export type ManageKeyModalProps = {
   onClose: () => void;
   onRevoke: () => void;
   onSave: (update: ManageKeyUpdate) => void;
+  isSubmitting?: boolean;
+  error?: string | null;
 };
