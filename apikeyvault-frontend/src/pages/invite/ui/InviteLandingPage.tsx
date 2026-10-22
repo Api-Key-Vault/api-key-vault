@@ -1,24 +1,30 @@
 import { Bubble } from "pixel-retroui";
 import { Card, PrimaryButton, ErrorMessage, Loading } from "@/shared/ui";
-import { useSearchParams } from "react-router";
+import { useSearchParams, useNavigate } from "react-router";
 import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
 import { useEffect, useState, useRef } from "react";
 import { acceptInvite } from "@/features/accept-invite";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
- 
+
   const token = searchParams.get("token");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [teamName, setTeamName] = useState("");
+  const [teamId, setTeamId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const { state } = useAuth();
   const attemptedTokenRef = useRef<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (state.status === "authenticated" && token && attemptedTokenRef.current !== token ) {
+    if (
+      state.status === "authenticated" &&
+      token &&
+      attemptedTokenRef.current !== token
+    ) {
       attemptedTokenRef.current = token;
       const handleAcceptInvite = async () => {
         try {
@@ -27,10 +33,10 @@ export function InviteLandingPage() {
           const response = await acceptInvite({ token });
 
           setTeamName(response.teamName);
+          setTeamId(response.teamId);
         } catch {
           setErrorMessage("Failed to accept invitation");
-        }
-        finally{
+        } finally {
           setIsLoading(false);
         }
       };
@@ -38,8 +44,8 @@ export function InviteLandingPage() {
     }
   }, [state.status, token]);
 
-  if(isLoading){
-    return <Loading/>
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (
@@ -58,15 +64,35 @@ export function InviteLandingPage() {
 
         <Card className="p-4 text-center w-80 h-80 flex gap-3.5 flex-col">
           <span className="pixelart-icons-font-key text-secondary-accent text-[40px]!" />
-          <h2 className="text-text text-2xl">Welcome!</h2>
-          {/*TODO: Make sure team name is generated dynamically based on the invite */}
-          <p className="text-text-muted">
-            You have been invited to join team: {teamName}
-          </p>
+
+          {teamId !== null ? (
+            <>
+              <h2 className="text-text text-2xl">Success!</h2>
+              <p className="text-text-muted">
+                You've successfully joined {teamName}!
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-text text-2xl">Welcome!</h2>
+              <p className="text-text-muted">
+                You have been invited to join a team!
+              </p>
+            </>
+          )}
 
           <LoginError />
 
-          {errorMessage && <ErrorMessage message={errorMessage}/>}
+          {errorMessage && <ErrorMessage message={errorMessage} />}
+
+          {teamId !== null && (
+            <PrimaryButton
+            onClick={() => navigate(`/team/${teamId}`)}
+            >
+              Go to Team
+              <span className="pixelart-icons-font-arrow-right" />
+            </PrimaryButton>
+          )}
 
           {state.status === "unauthenticated" && (
             <>
