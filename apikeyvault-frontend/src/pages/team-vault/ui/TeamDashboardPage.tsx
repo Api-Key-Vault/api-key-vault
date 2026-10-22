@@ -14,6 +14,7 @@ import {
 import {
   getTeam,
   getTeamMembers,
+  leaveTeam,
   removeTeamMember,
   type Team,
   type TeamMember,
@@ -614,7 +615,7 @@ function TeamDashboardContent({
 
     try {
       await removeTeamMember(teamId, teamMemberId);
-      
+
       if(!mountedRef.current){
         return;
       }
@@ -627,6 +628,33 @@ function TeamDashboardContent({
         console.error("The member could not be removed.");
       } finally {
         if(mountedRef.current){
+          setIsMutating(false);
+      }
+    }
+  }
+
+  async function handleLeaveTeam() {
+    if (isOwner || !hasValidTeamId || isMutating){
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      await leaveTeam(teamId);
+
+      if(!mountedRef.current){
+        return;
+      }
+
+      onBack();
+      } catch {
+        // TODO: Show this error in a popup (shared ErrorMessage) once its design
+        // is done in ticket-142. Delete errors are not validation errors, so they should
+        // not be shown as inline form text. Remove this comment when the popup is added.
+        console.error("The team could not be left.");
+      } finally {
+        if (mountedRef.current) {
           setIsMutating(false);
       }
     }
@@ -699,7 +727,7 @@ function TeamDashboardContent({
                   </span>
                 </div>
               </div>
-              {isOwner && (
+              
                 <button
                   className="inline-flex! h-5! cursor-pointer items-center justify-center self-end border! border-border! bg-surface-elevated! px-1.5! py-0.5! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:[transform:translateY(2px)]! min-[600px]:self-auto min-[900px]:h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
                   onClick={() => setIsSettingsOpen(true)}
@@ -707,7 +735,6 @@ function TeamDashboardContent({
                 >
                   Settings
                 </button>
-              )}
             </Card>
 
             <div className="mb-3 flex items-center justify-between gap-3 pl-1 pr-1.5 min-[600px]:mb-6 min-[900px]:mb-8!">
@@ -766,10 +793,11 @@ function TeamDashboardContent({
         />
       )}
 
-      {isOwner && isSettingsOpen && team !== null && (
+      {isSettingsOpen && team !== null && (
         <TeamSettingsModal
           isOwner={isOwner}
           onClose={() => setIsSettingsOpen(false)}
+          onLeave={handleLeaveTeam}
           onRemoveMember={handleRemoveMember}
           team={{ name: team.name, members }}
         />
