@@ -14,3 +14,7 @@ export async function getTeamMembers(teamId: number): Promise<TeamMember[]> {
 export async function removeTeamMember(teamId: number, teamMemberId: number): Promise<void> {
   await apiClient.delete(`teams/${teamId}/members/${teamMemberId}`);
 }
+
+export async function leaveTeam(teamId: number): Promise<void>{
+  await apiClient.delete(`teams/${teamId}/members/me`);
+}
