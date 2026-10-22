@@ -610,18 +610,18 @@ function TeamDashboardContent({
   return (
     <main className="min-h-screen p-4! text-text min-[600px]:px-12! min-[600px]:pb-5! min-[600px]:pt-5.5!">
       <div className="mx-auto w-full max-w-225">
-        <div className="mb-5 flex items-center justify-between gap-3 px-1.5">
+        <div className="mb-10 flex items-center justify-between gap-3 px-1.5">
           <PrimaryButton
-            className="m-0! inline-flex! h-4.75! min-h-4.75! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-6.5! min-[900px]:min-h-6.5! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
+            className="m-0! inline-flex! items-center justify-center gap-2 whitespace-nowrap px-1.5! text-[10px]! leading-none! min-[900px]:px-2.5! min-[900px]:text-[13px]!"
             onClick={onBack}
           >
-            <span aria-hidden="true" className="pixelart-icons-font-arrow-left text-[10px]! leading-none! min-[900px]:text-[15px]!" />
-            <span className="hidden min-[600px]:inline">Back to dashboard</span>
-            <span className="min-[600px]:hidden">Back</span>
+            <span aria-hidden="true" className="pixelart-icons-font-arrow-left text-[20px]! leading-none! min-[900px]:text-[30px]!" />
+            <span className="hidden min-[600px]:inline text-base">Back to dashboard</span>
+            <span className="min-[600px]:hidden text-sm">Back</span>
           </PrimaryButton>
-          <PrimaryButton className="m-0! inline-flex! h-4.75! min-h-4.75! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-6.5! min-[900px]:min-h-6.5! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!">
-            <span aria-hidden="true" className="pixelart-icons-font-logout text-[10px]! leading-none! min-[900px]:text-[15px]!" />
-            <span>Logout</span>
+          <PrimaryButton className="m-0! inline-flex! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0! text-[10px]! leading-none! min-[900px]:px-2.5! min-[900px]:text-[13px]!">
+            <span aria-hidden="true" className="pixelart-icons-font-logout text-[20px]! leading-none! min-[900px]:text-[30px]!" />
+            <span className="text-sm min-[600px]:text-base">Logout</span>
           </PrimaryButton>
         </div>
 
@@ -637,7 +637,7 @@ function TeamDashboardContent({
           renderStatusCard("The team could not be loaded.", true)
         ) : (
           <>
-            <Card className="m-0! mb-5! flex w-full flex-col gap-3 px-4 pb-5! pt-3! min-[600px]:mb-6! min-[600px]:min-h-15.5 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between min-[900px]:mb-8! min-[900px]:min-h-22 min-[900px]:pb-7! min-[900px]:pt-4.5!">
+            <Card className="m-0! mb-10! flex w-full flex-col gap-3 px-4 pb-5! pt-3! min-[600px]:min-h-15.5 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between min-[900px]:min-h-22 min-[900px]:pb-7! min-[900px]:pt-4.5!">
               <div className="min-w-0">
                 <h1 className="truncate text-lg min-[900px]:text-2xl! min-[900px]:leading-tight!">{team.name}</h1>
                 <div className="mt-1 flex flex-wrap gap-x-8 gap-y-1 text-xs text-text-muted min-[900px]:mt-2! min-[900px]:text-sm!">
@@ -661,7 +661,7 @@ function TeamDashboardContent({
               {isOwner && (
                   <Button
                     bg="var(--color-surface-elevated)"
-                    className="inline-flex! h-5! cursor-pointer items-center justify-center px-1.5! py-0.5! text-[10px]! text-text! min-[600px]:self-auto min-[900px]:h-6.5! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
+                    className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
                     onClick={() => setIsSettingsOpen(true)}
                   >
                   Settings
@@ -669,11 +669,11 @@ function TeamDashboardContent({
               )}
             </Card>
 
-            <div className="mb-3 flex items-center justify-between gap-3 pl-1 pr-1.5 min-[600px]:mb-6 min-[900px]:mb-8!">
+            <div className="mb-10! flex items-center justify-between pl-1 pr-1.5">
               <h2 className="text-base! text-primary-accent! min-[900px]:text-xl! min-[900px]:leading-tight!">Keys</h2>
               {isOwner && (
                 <PrimaryButton
-                  className="m-0! inline-flex h-5.75! min-h-5.75! items-center justify-center gap-1 whitespace-nowrap px-1.5! py-0.75! text-[10px]! leading-none! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+                  className="m-0! inline-flex min-h-5.75! px-5! items-center justify-center whitespace-nowrap text-sm! leading-none! min-[900px]:min-h-7.25! min-[900px]:text-base!"
                   onClick={handleOpenAddKey}
                 >
                   <span>Add key</span>
@@ -682,7 +682,7 @@ function TeamDashboardContent({
             </div>
 
             {keys.length === 0 ? (
-              <Card className="m-0! p-5! text-center text-[12px]! text-text-muted!">
+              <Card className="m-0! p-5! text-center text-base! text-text-muted!">
                 No API keys have been added yet.
               </Card>
             ) : (
