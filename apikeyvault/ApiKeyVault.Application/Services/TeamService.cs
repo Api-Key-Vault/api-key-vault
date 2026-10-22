@@ -115,5 +115,36 @@ namespace ApiKeyVault.Application.Services
 
 			return true;
 		}
-	}
+
+
+
+
+		public async Task<TeamResponse?> UpdateTeam(UpdateTeamRequest updateTeamRequest, string userId, int teamId)
+		{
+			var teamToUpdate = await _teamRepository.GetTeamByIdAsync(teamId, userId);
+
+			if (teamToUpdate is null)
+			{
+				return null;
+			}
+
+			var owner = teamToUpdate.Members.SingleOrDefault(m => m.Role.Name == "Owner");
+			if (owner == null || owner.UserId != userId)
+			{
+				return null;
+			}
+
+			teamToUpdate.Name = updateTeamRequest.Name;
+
+			await _teamRepository.SaveChangesAsync();
+
+			var response = new TeamResponse
+			{
+				Id = teamId,
+				Name = updateTeamRequest.Name
+			};
+
+			return response;
+		}
+    }
 }

@@ -2,7 +2,6 @@
 using ApiKeyVault.Application.Constants;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Infrastructure.Identity;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

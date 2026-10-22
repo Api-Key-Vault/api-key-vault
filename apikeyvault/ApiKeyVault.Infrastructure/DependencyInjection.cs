@@ -8,12 +8,15 @@ using ApiKeyVault.Infrastructure.Persistence.Repositories;
 using ApiKeyVault.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
+[assembly: InternalsVisibleTo("ApiKeyVault.Tests")]
 namespace ApiKeyVault.Infrastructure
 {
     public static class DependencyInjection
@@ -52,9 +55,18 @@ namespace ApiKeyVault.Infrastructure
                     options.Scope.Add("user:email");
                     options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
 
-                    options.Events.OnAccessDenied = context => RedirectToFrontendLogin(context, LoginRedirectErrors.AccessDenied);
-                    options.Events.OnRemoteFailure = context => RedirectToFrontendLogin(context, LoginRedirectErrors.LoginFailed);
-
+                    options.Events.OnAccessDenied = context =>
+                    {
+                        RedirectToFrontendLogin(context.Response, context.HttpContext.RequestServices, LoginRedirectErrors.AccessDenied);
+                        context.HandleResponse();
+                        return Task.CompletedTask;
+                    };
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        RedirectToFrontendLogin(context.Response, context.HttpContext.RequestServices, LoginRedirectErrors.LoginFailed);
+                        context.HandleResponse();
+                        return Task.CompletedTask;
+                    };
                 });
 
             services.AddScoped<IGitHubAuthenticationService, GitHubAuthenticationService>();
@@ -69,16 +81,13 @@ namespace ApiKeyVault.Infrastructure
 
             return services;
         }
-
-        private static Task RedirectToFrontendLogin(HandleRequestContext<RemoteAuthenticationOptions> context, string errorCode)
+        
+        internal static void RedirectToFrontendLogin(HttpResponse response, IServiceProvider provider, string errorCode)
         {
-            var redirectService = context.HttpContext.RequestServices
+            var redirectService = provider
                 .GetRequiredService<IFrontendRedirectService>();
             var redirectUrl = redirectService.GetHomeUrl(errorCode);
-            context.Response.Redirect(redirectUrl);
-            context.HandleResponse();
-
-            return Task.CompletedTask;
+            response.Redirect(redirectUrl);
         }
     }
 }
