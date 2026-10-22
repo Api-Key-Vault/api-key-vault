@@ -55,7 +55,7 @@ export function AddKeyModal({
   return (
     <dialog
       aria-labelledby="add-key-title"
-      className="fixed inset-0 z-50 m-0! h-[100dvh] w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
+      className="fixed inset-0 z-50 m-0! h-dvh w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
       onCancel={(event) => {
         event.preventDefault();
         if (!isSubmitting) {
@@ -69,8 +69,8 @@ export function AddKeyModal({
       }}
       ref={dialogRef}
     >
-      <div className="w-full max-w-[32rem]">
-        <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3 overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! max-[599px]:px-4! min-[900px]:px-12!">
+      <div className="w-full max-w-lg">
+        <Card className="relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3 overflow-y-auto px-8! py-10! max-[599px]:p-4! max-[599px]:px-4! min-[900px]:px-12!">
           <button
             autoFocus
             aria-label="Close add key modal"
@@ -100,13 +100,13 @@ export function AddKeyModal({
             <div className="flex flex-col gap-1">
               <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="api-key-name">Key name</label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="api-key-name"
                 maxLength={50}
                 minLength={3}
                 name="name"
-                placeholder="Production API key"
+                placeholder="eg. OpenRouter key"
                 required
                 type="text"
               />
@@ -115,11 +115,11 @@ export function AddKeyModal({
             <div className="flex flex-col gap-1">
               <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="api-key-value">API key</label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="api-key-value"
                 name="value"
-                placeholder="Enter your API key"
+                placeholder="[Paste here]"
                 required
                 type="password"
               />
@@ -128,13 +128,13 @@ export function AddKeyModal({
             <div className="flex flex-col gap-1">
               <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="api-key-category">Category</label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="api-key-category"
                 maxLength={50}
                 minLength={3}
                 name="category"
-                placeholder="Development, production, or other"
+                placeholder="eg. Development, production, or other"
                 type="text"
               />
             </div>
@@ -142,7 +142,7 @@ export function AddKeyModal({
             <div className="flex flex-col gap-1">
               <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="api-key-expires-at">Expires on</label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="api-key-expires-at"
                 name="expiresAt"
@@ -150,14 +150,14 @@ export function AddKeyModal({
               />
             </div>
 
-            <div className="mt-1.5">
+            <p className="text-center text-xs md:text-sm! text-text-muted">The key is encrypted before being stored</p>
               <PrimaryButton
-                className="m-0! inline-flex h-[23px]! min-h-[23px]! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                className="mt-2! m-auto! inline-flex! w-[90%] align-middle items-center justify-center gap-2 whitespace-nowrap text-sm! leading-none! disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={isSubmitting}
               >
+                <span className="pixelart-icons-font-plus" />
                 Add key
               </PrimaryButton>
-            </div>
           </form>
         </Card>
       </div>
