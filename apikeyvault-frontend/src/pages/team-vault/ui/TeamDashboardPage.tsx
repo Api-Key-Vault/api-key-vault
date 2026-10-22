@@ -715,15 +715,13 @@ function TeamDashboardContent({
                   </span>
                 </div>
               </div>
-              {isOwner && (
-                  <Button
-                    bg="var(--color-surface-elevated)"
-                    className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
-                    onClick={() => setIsSettingsOpen(true)}
-                  >
+                <Button
+                  bg="var(--color-surface-elevated)"
+                  className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
+                  onClick={() => setIsSettingsOpen(true)}
+                >
                   Settings
                 </Button>
-              )}
             </Card>
 
             <div className="mb-10! flex items-center justify-between pl-1 pr-1.5">
