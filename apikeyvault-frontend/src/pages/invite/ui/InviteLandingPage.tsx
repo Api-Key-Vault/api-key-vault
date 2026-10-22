@@ -1,23 +1,33 @@
 import { Bubble } from "pixel-retroui";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { useSearchParams } from "react-router";
-import { loginWithGithub } from "@/features/auth";
-import { LoginError } from "@/features/auth";
-import { useAuth } from "@/features/auth";
-import { useEffect } from "react";
+import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
+import { useEffect, useState } from "react";
+import { acceptInvite } from "@/features/accept-invite";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [teamName, setTeamName] = useState("");
+
   const { state } = useAuth();
 
-  useEffect (() => {
-
-    if(state.status === "authenticated" && token){
-  
+  useEffect(() => {
+    if (state.status === "authenticated" && token) {
+      const handleAcceptInvite = async () => {
+        try {
+          const response = await acceptInvite({ token });
+          setTeamName(response.teamName);
+        } catch {
+          setErrorMessage("Failed to accept invitation");
+        }
+      };
+      handleAcceptInvite();
     }
-  }, [state.status, token]) 
+  }, [state.status, token]);
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
@@ -32,24 +42,34 @@ export function InviteLandingPage() {
           <span className="pixelart-icons-font-mail text-text text-[30px]!"></span>
           You have been invited!
         </Bubble>
+
         <Card className="p-4 text-center w-80 h-80 flex gap-3.5 flex-col">
           <span className="pixelart-icons-font-key text-secondary-accent text-[40px]!" />
           <h2 className="text-text text-2xl">Welcome!</h2>
           {/*TODO: Make sure team name is generated dynamically based on the invite */}
           <p className="text-text-muted">
-            You have been invited to join team: {"TEAM"}
+            You have been invited to join team: {teamName}
           </p>
-          <LoginError/>
-          <PrimaryButton
-            className="flex align-middle items-center justify-center gap-5"
-            onClick={() => loginWithGithub(token ?? undefined)}
-          >
-            <span className="pixelart-icons-font-github text-[30px]!" />
-            Sign in with Github
-          </PrimaryButton>
-          <p className="text-text-muted text-sm">
-            We use your Github account for login. We do not save your password.
-          </p>
+
+          <LoginError />
+
+          {errorMessage && <p className="text-error text-sm">{errorMessage}</p>}
+
+          {state.status === "unauthenticated" && (
+            <>
+              <PrimaryButton
+                className="flex align-middle items-center justify-center gap-5"
+                onClick={() => loginWithGithub(token ?? undefined)}
+              >
+                <span className="pixelart-icons-font-github text-[30px]!" />
+                Sign in with Github
+              </PrimaryButton>
+              <p className="text-text-muted text-sm">
+                We use your Github account for login. We do not save your
+                password.
+              </p>
+            </>
+          )}
         </Card>
       </div>
     </section>
