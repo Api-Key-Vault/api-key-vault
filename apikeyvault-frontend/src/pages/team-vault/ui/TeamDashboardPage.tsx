@@ -14,6 +14,8 @@ import {
 import {
   getTeam,
   getTeamMembers,
+  leaveTeam,
+  removeTeamMember,
   type Team,
   type TeamMember,
 } from "@/entities/team";
@@ -591,6 +593,61 @@ function TeamDashboardContent({
     setSelectedKey(apiKey);
   }
 
+  async function handleRemoveMember(teamMemberId: number)
+  {
+    if(!isOwner || !hasValidTeamId || isMutating){
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      await removeTeamMember(teamId, teamMemberId);
+
+      if(!mountedRef.current){
+        return;
+      }
+
+        setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
+      } catch {
+        // TODO: Show this error in a popup (shared ErrorMessage) once its design
+        // is done in ticket-142. Delete errors are not validation errors, so they should
+        // not be shown as inline form text. Remove this comment when the popup is added.
+        console.error("The member could not be removed.");
+      } finally {
+        if(mountedRef.current){
+          setIsMutating(false);
+      }
+    }
+  }
+
+  async function handleLeaveTeam() {
+    if (isOwner || !hasValidTeamId || isMutating){
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      await leaveTeam(teamId);
+
+      if(!mountedRef.current){
+        return;
+      }
+
+      onBack();
+      } catch {
+        // TODO: Show this error in a popup (shared ErrorMessage) once its design
+        // is done in ticket-142. Delete errors are not validation errors, so they should
+        // not be shown as inline form text. Remove this comment when the popup is added.
+        console.error("The team could not be left.");
+      } finally {
+        if (mountedRef.current) {
+          setIsMutating(false);
+      }
+    }
+  }
+
   const renderStatusCard = (message: string, canRetry: boolean) => (
     <div role="alert">
       <Card className="dashboard-card m-0! border-2! border-border! p-5! text-center text-[12px]! text-text-muted! shadow-[3px_3px_0_var(--shadow)]!">
@@ -658,15 +715,13 @@ function TeamDashboardContent({
                   </span>
                 </div>
               </div>
-              {isOwner && (
-                  <Button
-                    bg="var(--color-surface-elevated)"
-                    className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
-                    onClick={() => setIsSettingsOpen(true)}
-                  >
+                <Button
+                  bg="var(--color-surface-elevated)"
+                  className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
+                  onClick={() => setIsSettingsOpen(true)}
+                >
                   Settings
                 </Button>
-              )}
             </Card>
 
             <div className="mb-10! flex items-center justify-between pl-1 pr-1.5">
@@ -725,9 +780,12 @@ function TeamDashboardContent({
         />
       )}
 
-      {isOwner && isSettingsOpen && team !== null && (
+      {isSettingsOpen && team !== null && (
         <TeamSettingsModal
+          isOwner={isOwner}
           onClose={() => setIsSettingsOpen(false)}
+          onLeave={handleLeaveTeam}
+          onRemoveMember={handleRemoveMember}
           team={{ name: team.name, members }}
         />
       )}
