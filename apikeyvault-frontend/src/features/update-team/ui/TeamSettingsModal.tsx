@@ -5,11 +5,12 @@ import type { Team, TeamMember } from "@/entities/team";
 type TeamSettingsModalProps = {
   isOwner?: boolean;
   onClose: () => void;
+  onLeave?: () => void;
   onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "name"> & { members: TeamMember[] };
 };
 
-export function TeamSettingsModal({ isOwner = false, onClose, onRemoveMember, team }: TeamSettingsModalProps) {
+export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveMember, team }: TeamSettingsModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -72,28 +73,32 @@ export function TeamSettingsModal({ isOwner = false, onClose, onRemoveMember, te
           </div>
 
           <form className="flex shrink-0 flex-col gap-2.5!" onSubmit={(event) => event.preventDefault()}>
-            <div className="flex shrink-0 flex-col gap-1!">
-              <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="team-settings-name">
-                Team name
-              </label>
-              <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
-                disabled
-                id="team-settings-name"
-                required
-                value={team.name}
-              />
-              <p className="text-[11px]! leading-tight! text-text-muted!">
-                Team renaming is not available yet.
-              </p>
-            </div>
+            {isOwner && (
+              <div className="flex shrink-0 flex-col gap-1!">
+                <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="team-settings-name">
+                  Team name
+                </label>
+                <input
+                  className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                  disabled
+                  id="team-settings-name"
+                  required
+                  value={team.name}
+                />
+                <p className="text-[11px]! leading-tight! text-text-muted!">
+                  Team renaming is not available yet.
+                </p>
+              </div>
+            )}
 
-            <PrimaryButton
-              className="m-0! inline-flex h-[23px]! min-h-[23px]! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
-              disabled
-            >
-              Save changes
-            </PrimaryButton>
+            {isOwner && (
+              <PrimaryButton
+                className="m-0! inline-flex h-[23px]! min-h-[23px]! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                disabled
+              >
+                Save changes
+              </PrimaryButton>
+            )}
 
             <section aria-label="Team members" className="flex shrink-0 flex-col gap-1.5 border-t-2! border-dashed! border-text-muted! pt-2.5">
               {team.members.map((member) => (
@@ -115,31 +120,48 @@ export function TeamSettingsModal({ isOwner = false, onClose, onRemoveMember, te
                 </div>
               ))}
 
-              <button
-                aria-label="Generate invite link"
-                className="inline-flex h-[23px]! min-h-[23px]! w-full cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-primary-accent! px-1.5! py-[3px]! text-[10px]! leading-none! text-text-on-accent! shadow-[3px_3px_0_var(--shadow)]! hover:bg-primary-accent-hover! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
-                onClick={handleGenerateInviteLink}
-                type="button"
-              >
-                <span aria-hidden="true" className="pixelart-icons-font-link text-[14px]! leading-none!" />
-                Generate invite link
-              </button>
+              {/* TODO: Show "Leave Team" for Owner with a warning popup explaining that
+                  the team and all its members are deleted when the Owner leaves.
+                  Requires backend support first. */}
+              {!isOwner && (
+                <button
+                  className="inline-flex h-[23px]! min-h-[23px]! w-full cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-[3px]! text-[10px]! leading-none! text-error-on-color! shadow-[3px_3px_0_var(--shadow)]! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  onClick={onLeave}
+                  type="button"
+                >
+                  Leave team
+                </button>
+              )}
+
+              {isOwner && (
+                <button
+                  aria-label="Generate invite link"
+                  className="inline-flex h-[23px]! min-h-[23px]! w-full cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-primary-accent! px-1.5! py-[3px]! text-[10px]! leading-none! text-text-on-accent! shadow-[3px_3px_0_var(--shadow)]! hover:bg-primary-accent-hover! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  onClick={handleGenerateInviteLink}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="pixelart-icons-font-link text-[14px]! leading-none!" />
+                  Generate invite link
+                </button>
+              )}
             </section>
 
-            <section aria-labelledby="team-settings-danger-title" className="flex shrink-0 flex-col gap-2.5 border-t-2! border-dashed! border-text-muted! pt-2.5">
-              <h3 className="text-[14px]! leading-tight! text-text! max-[599px]:text-[12px]!" id="team-settings-danger-title">
-                Danger zone
-              </h3>
-              <button
-                aria-label="Delete team"
-                className="self-center inline-flex h-[23px]! min-h-[23px]! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-[3px]! text-[10px]! leading-none! text-error-on-color! shadow-[2px_2px_0_var(--shadow)]! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
-                onClick={handleDeleteTeam}
-                type="button"
-              >
-                <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
-                Delete team
-              </button>
-            </section>
+              {isOwner && (
+              <section aria-labelledby="team-settings-danger-title" className="flex shrink-0 flex-col gap-2.5 border-t-2! border-dashed! border-text-muted! pt-2.5">
+                <h3 className="text-[14px]! leading-tight! text-text! max-[599px]:text-[12px]!" id="team-settings-danger-title">
+                  Danger zone
+                </h3>
+                <button
+                  aria-label="Delete team"
+                  className="self-center inline-flex h-[23px]! min-h-[23px]! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-[3px]! text-[10px]! leading-none! text-error-on-color! shadow-[2px_2px_0_var(--shadow)]! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  onClick={handleDeleteTeam}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
+                  Delete team
+                </button>
+              </section>
+              )}
           </form>
         </Card>
       </div>
