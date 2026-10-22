@@ -35,21 +35,6 @@ export function InviteLandingPage() {
       handleAcceptInvite();
     }
   }, [state.status, token]);
-  const { state } = useAuth();
-
-  useEffect(() => {
-    if (state.status === "authenticated" && token) {
-      const handleAcceptInvite = async () => {
-        try {
-          const response = await acceptInvite({ token });
-          setTeamName(response.teamName);
-        } catch {
-          setErrorMessage("Failed to accept invitation");
-        }
-      };
-      handleAcceptInvite();
-    }
-  }, [state.status, token]);
 
   if(isLoading){
     return <Loading/>
