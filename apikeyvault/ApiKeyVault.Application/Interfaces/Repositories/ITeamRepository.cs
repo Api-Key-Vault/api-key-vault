@@ -10,7 +10,6 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
 		Task<List<TeamResponse>> GetAllTeamsByUserIdAsync(string userId);
 		Task AddTeamAsync(Team teamToAdd);
 		void DeleteTeam(Team teamToDelete);
-
 		Task SaveChangesAsync();
 
 	}
