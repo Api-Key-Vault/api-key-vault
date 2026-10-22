@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Card, PrimaryButton } from "@/shared/ui";
+import { Card, DeleteButton, PrimaryButton } from "@/shared/ui";
 import type { Team, TeamMember } from "@/entities/team";
 
 type TeamSettingsModalProps = {
@@ -54,8 +54,8 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
       }}
       ref={dialogRef}
     >
-      <div className="w-full max-w-lg">
-        <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! min-[900px]:px-12!">
+      <div className="w-full max-w-md">
+        <Card className="relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-autopx-8! py-5! max-[599px]:p-4! min-[900px]:px-12!">
           <button
             autoFocus
             aria-label="Close team settings modal"
@@ -85,15 +85,12 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
                   required
                   value={team.name}
                 />
-                <p className="text-[11px]! leading-tight! text-text-muted!">
-                  Team renaming is not available yet.
-                </p>
               </div>
             )}
 
             {isOwner && (
               <PrimaryButton
-                className="m-0! inline-flex h-5.75! min-h-5.75! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-0.75! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+                className="m-auto! inline-flex w-[75%] items-center text-sm! justify-center whitespace-nowrap leading-none! disabled:cursor-not-allowed disabled:opacity-50"
                 disabled
               >
                 Save changes
@@ -124,25 +121,23 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
                   the team and all its members are deleted when the Owner leaves.
                   Requires backend support first. */}
               {!isOwner && (
-                <button
-                  className="inline-flex h-5.75! min-h-5.75! w-full cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-0.75! text-[10px]! leading-none! text-error-on-color! shadow-[3px_3px_0_var(--shadow)]! active:transform-[translateY(2px)]! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+                <PrimaryButton
+                  className="m-auto! inline-flex! w-[75%] cursor-pointer items-center justify-center whitespace-nowrap bg-error! text-sm! leading-none! text-error-on-color!"
                   onClick={onLeave}
-                  type="button"
                 >
                   Leave team
-                </button>
+                </PrimaryButton>
               )}
 
               {isOwner && (
-                <button
+                <PrimaryButton
                   aria-label="Generate invite link"
-                  className="inline-flex h-5.75! min-h-5.75! w-full cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-primary-accent! px-1.5! py-0.75! text-[10px]! leading-none! text-text-on-accent! shadow-[3px_3px_0_var(--shadow)]! hover:bg-primary-accent-hover! active:transform-[translateY(2px)]! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+                  className="m-auto! mt-2! inline-flex! w-[75%] text-sm cursor-pointer items-center justify-center gap-2 whitespace-nowrap leading-none! text-text-on-accent!"
                   onClick={handleGenerateInviteLink}
-                  type="button"
                 >
                   <span aria-hidden="true" className="pixelart-icons-font-link text-[14px]! leading-none!" />
                   Generate invite link
-                </button>
+                </PrimaryButton>
               )}
             </section>
 
@@ -151,15 +146,13 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
                 <h3 className="text-[14px]! leading-tight! text-text! max-[599px]:text-[12px]!" id="team-settings-danger-title">
                   Danger zone
                 </h3>
-                <button
+                <DeleteButton
                   aria-label="Delete team"
-                  className="self-center inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-0.75! text-[10px]! leading-none! text-error-on-color! shadow-[2px_2px_0_var(--shadow)]! active:transform-[translateY(2px)]! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+                  className="self-center inline-flex! text-sm! cursor-pointer items-center justify-center whitespace-nowrap leading-none! text-error-on-color!"
                   onClick={handleDeleteTeam}
-                  type="button"
                 >
-                  <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
                   Delete team
-                </button>
+                </DeleteButton>
               </section>
               )}
           </form>
