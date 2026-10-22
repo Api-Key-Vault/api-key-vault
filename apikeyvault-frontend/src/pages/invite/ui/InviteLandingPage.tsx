@@ -1,5 +1,5 @@
 import { Bubble } from "pixel-retroui";
-import { Card, PrimaryButton } from "@/shared/ui";
+import { Card, PrimaryButton, ErrorMessage, Loading } from "@/shared/ui";
 import { useSearchParams } from "react-router";
 import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
 import { useEffect, useState } from "react";
@@ -7,11 +7,12 @@ import { acceptInvite } from "@/features/accept-invite";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
+ 
   const token = searchParams.get("token");
 
   const [errorMessage, setErrorMessage] = useState("");
-
   const [teamName, setTeamName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { state } = useAuth();
 
@@ -19,10 +20,16 @@ export function InviteLandingPage() {
     if (state.status === "authenticated" && token) {
       const handleAcceptInvite = async () => {
         try {
+          setIsLoading(true);
+
           const response = await acceptInvite({ token });
+
           setTeamName(response.teamName);
         } catch {
           setErrorMessage("Failed to accept invitation");
+        }
+        finally{
+          setIsLoading(false);
         }
       };
       handleAcceptInvite();
@@ -43,6 +50,10 @@ export function InviteLandingPage() {
       handleAcceptInvite();
     }
   }, [state.status, token]);
+
+  if(isLoading){
+    return <Loading/>
+  }
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
@@ -68,7 +79,7 @@ export function InviteLandingPage() {
 
           <LoginError />
 
-          {errorMessage && <p className="text-error text-sm">{errorMessage}</p>}
+          {errorMessage && <ErrorMessage message={errorMessage}/>}
 
           {state.status === "unauthenticated" && (
             <>
