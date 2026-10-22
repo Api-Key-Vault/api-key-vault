@@ -30,12 +30,19 @@ export function InviteLandingPage() {
   }, [state.status, token]);
   const { state } = useAuth();
 
-  useEffect (() => {
-
-    if(state.status === "authenticated" && token){
-  
+  useEffect(() => {
+    if (state.status === "authenticated" && token) {
+      const handleAcceptInvite = async () => {
+        try {
+          const response = await acceptInvite({ token });
+          setTeamName(response.teamName);
+        } catch {
+          setErrorMessage("Failed to accept invitation");
+        }
+      };
+      handleAcceptInvite();
     }
-  }, [state.status, token]) 
+  }, [state.status, token]);
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
