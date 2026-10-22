@@ -6,7 +6,7 @@ export function WelcomePage() {
   return (
 		<section className="flex flex-col items-center justify-center min-h-screen gap-4 md:gap-10 px-6 py-6">
 			<div className="flex items-center justify-center md:justify-between gap-3 md:gap-0 w-full max-w-3xl">
-				<h1 className="text-[20px]! sm:text-2xl! md:text-6xl! leading-tight text-[var(--color-primary-accent)]">
+				<h1 className="text-[20px]! sm:text-2xl! md:text-6xl! leading-tight text-primary-accent">
 					Welcome to
 					<br />
 					<span className="font-bold whitespace-nowrap">Api Key Vault!</span>
@@ -21,7 +21,7 @@ export function WelcomePage() {
 						<span>1.</span>
 						<p className="flex-1 flex items-center justify-center text-center">
 							{" "}
-							Create a team
+							Sign in and create a team
 						</p>
 					</div>
 				</Card>
