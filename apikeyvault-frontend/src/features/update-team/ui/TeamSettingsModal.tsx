@@ -42,7 +42,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
   return (
     <dialog
       aria-labelledby="team-settings-title"
-      className="fixed inset-0 z-50 m-0! h-[100dvh] w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
+      className="fixed inset-0 z-50 m-0! h-dvh w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -54,7 +54,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
       }}
       ref={dialogRef}
     >
-      <div className="w-full max-w-[32rem]">
+      <div className="w-full max-w-lg">
         <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! min-[900px]:px-12!">
           <button
             autoFocus
@@ -79,7 +79,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
                   Team name
                 </label>
                 <input
-                  className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                  className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                   disabled
                   id="team-settings-name"
                   required
@@ -93,7 +93,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
 
             {isOwner && (
               <PrimaryButton
-                className="m-0! inline-flex h-[23px]! min-h-[23px]! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                className="m-0! inline-flex h-5.75! min-h-5.75! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-0.75! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
                 disabled
               >
                 Save changes
@@ -125,7 +125,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
                   Requires backend support first. */}
               {!isOwner && (
                 <button
-                  className="inline-flex h-[23px]! min-h-[23px]! w-full cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-[3px]! text-[10px]! leading-none! text-error-on-color! shadow-[3px_3px_0_var(--shadow)]! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  className="inline-flex h-5.75! min-h-5.75! w-full cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-0.75! text-[10px]! leading-none! text-error-on-color! shadow-[3px_3px_0_var(--shadow)]! active:transform-[translateY(2px)]! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
                   onClick={onLeave}
                   type="button"
                 >
@@ -136,7 +136,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
               {isOwner && (
                 <button
                   aria-label="Generate invite link"
-                  className="inline-flex h-[23px]! min-h-[23px]! w-full cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-primary-accent! px-1.5! py-[3px]! text-[10px]! leading-none! text-text-on-accent! shadow-[3px_3px_0_var(--shadow)]! hover:bg-primary-accent-hover! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  className="inline-flex h-5.75! min-h-5.75! w-full cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-primary-accent! px-1.5! py-0.75! text-[10px]! leading-none! text-text-on-accent! shadow-[3px_3px_0_var(--shadow)]! hover:bg-primary-accent-hover! active:transform-[translateY(2px)]! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
                   onClick={handleGenerateInviteLink}
                   type="button"
                 >
@@ -153,7 +153,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
                 </h3>
                 <button
                   aria-label="Delete team"
-                  className="self-center inline-flex h-[23px]! min-h-[23px]! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-[3px]! text-[10px]! leading-none! text-error-on-color! shadow-[2px_2px_0_var(--shadow)]! active:[transform:translateY(2px)]! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  className="self-center inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-error! px-1.5! py-0.75! text-[10px]! leading-none! text-error-on-color! shadow-[2px_2px_0_var(--shadow)]! active:transform-[translateY(2px)]! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
                   onClick={handleDeleteTeam}
                   type="button"
                 >
