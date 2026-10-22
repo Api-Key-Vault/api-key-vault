@@ -28,6 +28,14 @@ export function InviteLandingPage() {
       handleAcceptInvite();
     }
   }, [state.status, token]);
+  const { state } = useAuth();
+
+  useEffect (() => {
+
+    if(state.status === "authenticated" && token){
+  
+    }
+  }, [state.status, token]) 
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
