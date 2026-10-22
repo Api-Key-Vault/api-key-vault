@@ -19,8 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApiKeyVault.Api\ApiKeyVault.Api.csproj" />
     <ProjectReference Include="..\ApiKeyVault.Application\ApiKeyVault.Application.csproj" />
     <ProjectReference Include="..\ApiKeyVault.Domain\ApiKeyVault.Domain.csproj" />
+    <ProjectReference Include="..\ApiKeyVault.Infrastructure\ApiKeyVault.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
