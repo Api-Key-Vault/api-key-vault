@@ -8,6 +8,7 @@ import { AccountModal } from "./AccountModal";
 import type { TeamResponse } from "@/features/get-team";
 import { getAllTeams } from "@/features/get-team/api/getTeam";
 import { useAuth } from "@/features/auth";
+import { useNavigate } from "react-router";
 
 export function UserDashboardPage() {
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
@@ -17,6 +18,7 @@ export function UserDashboardPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const { logout } = useAuth();
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -117,6 +119,7 @@ export function UserDashboardPage() {
                 name={team.name}
                 keyCount={team.keys}
                 memberCount={team.members}
+                onClick={() => navigate(`/team/${team.id}`)}
               />
             ))
           )}
