@@ -3,6 +3,6 @@ export const ROUTE_PATHS = {
 	DASHBOARD: "/dashboard",
 	TEAM: "/team/:teamId",
 	INVITE: "/invite",
+	NOTFOUND: "/notfound",
 } as const;
 
-// TODO: add routing parameter to invite, need som special function
