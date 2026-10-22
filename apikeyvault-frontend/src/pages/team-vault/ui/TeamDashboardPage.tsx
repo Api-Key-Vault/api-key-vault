@@ -14,6 +14,7 @@ import {
 import {
   getTeam,
   getTeamMembers,
+  removeTeamMember,
   type Team,
   type TeamMember,
 } from "@/entities/team";
@@ -603,6 +604,34 @@ function TeamDashboardContent({
     setSelectedKey(apiKey);
   }
 
+  async function handleRemoveMember(teamMemberId: number)
+  {
+    if(!isOwner || !hasValidTeamId || isMutating){
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      await removeTeamMember(teamId, teamMemberId);
+      
+      if(!mountedRef.current){
+        return;
+      }
+
+        setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
+      } catch {
+        // TODO: Show this error in a popup (shared ErrorMessage) once its design
+        // is done in ticket-142. Delete errors are not validation errors, so they should
+        // not be shown as inline form text. Remove this comment when the popup is added.
+        console.error("The member could not be removed.");
+      } finally {
+        if(mountedRef.current){
+          setIsMutating(false);
+      }
+    }
+  }
+
   const renderStatusCard = (message: string, canRetry: boolean) => (
     <div role="alert">
       <Card className="dashboard-card m-0! border-2! border-border! p-5! text-center text-[12px]! text-text-muted! shadow-[3px_3px_0_var(--shadow)]!">
@@ -739,7 +768,9 @@ function TeamDashboardContent({
 
       {isOwner && isSettingsOpen && team !== null && (
         <TeamSettingsModal
+          isOwner={isOwner}
           onClose={() => setIsSettingsOpen(false)}
+          onRemoveMember={handleRemoveMember}
           team={{ name: team.name, members }}
         />
       )}
