@@ -2,9 +2,12 @@ import axios from "axios";
 import { apiClient } from '@/shared/api';
 import type { User } from '@/entities/user';
 
-export function loginWithGithub(): void {
+export function loginWithGithub(token? : string): void {
     const fullUrl = apiClient.getUri({
         url: 'Auth/github',
+        params: {
+            token
+        }
     });
 
     window.location.assign(fullUrl);

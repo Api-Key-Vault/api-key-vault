@@ -74,7 +74,7 @@ namespace ApiKeyVault.Infrastructure
         {
             var redirectService = context.HttpContext.RequestServices
                 .GetRequiredService<IFrontendRedirectService>();
-            var redirectUrl = redirectService.GetLoginUrl(errorCode);
+            var redirectUrl = redirectService.GetHomeUrl(errorCode);
             context.Response.Redirect(redirectUrl);
             context.HandleResponse();
 

@@ -19,8 +19,8 @@ namespace ApiKeyVault.Api.Controllers
         }
 
         [HttpGet("{teamId:int}")]
-        public async Task<ActionResult<GetTeamResponse>> GetTeamById([FromRoute] int teamId)
-        {
+		public async Task<ActionResult<TeamResponse>> GetTeamById([FromRoute] int teamId)
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
 			if (userId is null)
@@ -39,7 +39,7 @@ namespace ApiKeyVault.Api.Controllers
         }
 
         [HttpGet]
-		public async Task<ActionResult<List<GetTeamResponse>>> GetAllTeams()
+		public async Task<ActionResult<List<TeamResponse>>> GetAllTeams()
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (userId is null)
