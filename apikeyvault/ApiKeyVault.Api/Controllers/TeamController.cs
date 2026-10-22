@@ -73,8 +73,8 @@ namespace ApiKeyVault.Api.Controllers
 			return StatusCode(StatusCodes.Status201Created, newTeam);
 		}
 
-		[HttpPut]
-		public async Task<ActionResult> UpdateTeam([FromBody] UpdateTeamRequest updateTeamRequest)
+		[HttpPut("{teamId:int}")]
+		public async Task<ActionResult> UpdateTeam([FromRoute]int teamId, [FromBody] UpdateTeamRequest updateTeamRequest)
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -83,7 +83,7 @@ namespace ApiKeyVault.Api.Controllers
 				return Unauthorized();
 			}
 
-			var updatedTeam = await _teamService.UpdateTeam(updateTeamRequest, userId);
+			var updatedTeam = await _teamService.UpdateTeam(updateTeamRequest, userId, teamId);
 
 			if(updatedTeam is null)
 			{

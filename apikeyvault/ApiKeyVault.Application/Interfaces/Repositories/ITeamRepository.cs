@@ -9,7 +9,6 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
 		Task<Team?> GetTeamForDeletionAsync(int teamId, string userId);
 		Task<List<TeamResponse>> GetAllTeamsByUserIdAsync(string userId);
 		Task AddTeamAsync(Team teamToAdd);
-		Task UpdateTeamAsync(Team teamToUpdate);
 		void DeleteTeam(Team teamToDelete);
 		Task SaveChangesAsync();
 

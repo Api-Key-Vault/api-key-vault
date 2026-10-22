@@ -119,7 +119,7 @@ namespace ApiKeyVault.Application.Services
 
 
 
-		public async Task<TeamResponse?> UpdateTeam(UpdateTeamRequest updateTeamRequest, string userId)
+		public async Task<TeamResponse?> UpdateTeam(UpdateTeamRequest updateTeamRequest, string userId, int teamId)
 		{
 			var teamToUpdate = await _teamRepository.GetTeamByIdAsync(updateTeamRequest.Id, userId);
 
@@ -136,7 +136,6 @@ namespace ApiKeyVault.Application.Services
 
 			teamToUpdate.Name = updateTeamRequest.Name;
 
-			await _teamRepository.UpdateTeamAsync(teamToUpdate);
 			await _teamRepository.SaveChangesAsync();
 
 			var response = new TeamResponse
