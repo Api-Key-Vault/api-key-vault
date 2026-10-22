@@ -21,6 +21,7 @@ import { Card, PrimaryButton } from "@/shared/ui";
 import { ROUTE_PATHS } from "@/app/router/paths";
 import { TeamSettingsModal } from "@/features/update-team";
 import "./TeamDashboardPage.css";
+import { Button } from "pixel-retroui";
 
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
@@ -237,16 +238,16 @@ function TeamKeyRow({
         <div className="flex min-w-0 items-start gap-2 max-[599px]:grid! max-[599px]:grid-cols-[auto_minmax(0,1fr)]! max-[599px]:grid-rows-[auto_auto]! max-[599px]:gap-x-2! max-[599px]:gap-y-1.5! max-[599px]:items-center!">
           <span
             aria-hidden="true"
-            className="pixelart-icons-font-key shrink-0 text-xl text-secondary-accent max-[599px]:col-start-1! max-[599px]:row-start-1! max-[599px]:text-[18px]! max-[599px]:leading-none! min-[600px]:mt-1 min-[600px]:translate-y-[10px]!"
+            className="pixelart-icons-font-key shrink-0 text-xl text-secondary-accent max-[599px]:col-start-1! max-[599px]:row-start-1! max-[599px]:text-[18px]! max-[599px]:leading-none! min-[600px]:mt-1 min-[600px]:translate-y-2.5!"
           />
           <div className="min-w-0 flex-1 max-[599px]:contents!">
-            <p className="break-words text-xs! leading-tight! max-[599px]:col-start-2! max-[599px]:row-start-1! max-[599px]:pr-[132px]! min-[900px]:text-base! min-[900px]:leading-tight!">{apiKey.name}</p>
-            <p className="mt-1 break-words text-[9px]! leading-tight! text-text-muted! max-[599px]:col-span-full! max-[599px]:row-start-2! max-[599px]:mt-0! max-[599px]:pr-[132px]! min-[900px]:text-[11px]!">
+            <p className="wrap-break-word text-xs! leading-tight! max-[599px]:col-start-2! max-[599px]:row-start-1! max-[599px]:pr-33! min-[900px]:text-base! min-[900px]:leading-tight!">{apiKey.name}</p>
+            <p className="mt-1 wrap-break-word text-[9px]! leading-tight! text-text-muted! max-[599px]:col-span-full! max-[599px]:row-start-2! max-[599px]:mt-0! max-[599px]:pr-33! min-[900px]:text-[11px]!">
               {apiKey.category ?? "Uncategorized"}
             </p>
             <input
               aria-label={apiKey.name + (isRevealed ? " revealed value" : " masked value")}
-              className="mt-2 h-[15px]! w-full min-w-0 border! border-border! bg-surface-elevated! px-1! py-px! text-[8px]! leading-none! text-text-muted! outline-none max-[599px]:col-span-full! max-[599px]:row-start-3! max-[599px]:mt-0! min-[900px]:h-6! min-[900px]:px-1.5! min-[900px]:py-[3px]! min-[900px]:text-[11px]!"
+              className="mt-2 h-3.75! w-full min-w-0 border! border-border! bg-surface-elevated! px-1! py-px! text-[8px]! leading-none! text-text-muted! outline-none max-[599px]:col-span-full! max-[599px]:row-start-3! max-[599px]:mt-0! min-[900px]:h-6! min-[900px]:px-1.5! min-[900px]:py-0.75! min-[900px]:text-[11px]!"
               readOnly
               type="text"
               value={displayedValue}
@@ -258,7 +259,7 @@ function TeamKeyRow({
         </div>
 
         <div className="flex flex-col items-start gap-1 max-[599px]:contents min-[600px]:items-end">
-          <div className="contents max-[599px]:absolute max-[599px]:right-2 max-[599px]:top-[10px] max-[599px]:flex max-[599px]:max-w-[132px]! max-[599px]:flex-col max-[599px]:items-end">
+          <div className="contents max-[599px]:absolute max-[599px]:right-2 max-[599px]:top-2.5 max-[599px]:flex max-[599px]:max-w-33! max-[599px]:flex-col max-[599px]:items-end">
             <p className={`text-[8px]! leading-tight! max-[599px]:text-right! min-[900px]:text-[10px]! ${statusClass}`}>
               {displayedStatus} · {apiKey.expiresAt === null ? "No expiry" : `Expires ${formatDate(apiKey.expiresAt)}`}
             </p>
@@ -266,10 +267,10 @@ function TeamKeyRow({
               Added {formatDate(apiKey.createdAt)}
             </p>
           </div>
-          <div className="flex items-center gap-3 max-[599px]:ml-0 max-[599px]:mt-1 min-[600px]:translate-y-[5px]! min-[900px]:translate-y-[7px]!">
+          <div className="flex items-center gap-3 max-[599px]:ml-0 max-[599px]:mt-1 min-[600px]:translate-y-1.25! min-[900px]:translate-y-1.75!">
             <button
               aria-label={(isRevealed ? "Hide " : "Reveal ") + apiKey.name}
-              className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-[18px]! max-[599px]:w-[18px]! min-[900px]:h-5! min-[900px]:w-5!"
+              className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-4.5! max-[599px]:w-4.5! min-[900px]:h-5! min-[900px]:w-5!"
               disabled={isInactive || isPending}
               onClick={handleReveal}
               type="button"
@@ -278,7 +279,7 @@ function TeamKeyRow({
             </button>
             <button
               aria-label={(isCopied ? "Copied " : "Copy ") + apiKey.name}
-              className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-[18px]! max-[599px]:w-[18px]! min-[900px]:h-5! min-[900px]:w-5!"
+              className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-4.5! max-[599px]:w-4.5! min-[900px]:h-5! min-[900px]:w-5!"
               disabled={isInactive || isPending}
               onClick={() => void handleCopy()}
               title={isCopied ? "Copied" : "Copy API key"}
@@ -289,7 +290,7 @@ function TeamKeyRow({
             {isOwner && (
               <button
                 aria-label={"Manage " + apiKey.name}
-                className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-[18px]! max-[599px]:w-[18px]! min-[900px]:h-5! min-[900px]:w-5!"
+                className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center border! border-border! bg-surface-elevated! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:text-primary-accent active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 max-[599px]:h-4.5! max-[599px]:w-4.5! min-[900px]:h-5! min-[900px]:w-5!"
                 disabled={isBusy}
                 onClick={() => onManage(apiKey)}
                 type="button"
@@ -596,7 +597,7 @@ function TeamDashboardContent({
         <p>{message}</p>
         {canRetry && (
           <PrimaryButton
-            className="mx-auto! mt-4! inline-flex! h-[24px]! min-h-[24px]! items-center justify-center border-2! border-border! px-2! py-1! text-[10px]! shadow-[2px_2px_0_var(--shadow)]!"
+            className="mx-auto! mt-4! inline-flex! h-6! min-h-6! items-center justify-center border-2! border-border! px-2! py-1! text-[10px]! shadow-[2px_2px_0_var(--shadow)]!"
             onClick={onRetry}
           >
             Retry
@@ -607,18 +608,18 @@ function TeamDashboardContent({
   );
 
   return (
-    <main className="min-h-screen p-4! text-text min-[600px]:px-12! min-[600px]:pb-5! min-[600px]:pt-[22px]!">
-      <div className="mx-auto w-full max-w-[900px]">
+    <main className="min-h-screen p-4! text-text min-[600px]:px-12! min-[600px]:pb-5! min-[600px]:pt-5.5!">
+      <div className="mx-auto w-full max-w-225">
         <div className="mb-5 flex items-center justify-between gap-3 px-1.5">
           <PrimaryButton
-            className="m-0! inline-flex! h-[19px]! min-h-[19px]! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-[26px]! min-[900px]:min-h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
+            className="m-0! inline-flex! h-4.75! min-h-4.75! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-6.5! min-[900px]:min-h-6.5! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
             onClick={onBack}
           >
             <span aria-hidden="true" className="pixelart-icons-font-arrow-left text-[10px]! leading-none! min-[900px]:text-[15px]!" />
             <span className="hidden min-[600px]:inline">Back to dashboard</span>
             <span className="min-[600px]:hidden">Back</span>
           </PrimaryButton>
-          <PrimaryButton className="m-0! inline-flex! h-[19px]! min-h-[19px]! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-[26px]! min-[900px]:min-h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!">
+          <PrimaryButton className="m-0! inline-flex! h-4.75! min-h-4.75! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0.5! text-[10px]! leading-none! min-[900px]:h-6.5! min-[900px]:min-h-6.5! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!">
             <span aria-hidden="true" className="pixelart-icons-font-logout text-[10px]! leading-none! min-[900px]:text-[15px]!" />
             <span>Logout</span>
           </PrimaryButton>
@@ -636,7 +637,7 @@ function TeamDashboardContent({
           renderStatusCard("The team could not be loaded.", true)
         ) : (
           <>
-            <Card className="dashboard-card m-0! mb-5! flex w-full flex-col gap-3 border-2! border-border! px-4 pb-5! pt-3! shadow-[5px_5px_0_var(--shadow)]! min-[600px]:mb-6! min-[600px]:min-h-[62px] min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between min-[900px]:mb-8! min-[900px]:min-h-[88px] min-[900px]:pb-7! min-[900px]:pt-[18px]!">
+            <Card className="m-0! mb-5! flex w-full flex-col gap-3 px-4 pb-5! pt-3! min-[600px]:mb-6! min-[600px]:min-h-15.5 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between min-[900px]:mb-8! min-[900px]:min-h-22 min-[900px]:pb-7! min-[900px]:pt-4.5!">
               <div className="min-w-0">
                 <h1 className="truncate text-lg min-[900px]:text-2xl! min-[900px]:leading-tight!">{team.name}</h1>
                 <div className="mt-1 flex flex-wrap gap-x-8 gap-y-1 text-xs text-text-muted min-[900px]:mt-2! min-[900px]:text-sm!">
@@ -658,13 +659,13 @@ function TeamDashboardContent({
                 </div>
               </div>
               {isOwner && (
-                <button
-                  className="inline-flex! h-5! cursor-pointer items-center justify-center self-end border! border-border! bg-surface-elevated! px-1.5! py-0.5! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:[transform:translateY(2px)]! min-[600px]:self-auto min-[900px]:h-[26px]! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
-                  onClick={() => setIsSettingsOpen(true)}
-                  type="button"
-                >
+                  <Button
+                    bg="var(--color-surface-elevated)"
+                    className="inline-flex! h-5! cursor-pointer items-center justify-center px-1.5! py-0.5! text-[10px]! text-text! min-[600px]:self-auto min-[900px]:h-6.5! min-[900px]:px-2.5! min-[900px]:py-1! min-[900px]:text-[13px]!"
+                    onClick={() => setIsSettingsOpen(true)}
+                  >
                   Settings
-                </button>
+                </Button>
               )}
             </Card>
 
@@ -672,7 +673,7 @@ function TeamDashboardContent({
               <h2 className="text-base! text-primary-accent! min-[900px]:text-xl! min-[900px]:leading-tight!">Keys</h2>
               {isOwner && (
                 <PrimaryButton
-                  className="m-0! inline-flex h-[23px]! min-h-[23px]! items-center justify-center gap-1 whitespace-nowrap px-1.5! py-[3px]! text-[10px]! leading-none! min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+                  className="m-0! inline-flex h-5.75! min-h-5.75! items-center justify-center gap-1 whitespace-nowrap px-1.5! py-0.75! text-[10px]! leading-none! min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
                   onClick={handleOpenAddKey}
                 >
                   <span>Add key</span>
@@ -681,7 +682,7 @@ function TeamDashboardContent({
             </div>
 
             {keys.length === 0 ? (
-              <Card className="dashboard-card m-0! border-2! border-border! p-5! text-center text-[12px]! text-text-muted! shadow-[3px_3px_0_var(--shadow)]!">
+              <Card className="m-0! p-5! text-center text-[12px]! text-text-muted!">
                 No API keys have been added yet.
               </Card>
             ) : (
