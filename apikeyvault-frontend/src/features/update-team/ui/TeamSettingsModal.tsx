@@ -72,7 +72,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
             </h2>
           </div>
 
-          <form className="flex shrink-0 flex-col gap-2.5!" onSubmit={(event) => event.preventDefault()}>
+          <form className="flex shrink-0 flex-col gap-5" onSubmit={(event) => event.preventDefault()}>
             {isOwner && (
               <div className="flex shrink-0 flex-col gap-1!">
                 <label className="text-[14px]! text-text! max-[599px]:text-[12px]!" htmlFor="team-settings-name">
@@ -97,7 +97,7 @@ export function TeamSettingsModal({ isOwner = false, onClose, onLeave, onRemoveM
               </PrimaryButton>
             )}
 
-            <section aria-label="Team members" className="flex shrink-0 flex-col gap-1.5 border-t-2! border-dashed! border-text-muted! pt-2.5">
+            <section aria-label="Team members" className="flex shrink-0 flex-col gap-3 border-t-2! border-dashed! border-text-muted! pt-2.5">
               {team.members.map((member) => (
                 <div className="flex items-center gap-1.5 border-2! border-border! bg-surface-elevated! px-2! py-1!"
                 key={member.id}
