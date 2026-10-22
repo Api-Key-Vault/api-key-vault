@@ -3,10 +3,21 @@ import { Card, PrimaryButton } from "@/shared/ui";
 import { useSearchParams } from "react-router";
 import { loginWithGithub } from "@/features/auth";
 import { LoginError } from "@/features/auth";
+import { useAuth } from "@/features/auth";
+import { useEffect } from "react";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+
+  const { state } = useAuth();
+
+  useEffect (() => {
+
+    if(state.status === "authenticated" && token){
+  
+    }
+  }, [state.status, token]) 
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
