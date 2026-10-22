@@ -2,7 +2,7 @@ import { Bubble } from "pixel-retroui";
 import { Card, PrimaryButton, ErrorMessage, Loading } from "@/shared/ui";
 import { useSearchParams } from "react-router";
 import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { acceptInvite } from "@/features/accept-invite";
 
 export function InviteLandingPage() {
@@ -15,9 +15,11 @@ export function InviteLandingPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { state } = useAuth();
+  const attemptedTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (state.status === "authenticated" && token) {
+    if (state.status === "authenticated" && token && attemptedTokenRef.current !== token ) {
+      attemptedTokenRef.current = token;
       const handleAcceptInvite = async () => {
         try {
           setIsLoading(true);
