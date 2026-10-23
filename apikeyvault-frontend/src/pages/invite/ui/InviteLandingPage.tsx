@@ -11,8 +11,6 @@ export function InviteLandingPage() {
   const token = searchParams.get("token");
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [teamName, setTeamName] = useState("");
-  const [teamId, setTeamId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const { state } = useAuth();
@@ -31,9 +29,10 @@ export function InviteLandingPage() {
           setIsLoading(true);
 
           const response = await acceptInvite({ token });
-
-          setTeamName(response.teamName);
-          setTeamId(response.teamId);
+          navigate(`/team/${response.teamId}`, {
+            state: { welcomeTeamName: response.teamName },
+            replace: true,
+          });
         } catch {
           setErrorMessage("Failed to accept invitation");
         } finally {
@@ -42,7 +41,7 @@ export function InviteLandingPage() {
       };
       handleAcceptInvite();
     }
-  }, [state.status, token]);
+  }, [state.status, token, navigate]);
 
   if (isLoading) {
     return <Loading />;
@@ -65,34 +64,14 @@ export function InviteLandingPage() {
         <Card className="p-4 text-center w-80 h-80 flex gap-3.5 flex-col">
           <span className="pixelart-icons-font-key text-secondary-accent text-[40px]!" />
 
-          {teamId !== null ? (
-            <>
-              <h2 className="text-text text-2xl">Success!</h2>
-              <p className="text-text-muted">
-                You've successfully joined {teamName}!
-              </p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-text text-2xl">Welcome!</h2>
-              <p className="text-text-muted">
-                You have been invited to join a team!
-              </p>
-            </>
-          )}
+          <h2 className="text-text text-2xl">Welcome!</h2>
+          <p className="text-text-muted">
+            You have been invited to join a team!
+          </p>
 
           <LoginError />
 
           {errorMessage && <ErrorMessage message={errorMessage} />}
-
-          {teamId !== null && (
-            <PrimaryButton
-            onClick={() => navigate(`/team/${teamId}`)}
-            >
-              Go to Team
-              <span className="pixelart-icons-font-arrow-right" />
-            </PrimaryButton>
-          )}
 
           {state.status === "unauthenticated" && (
             <>
