@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ApiKeyVault.Domain.Entities
+﻿namespace ApiKeyVault.Domain.Entities
 {
     public class ApiKeyAccess
     {
