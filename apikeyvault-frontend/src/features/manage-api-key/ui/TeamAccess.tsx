@@ -1,12 +1,13 @@
 import type { ApiKeyAccess } from "@/entities/api-key-access/model/types";
 import type { TeamMember } from "@/entities/team";
+import { DropDown } from "@/shared/ui";
 
 type TeamAccessProps = {
   apiKeyAccesses: ApiKeyAccess[];
   availableMembers: TeamMember[];
   isSubmitting?: boolean;
   onRevokeAccess: (teamMemberId: number) => void
-  onAddAccess: () => void
+  onAddAccess: (teamMember: TeamMember) => void
 };
 export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRevokeAccess, onAddAccess} : TeamAccessProps){
 
@@ -33,16 +34,14 @@ export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRe
                     )
                 })}
             </div>
-            <button
-                aria-label="Add team access"
-                className="mx-auto! inline-flex h-6! w-6! shrink-0 cursor-pointer items-center justify-center border-2! border-border! bg-success! p-0! text-success-on-color! shadow-[2px_2px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50"
+            <DropDown
+                ariaLabel="Add access"
+                dropDownOptions={availableMembers}
                 disabled={isSubmitting}
-                onClick={onAddAccess}
-                type="button"
-            >
-                <span aria-hidden="true" className="pixelart-icons-font-plus text-[14px]! leading-none!" />
-            </button>
-            {/* Dropdown button with members to choose from */}
+                getOptionsKey={(member) => member.id}
+                getOptionsLabel={(member) => member.displayName}
+                onSelect={(member) => {onAddAccess(member)}}
+            />               
         </section>
     )
 }
