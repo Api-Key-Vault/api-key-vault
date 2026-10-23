@@ -36,7 +36,8 @@ namespace ApiKeyVault.Application.Services
                     Id = teamMember.Id,
                     UserId = teamMember.UserId,
                     TeamId = teamMember.TeamId,
-                    RoleName = teamMember.Role.Name
+                    RoleName = teamMember.RoleName,
+                    DisplayName = teamMember.DisplayName
                 })
                 .ToList();
 
