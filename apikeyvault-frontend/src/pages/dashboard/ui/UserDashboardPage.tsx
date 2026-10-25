@@ -68,7 +68,7 @@ export function UserDashboardPage() {
             <span className="pixelart-icons-font-users text-text text-[35px]!" />
           }
           count={userTeams.length}
-          label="Teams"
+          label={userTeams.length == 1 ? "Team" : "Teams"}
         />
 
         <StatsBox
@@ -76,7 +76,7 @@ export function UserDashboardPage() {
             <span className="pixelart-icons-font-key text-secondary-accent text-[35px]!" />
           }
           count={totalKeys}
-          label="Keys"
+          label={totalKeys == 1 ? "Key" : "Keys"}
         />
 
         <StatsBox
@@ -84,7 +84,7 @@ export function UserDashboardPage() {
             <span className="pixelart-icons-font-user-plus text-text text-[35px]!" />
           }
           count={totalMembers}
-          label="Members"
+          label={totalMembers == 1 ? "Member" : "Members"}
         />
       </div>
 
@@ -99,32 +99,36 @@ export function UserDashboardPage() {
       </div>
 
       <section className="w-4/5">
-        <div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
-          {errorMessage ? (
-            <div className="text-center text-error text-2xl">
-              {errorMessage}
-            </div>
-          ) : isLoading ? (
-            <div className="text-center text-text text-2xl">
-              Loading teams...
-            </div>
-          ) : userTeams.length === 0 ? (
-            <div className="text-center text-text text-2xl">
-              You are not a member of any teams yet.
-            </div>
-          ) : (
-            userTeams.map((team) => (
-              <TeamCard
-                key={team.id}
-                name={team.name}
-                keyCount={team.keys}
-                memberCount={team.members}
-                onClick={() => navigate(`/team/${team.id}`)}
-              />
-            ))
-          )}
-        </div>
-      </section>
+  {errorMessage || isLoading || userTeams.length === 0 ? (
+    <div className="flex justify-center w-full mt-20">
+      {errorMessage ? (
+        <p className="text-center text-error text-2xl">
+          {errorMessage}
+        </p>
+      ) : isLoading ? (
+        <p className="text-center text-text text-2xl">
+          Loading teams...
+        </p>
+      ) : (
+        <p className="text-center text-text text-2xl">
+          You are not a member of any teams yet.
+        </p>
+      )}
+    </div>
+  ) : (
+    <div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
+      {userTeams.map((team) => (
+        <TeamCard
+          key={team.id}
+          name={team.name}
+          keyCount={team.keys}
+          memberCount={team.members}
+          onClick={() => navigate(`/team/${team.id}`)}
+        />
+      ))}
+    </div>
+  )}
+</section>
       {isCreateTeamOpen && (
         <CreateTeamModal
           onClose={() => setIsCreateTeamOpen(false)}
