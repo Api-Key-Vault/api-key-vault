@@ -5,7 +5,7 @@ using ApiKeyVault.Domain.Entities;
 using Moq;
 using Xunit;
 
-namespace ApiKeyVault.Tests
+namespace ApiKeyVault.Tests.Services
 {
     public class ApiKeyAccessServiceTests
     {

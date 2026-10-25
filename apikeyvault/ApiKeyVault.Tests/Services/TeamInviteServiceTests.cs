@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
-namespace ApiKeyVault.Tests
+namespace ApiKeyVault.Tests.Services
 {
     public class TeamInviteServiceTests
     {
