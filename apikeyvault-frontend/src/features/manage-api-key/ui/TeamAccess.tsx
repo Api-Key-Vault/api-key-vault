@@ -6,8 +6,8 @@ type TeamAccessProps = {
   apiKeyAccesses: ApiKeyAccess[];
   availableMembers: TeamMember[];
   isSubmitting?: boolean;
-  onRevokeAccess: (teamMemberId: number) => void
-  onAddAccess: (teamMember: TeamMember) => void
+  onRevokeAccess: (ApiKeyAccess: ApiKeyAccess) => void
+  onAddAccess: (teamMemberId: number) => void
 };
 export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRevokeAccess, onAddAccess} : TeamAccessProps){
 
@@ -25,7 +25,7 @@ export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRe
                                 aria-label={`Revoke ${access.displayName}'s access`}
                                 className="ml-auto shrink-0 cursor-pointer border-0! bg-transparent! p-0! text-right text-[11px]! leading-tight! text-error! underline underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 disabled={isSubmitting}
-                                onClick={() => onRevokeAccess(access.teamMemberId)}
+                                onClick={() => onRevokeAccess(access)}
                                 type="button"
                             >
                                 Revoke
@@ -40,7 +40,7 @@ export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRe
                 disabled={isSubmitting}
                 getOptionsKey={(member) => member.id}
                 getOptionsLabel={(member) => member.displayName}
-                onSelect={(member) => {onAddAccess(member)}}
+                onSelect={(member) => {onAddAccess(member.id)}}
             />               
         </section>
     )

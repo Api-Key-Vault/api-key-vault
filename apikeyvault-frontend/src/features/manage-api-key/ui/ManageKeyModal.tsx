@@ -2,8 +2,11 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { TeamAccess } from "./TeamAccess";
 import type { ManageKeyModalProps } from "../model/types";
+import type { TeamMember } from "@/entities/team";
+import type { ApiKeyAccess } from "@/entities/api-key-access";
 
 export function ManageKeyModal({
+  teamId,
   apiKey,
   apiKeyAccesses,
   teamMembers,
@@ -34,7 +37,7 @@ export function ManageKeyModal({
       }
     };
   }, []);
-
+// Api key variables
   const [category, setCategory] = useState(apiKey.category ?? "");
   const initialExpiresAt = apiKey.expiresAt?.slice(0, 10) ?? "";
   const [expiresAt, setExpiresAt] = useState(initialExpiresAt);
@@ -43,6 +46,12 @@ export function ManageKeyModal({
   const [value, setValue] = useState("");
   const isRevoked = Boolean(apiKey.revokedAt) || apiKey.status === "Revoked";
 
+  // Api key access variables
+  const availableMembers = teamMembers.filter((member: TeamMember) => 
+    !apiKeyAccesses.some(access => access.teamMemberId === member.id)
+  );
+
+  // Api key functions
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -66,14 +75,19 @@ export function ManageKeyModal({
     onRevoke();
   }
 
-  function handleRevokeAccess() {
-    // Team access management is not wired yet.
-    onRevokeAccess();
+  // Api key access functions
+  function handleRevokeAccess(access: ApiKeyAccess) {
+    if (isSubmitting || isRevoked) {
+      return;
+    }
+    onRevokeAccess(teamId, access);
   }
 
-  function handleAddAccess() {
-    // Team access management is not wired yet.
-    onAddAccess();
+  function handleAddAccess(teamMemberId: number) {
+    if (isSubmitting || isRevoked) {
+      return;
+    }
+    onAddAccess(teamId, apiKey.id, teamMemberId);
   }
 
   return (

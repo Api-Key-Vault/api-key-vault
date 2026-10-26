@@ -10,14 +10,15 @@ export type ManageKeyUpdate = {
 };
 
 export type ManageKeyModalProps = {
+  teamId: number,
   apiKey: ApiKey;
   apiKeyAccesses: ApiKeyAccess[];
   teamMembers: TeamMember[];
   onClose: () => void;
   onRevoke: () => void;
   onSave: (update: ManageKeyUpdate) => void;
-  onAddAccess: () => void;
-  onRevokeAccess : () => void
+  onAddAccess: (teamId: number, apiKeyId: number, teamMemberId: number) => void;
+  onRevokeAccess : (teamId: number, access: ApiKeyAccess) => void
   isSubmitting?: boolean;
   error?: string | null;
 };
