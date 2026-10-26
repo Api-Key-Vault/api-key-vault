@@ -3,6 +3,7 @@ import { Button, Card } from "pixel-retroui";
 
 type DropDownProps<T> = {
   ariaLabel: string;
+  className: string;
   dropDownOptions: T[];
   disabled?: boolean;
   getOptionsKey: (option: T) => string | number;
@@ -12,6 +13,7 @@ type DropDownProps<T> = {
 
 export function DropDown<T>({
   ariaLabel,
+  className,
   dropDownOptions,
   disabled = false,
   getOptionsKey,
@@ -30,14 +32,14 @@ export function DropDown<T>({
   }
 
   return (
-    <div className="relative">
+    <div className={`relative flex! w-full! justify-center ${className ?? ""}`}>
       <Button
         aria-expanded={isOpen}
         aria-haspopup="menu"
         aria-label={ariaLabel}
         bg="var(--success)"
         borderColor="var(--border)"
-        className="m-0! inline-flex! h-6! w-6! items-center! justify-center! p-0!"
+        className="inline-flex! h-6! w-6! items-center! justify-center! p-0!"
         disabled={disabled}
         onClick={() => setIsOpen((open) => !open)}
         shadow="var(--shadow)"
@@ -61,7 +63,7 @@ export function DropDown<T>({
         <Card
           bg="var(--success)"
           borderColor="var(--border)"
-          className="absolute left-0! top-full z-10 min-w-full p-0!"
+          className="absolute m-0! top-full z-10 w-[98%]! p-0!"
           style={{ marginLeft: 0, marginTop: "4px" }}
           shadowColor="var(--shadow)"
           textColor="var(--success-on-color)"

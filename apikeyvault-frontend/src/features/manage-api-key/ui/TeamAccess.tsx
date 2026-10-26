@@ -12,14 +12,14 @@ type TeamAccessProps = {
 export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRevokeAccess, onAddAccess} : TeamAccessProps){
 
     return(
-        <section aria-labelledby="manage-key-access-title" className="flex shrink-0 flex-col gap-2.5">
-            <h3 className="my-2! text-center text-[14px]! leading-tight! text-text! max-[599px]:text-[12px]!" id="manage-key-access-title">
+        <section aria-labelledby="manage-key-access-title" className="flex shrink-0 flex-col gap-2.5 border-t-2! border-dashed! pt-2.5  mb-4!">          
+            <h2 className="my-2! text-center text-xl! leading-tight! text-text! max-[599px]:text-base!" id="manage-key-access-title">
                 Team access
-            </h3>
+            </h2>
             <div  className="flex flex-col gap-1.5">
                 {apiKeyAccesses.map((access, index) => {
                     return(                        
-                        <div key={index} className="flex items-center justify-between gap-2 border-2! border-border! bg-surface-elevated! px-2! py-1!">
+                        <div key={index} className="flex items-center justify-between gap-2 border-2! border-border! bg-surface-elevated! px-4! py-2!">
                             <span className="text-[11px]! leading-tight! text-text!">{access.displayName}</span>
                             <button
                                 aria-label={`Revoke ${access.displayName}'s access`}
@@ -36,6 +36,7 @@ export function TeamAccess({apiKeyAccesses, availableMembers, isSubmitting, onRe
             </div>
             <DropDown
                 ariaLabel="Add access"
+                className= "mt-2!"
                 dropDownOptions={availableMembers}
                 disabled={isSubmitting}
                 getOptionsKey={(member) => member.id}

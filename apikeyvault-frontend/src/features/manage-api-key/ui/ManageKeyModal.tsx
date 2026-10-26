@@ -126,7 +126,7 @@ export function ManageKeyModal({
             </h2>
           </div>
 
-          <form className="flex shrink-0 flex-col gap-2.5!" onSubmit={handleSubmit}>
+          <form className="flex shrink-0 flex-col gap-2.5! mb-4!" onSubmit={handleSubmit}>
             {error ? (
               <p
                 aria-live="polite"
@@ -198,7 +198,7 @@ export function ManageKeyModal({
             </div>
 
             <PrimaryButton
-              className="m-0! inline-flex h-[23px]! min-h-[23px]! w-full items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+              className=" inline-flex h-[23px]! min-h-[23px]! w-[75%] self-center items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
               disabled={isSubmitting}
             >
               Save changes
