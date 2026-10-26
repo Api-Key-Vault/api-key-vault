@@ -786,7 +786,7 @@ function TeamDashboardContent({
           onClose={() => setIsSettingsOpen(false)}
           onLeave={handleLeaveTeam}
           onRemoveMember={handleRemoveMember}
-          team={{ name: team.name, members }}
+          team={{id: team.id, name: team.name, members }}
         />
       )}
     </main>

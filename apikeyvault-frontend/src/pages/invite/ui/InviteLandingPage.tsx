@@ -18,6 +18,10 @@ export function InviteLandingPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (token === null) {
+      setErrorMessage("This invitation is no longer valid");
+      return;
+    }
     if (
       state.status === "authenticated" &&
       token &&
@@ -72,6 +76,12 @@ export function InviteLandingPage() {
           <LoginError />
 
           {errorMessage && <ErrorMessage message={errorMessage} />}
+
+          {errorMessage && state.status === "authenticated" && (
+            <PrimaryButton onClick={() => navigate("/dashboard")}>
+              Go to Dashboard
+            </PrimaryButton>
+          )}
 
           {state.status === "unauthenticated" && (
             <>
