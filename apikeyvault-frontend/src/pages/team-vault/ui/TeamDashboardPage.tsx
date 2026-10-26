@@ -19,6 +19,12 @@ import {
   type Team,
   type TeamMember,
 } from "@/entities/team";
+import {
+  getApiKeyAccesses,
+  revokeKeyAccess,
+  grantKeyAccess,
+  type ApiKeyAccess
+} from "@/entities/api-key-access";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { ROUTE_PATHS } from "@/app/router/paths";
 import { TeamSettingsModal } from "@/features/update-team";
@@ -354,6 +360,7 @@ function TeamDashboardContent({
   const [isAddKeyOpen, setIsAddKeyOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
+  const [apiKeyAccesses, setApiKeyAccesses] = useState<ApiKeyAccess[]>([]);
   const [isMutating, setIsMutating] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
   const [copiedFeedback, setCopiedFeedback] = useState<CopyFeedback | null>(null);
@@ -591,10 +598,94 @@ function TeamDashboardContent({
     }
   }
 
-  function handleSelectKey(apiKey: ApiKey) {
+  async function handleSelectKey(apiKey: ApiKey) {
     setModalError(null);
     setSelectedKey(apiKey);
+    setApiKeyAccesses([]);
+
+    await handleLoadAccesses(apiKey.id);
   }
+
+  async function handleLoadAccesses(apiKeyId: number){
+    if(!hasValidTeamId){
+      return;
+    }
+    try{
+      const accesses = await getApiKeyAccesses(teamId, apiKeyId);
+
+      if(mountedRef.current){
+        setApiKeyAccesses(accesses);
+      }
+    } catch {
+      if(mountedRef.current){
+        setModalError("The key accesses could not be loaded.")
+      }
+    }
+  }
+
+  async function handleAddAccess(
+    currentTeamId: number,
+    apiKeyId: number,
+    teamMemberId: number,
+  ) {
+    if(!isOwner || !hasValidTeamId || isMutating) {
+      return;
+    }
+    setIsMutating(true);
+    setModalError(null);
+
+    try{
+      const newAccess = await grantKeyAccess(currentTeamId, { apiKeyId, teamMemberId });
+
+      if(mountedRef.current) {
+        setApiKeyAccesses((currentAccesses) => [
+          ...currentAccesses,
+          newAccess,
+        ]);
+      }
+    } catch{
+      if(mountedRef.current){
+        setModalError("Key access could not be added.");
+      }
+    } finally {
+      if(mountedRef.current){
+        setIsMutating(false);
+      }
+    }
+  }
+
+  async function handleRevokeAccess(
+    currentTeamId: number, 
+    access: ApiKeyAccess,
+  ) {
+    if (!isOwner || !hasValidTeamId || isMutating) {
+    return;
+    }
+
+    setIsMutating(true);
+    setModalError(null);
+
+    try{
+      await revokeKeyAccess(currentTeamId, access.apiKeyId, access.teamMemberId);
+
+      if(mountedRef.current){
+        setApiKeyAccesses((currentAccesses) =>
+        currentAccesses.filter(
+          currentAccess => 
+            currentAccess.teamMemberId !== access.teamMemberId,
+          )
+        );
+      }
+    } catch {
+      if(mountedRef.current){
+        setModalError("Key access could not be removed");
+      }
+    } finally {
+      if(mountedRef.current){
+        setIsMutating(false);
+      }
+    }
+  } 
 
   async function handleRemoveMember(teamMemberId: number)
   {
@@ -773,7 +864,10 @@ function TeamDashboardContent({
 
       {isOwner && selectedKey !== null && (
         <ManageKeyModal
+          teamId={teamId}
           apiKey={selectedKey}
+          apiKeyAccesses={apiKeyAccesses}
+          teamMembers={members}
           error={modalError}
           isSubmitting={isMutating}
           onClose={() => {
@@ -783,6 +877,8 @@ function TeamDashboardContent({
           }}
           onRevoke={handleRevokeKey}
           onSave={handleSaveKey}
+          onAddAccess={handleAddAccess}
+          onRevokeAccess={handleRevokeAccess}
         />
       )}
 
