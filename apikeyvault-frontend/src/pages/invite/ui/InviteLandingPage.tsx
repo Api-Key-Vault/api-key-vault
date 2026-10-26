@@ -3,7 +3,7 @@ import { Card, PrimaryButton, ErrorMessage, Loading } from "@/shared/ui";
 import { useSearchParams, useNavigate } from "react-router";
 import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
 import { useEffect, useState, useRef } from "react";
-import { acceptInvite } from "@/features/accept-invite";
+import { acceptInvite, getInvitePreview } from "@/features/accept-invite";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
@@ -12,10 +12,26 @@ export function InviteLandingPage() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [teamName, setTeamName] = useState<string | null>(null);
 
   const { state } = useAuth();
   const attemptedTokenRef = useRef<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchInvitePreview = async () => {
+      try {
+        const response = await getInvitePreview(token);
+        setTeamName(response.teamName);
+      } catch {
+        setErrorMessage("This invitation is no longer valid");
+      }
+    };
+
+    fetchInvitePreview();
+  }, [token]);
 
   useEffect(() => {
     if (token === null) {
@@ -70,7 +86,7 @@ export function InviteLandingPage() {
 
           <h2 className="text-text text-2xl">Welcome!</h2>
           <p className="text-text-muted">
-            You have been invited to join a team!
+            You have been invited to join team: {teamName ?? "..."}
           </p>
 
           <LoginError />
@@ -83,7 +99,7 @@ export function InviteLandingPage() {
             </PrimaryButton>
           )}
 
-          {state.status === "unauthenticated" && (
+          {state.status === "unauthenticated" && teamName && !errorMessage && (
             <>
               <PrimaryButton
                 className="flex align-middle items-center justify-center gap-5"
