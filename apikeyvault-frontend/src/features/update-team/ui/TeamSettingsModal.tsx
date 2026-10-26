@@ -150,25 +150,18 @@ export function TeamSettingsModal({
                   className="flex items-center gap-1.5 border-2! border-border! bg-surface-elevated! px-2! py-1!"
                   key={member.id}
                 >
-                  <span className="text-[11px]! leading-tight! text-text!">
-                    {member.userId}
-                  </span>
-                  <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">
-                    {member.roleName}
-                  </span>
+                  <span className="text-[11px]! leading-tight! text-text!">{member.displayName || member.userId}</span>
+                  <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">{member.roleName}</span>
                   {isOwner && member.roleName === "Member" && (
-                    <button
-                      aria-label={`Remove ${member.userId}`}
-                      className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                      onClick={() => onRemoveMember?.(member.id)}
-                      type="button"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="pixelart-icons-font-trash text-[14px]! leading-none!"
-                      />
-                    </button>
-                  )}
+                  <button
+                    aria-label={`Remove ${member.displayName || member.userId}`}
+                    className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
+                    onClick={() => onRemoveMember?.(member.id)}
+                    type="button"
+                  >
+                    <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
+                  </button>
+                )}
                 </div>
               ))}
 

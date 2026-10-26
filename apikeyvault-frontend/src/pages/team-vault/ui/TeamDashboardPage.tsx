@@ -310,6 +310,7 @@ function TeamKeyRow({
 type TeamDashboardContentProps = {
   authUserId: string | null;
   hasValidTeamId: boolean;
+  onLogout: () => Promise<void>;
   onBack: () => void;
   onRetry: () => void;
   teamId: number;
@@ -318,7 +319,7 @@ type TeamDashboardContentProps = {
 export function TeamDashboardPage() {
   const navigate = useNavigate();
   const { teamId: teamIdParam } = useParams<{ teamId: string }>();
-  const { state: authState } = useAuth();
+  const { logout, state: authState } = useAuth();
   const authUserId = authState.status === "authenticated" ? authState.user.id : null;
   const teamId = Number(teamIdParam);
   const hasValidTeamId = Number.isInteger(teamId) && teamId > 0;
@@ -328,6 +329,7 @@ export function TeamDashboardPage() {
     <TeamDashboardContent
       authUserId={authUserId}
       hasValidTeamId={hasValidTeamId}
+      onLogout={logout}
       key={`${hasValidTeamId ? teamId : "invalid"}:${authUserId ?? "anonymous"}:${loadAttempt}`}
       onBack={() => navigate(ROUTE_PATHS.DASHBOARD)}
       onRetry={() => setLoadAttempt((attempt) => attempt + 1)}
@@ -339,6 +341,7 @@ export function TeamDashboardPage() {
 function TeamDashboardContent({
   authUserId,
   hasValidTeamId,
+  onLogout,
   onBack,
   onRetry,
   teamId,
@@ -676,7 +679,10 @@ function TeamDashboardContent({
             <span className="hidden min-[600px]:inline text-base">Back to dashboard</span>
             <span className="min-[600px]:hidden text-sm">Back</span>
           </PrimaryButton>
-          <PrimaryButton className="m-0! inline-flex! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0! text-[10px]! leading-none! min-[900px]:px-2.5! min-[900px]:text-[13px]!">
+          <PrimaryButton
+            className="m-0! inline-flex! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0! text-[10px]! leading-none! min-[900px]:px-2.5! min-[900px]:text-[13px]!"
+            onClick={() => void onLogout()}
+          >
             <span aria-hidden="true" className="pixelart-icons-font-logout text-[20px]! leading-none! min-[900px]:text-[30px]!" />
             <span className="text-sm min-[600px]:text-base">Logout</span>
           </PrimaryButton>

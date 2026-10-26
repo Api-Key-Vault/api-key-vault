@@ -1,10 +1,14 @@
 import { Card, DeleteButton } from "@/shared/ui";
+import { useAuth } from "@/features/auth";
 
 type AccountModalProps ={
     onClose?: () => void;
 };
 
 export function AccountModal({ onClose }: AccountModalProps) {
+	const { state: authState } = useAuth();
+	const displayName = authState.status === "authenticated" ? authState.user.displayName : "Unknown user";
+
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 			<Card className="relative p-4 w-80 flex flex-col gap-4">
@@ -26,8 +30,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
                     {/* TODO: Show the user's real GitHub profile picture here instead of this icon. 
                     The picture URL comes from the logged-in user's GitHub data (via the API). */}
 					<span className="pixelart-icons-font-user text-text text-[50px]!" />
-					{/* TODO: Replace hardcoded username with the logged-in user's GitHub username. */}
-					<p className="text-text">Vic-Linden</p>
+					<p className="text-text">{displayName}</p>
 				</div>
 
 				<hr className="border-t-2! border-dashed! border-text-muted!" />
