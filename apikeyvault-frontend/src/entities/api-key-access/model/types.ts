@@ -3,6 +3,7 @@ export type ApiKeyAccess = {
     apiKeyId: number;
     teamMemberId: number;
     displayName: string;
+    assignedAt: string;
     grantedByMemberId: number;
 };
 

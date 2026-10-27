@@ -78,13 +78,22 @@ namespace ApiKeyVault.Application.Services
             await _apiKeyAccessRepository.AddAsync(apiKeyAccess);
             await _apiKeyAccessRepository.SaveChangesAsync();
 
+            var newAccess = await _apiKeyAccessRepository.GetByApiKeyAndMemberAsync(request.ApiKeyId, request.TeamMemberId);
+
+            if(newAccess is null)
+            {
+                response.Status = GrantAccessResult.UnexpectedError;
+            }
+
             response.Status = GrantAccessResult.Success;
 
             response.Data = new ApiKeyAccessResponse
             {
-                ApiKeyId = apiKeyAccess.ApiKeyId,
-                TeamMemberId = apiKeyAccess.TeamMemberId,                
-                GrantedByMemberId = apiKeyAccess.GrantedByMemberId
+                ApiKeyId = newAccess!.ApiKeyId,
+                TeamMemberId = newAccess!.TeamMemberId,
+                DisplayName = newAccess!.DisplayName,
+                AssignedAt = newAccess!.AssignedAt,
+                GrantedByMemberId = newAccess!.GrantedByMemberId
             };
 
             return response;

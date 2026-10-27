@@ -46,6 +46,8 @@ namespace ApiKeyVault.Api.Controllers
                     => NotFound(),
                 GrantAccessResult.AlreadyExists
                     => Conflict(),
+                GrantAccessResult.UnexpectedError
+                    => StatusCode(500),
                 _ => BadRequest()
             };
         }
