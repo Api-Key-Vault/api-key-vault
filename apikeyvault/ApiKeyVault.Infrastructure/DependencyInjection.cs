@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
@@ -21,7 +22,7 @@ namespace ApiKeyVault.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddDbContext<ApiKeyVaultDbContext>(options =>
             {
@@ -36,6 +37,15 @@ namespace ApiKeyVault.Infrastructure
             // Values for blobUri and keyUri are empty by default in local development appsettings.json,
             // This is default and expected behavior, and this if statement will only be run in production
             // with Azure env variables.
+            if (!environment.IsDevelopment() &&
+                (string.IsNullOrEmpty(blobUri) || string.IsNullOrEmpty(keyUri)))
+            {
+                throw new InvalidOperationException(
+                    "Azure Data Protection is not configured. " +
+                    "Set DataProtection:BlobUri and DataProtection:KeyVaultKeyUri " +
+                    $"(environment: {environment.EnvironmentName}).");
+            }
+
             if (!string.IsNullOrEmpty(blobUri) && !string.IsNullOrEmpty(keyUri))
             {
                 var credential = new DefaultAzureCredential();
