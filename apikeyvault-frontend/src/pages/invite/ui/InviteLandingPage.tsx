@@ -8,7 +8,7 @@ import { acceptInvite, getInvitePreview } from "@/features/accept-invite";
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
 
-  const token = searchParams.get("token");
+  const token = searchParams.get("token")?.trim() || null;
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
