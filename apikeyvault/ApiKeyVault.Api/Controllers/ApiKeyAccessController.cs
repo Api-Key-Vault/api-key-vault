@@ -31,11 +31,6 @@ namespace ApiKeyVault.Api.Controllers
 
             var result = await _apiKeyAccessService.CreateAsync(teamId, userId, request);
 
-            if (result is null)
-            {
-                return BadRequest();
-            }
-
             return result.Status switch
             {
                 GrantAccessResult.Success

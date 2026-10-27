@@ -19,7 +19,7 @@ namespace ApiKeyVault.Application.Services
             _teamMemberRepository = teamMemberRepository;
             _apiKeyRepository = apiKeyRepository;
         }
-        public async Task<ApiKeyAccessServiceResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request)
+        public async Task<ApiKeyAccessServiceResponse> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
 
@@ -160,6 +160,7 @@ namespace ApiKeyVault.Application.Services
                     ApiKeyId = apiKeyAccess.ApiKeyId,
                     TeamMemberId = apiKeyAccess.TeamMemberId,
                     DisplayName = apiKeyAccess.DisplayName,
+                    AssignedAt = apiKeyAccess.AssignedAt,
                     GrantedByMemberId = apiKeyAccess.GrantedByMemberId
                 })
                 .ToList();
