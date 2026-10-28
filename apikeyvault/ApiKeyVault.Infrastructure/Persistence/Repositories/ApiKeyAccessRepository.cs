@@ -66,6 +66,25 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
                     })
                 .ToListAsync();
         }
+
+        public async Task<ApiKeyAccessReadModel?> GetByApiKeyAndMemberAsync(int apiKeyId, int teamMemberId)
+        {
+            return await _dbContext.ApiKeyAccesses
+                .AsNoTracking()
+                .Where(access => access.ApiKeyId == apiKeyId && access.TeamMemberId == teamMemberId)
+                .Join(_dbContext.Users,
+                    access => access.Member.UserId,
+                    user => user.Id,
+                    (access, user) => new ApiKeyAccessReadModel
+                    {
+                        ApiKeyId = access.ApiKeyId,
+                        TeamMemberId = access.TeamMemberId,
+                        DisplayName = user.DisplayName,
+                        AssignedAt = access.AssignedAt,
+                        GrantedByMemberId = access.GrantedByMemberId
+                    })
+                .FirstOrDefaultAsync();
+        }
     }
     
 }

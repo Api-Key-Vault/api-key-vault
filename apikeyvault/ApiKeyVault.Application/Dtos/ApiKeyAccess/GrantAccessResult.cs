@@ -5,6 +5,7 @@
         Success,
         Forbidden,
         NotFound,
-        AlreadyExists
+        AlreadyExists,
+        UnexpectedError
     }
 }
