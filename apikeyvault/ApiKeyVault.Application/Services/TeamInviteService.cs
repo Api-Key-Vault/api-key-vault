@@ -114,5 +114,25 @@ namespace ApiKeyVault.Application.Services
                 InviteUrl = $"{_frontendOrigin}{string.Format(InviteRoute, token)}"
             };
         }
+
+        public async Task<InvitePreviewResponse?> GetInvitePreviewAsync(string token)
+        {
+            var invite = await _teamInviteRepository.GetByTokenHashAsync(HashToken(token));
+
+            if (invite is null)
+            {
+                return null;
+            }
+
+            if (invite.UsedByMemberId is not null || invite.ExpiresAt <= DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            return new InvitePreviewResponse
+            {
+                TeamName = invite.Team.Name
+            };
+        }
     }
 }
