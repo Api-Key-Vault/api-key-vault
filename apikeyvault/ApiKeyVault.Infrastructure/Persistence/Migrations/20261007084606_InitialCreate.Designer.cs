@@ -115,7 +115,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("ApiKeyVault.Domain.Entities.TeamInvite", b =>
+            modelBuilder.Entity("ApiKeyVault.Domain.Entities.InvitePreviewResponse", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -475,7 +475,7 @@ namespace ApiKeyVault.Infrastructure.Persistence.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("ApiKeyVault.Domain.Entities.TeamInvite", b =>
+            modelBuilder.Entity("ApiKeyVault.Domain.Entities.InvitePreviewResponse", b =>
                 {
                     b.HasOne("ApiKeyVault.Domain.Entities.TeamMember", "CreatedByMember")
                         .WithMany("CreatedInvites")
