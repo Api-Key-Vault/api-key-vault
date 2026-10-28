@@ -23,7 +23,6 @@ export function ErrorMessage({ message, onClose, duration = 10000 }: ErrorMessag
                 textColor="var(--color-error)"
                 borderColor="var(--color-border)"
             >
-                {/* TODO: Add an error icon here. */}
                 {message}
             </Bubble>
         </div>
