@@ -83,17 +83,18 @@ namespace ApiKeyVault.Application.Services
             if(newAccess is null)
             {
                 response.Status = GrantAccessResult.UnexpectedError;
+                return response;
             }
 
             response.Status = GrantAccessResult.Success;
 
             response.Data = new ApiKeyAccessResponse
             {
-                ApiKeyId = newAccess!.ApiKeyId,
-                TeamMemberId = newAccess!.TeamMemberId,
-                DisplayName = newAccess!.DisplayName,
-                AssignedAt = newAccess!.AssignedAt,
-                GrantedByMemberId = newAccess!.GrantedByMemberId
+                ApiKeyId = newAccess.ApiKeyId,
+                TeamMemberId = newAccess.TeamMemberId,
+                DisplayName = newAccess.DisplayName,
+                AssignedAt = newAccess.AssignedAt,
+                GrantedByMemberId = newAccess.GrantedByMemberId
             };
 
             return response;
