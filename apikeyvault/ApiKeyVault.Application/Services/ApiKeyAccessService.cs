@@ -19,7 +19,7 @@ namespace ApiKeyVault.Application.Services
             _teamMemberRepository = teamMemberRepository;
             _apiKeyRepository = apiKeyRepository;
         }
-        public async Task<ApiKeyAccessServiceResponse?> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request)
+        public async Task<ApiKeyAccessServiceResponse> CreateAsync(int teamId, string userId, GrantApiKeyAccessRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
 
@@ -78,13 +78,23 @@ namespace ApiKeyVault.Application.Services
             await _apiKeyAccessRepository.AddAsync(apiKeyAccess);
             await _apiKeyAccessRepository.SaveChangesAsync();
 
+            var newAccess = await _apiKeyAccessRepository.GetByApiKeyAndMemberAsync(request.ApiKeyId, request.TeamMemberId);
+
+            if(newAccess is null)
+            {
+                response.Status = GrantAccessResult.UnexpectedError;
+                return response;
+            }
+
             response.Status = GrantAccessResult.Success;
 
             response.Data = new ApiKeyAccessResponse
             {
-                ApiKeyId = apiKeyAccess.ApiKeyId,
-                TeamMemberId = apiKeyAccess.TeamMemberId,                
-                GrantedByMemberId = apiKeyAccess.GrantedByMemberId
+                ApiKeyId = newAccess.ApiKeyId,
+                TeamMemberId = newAccess.TeamMemberId,
+                DisplayName = newAccess.DisplayName,
+                AssignedAt = newAccess.AssignedAt,
+                GrantedByMemberId = newAccess.GrantedByMemberId
             };
 
             return response;
@@ -151,6 +161,7 @@ namespace ApiKeyVault.Application.Services
                     ApiKeyId = apiKeyAccess.ApiKeyId,
                     TeamMemberId = apiKeyAccess.TeamMemberId,
                     DisplayName = apiKeyAccess.DisplayName,
+                    AssignedAt = apiKeyAccess.AssignedAt,
                     GrantedByMemberId = apiKeyAccess.GrantedByMemberId
                 })
                 .ToList();

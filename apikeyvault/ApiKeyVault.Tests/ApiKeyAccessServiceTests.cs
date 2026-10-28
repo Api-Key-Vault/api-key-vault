@@ -40,8 +40,7 @@ namespace ApiKeyVault.Tests
             //Act
             var result = await service.CreateAsync(1, "member", grantApiKeyAccess);
 
-            //Assert 
-            Assert.NotNull(result);
+            //Assert             
             Assert.Equal(GrantAccessResult.Forbidden, result.Status);
         }
 
@@ -87,8 +86,7 @@ namespace ApiKeyVault.Tests
             //Act
             var result = await service.CreateAsync(1, "owner", grantApiKeyAccess);
 
-            //Assert
-            Assert.NotNull(result);
+            //Assert            
             Assert.Equal(GrantAccessResult.AlreadyExists, result.Status);
         }
 
@@ -134,8 +132,7 @@ namespace ApiKeyVault.Tests
             //Act
             var result = await service.CreateAsync(1, "owner", grantApiKeyAccess);
 
-            //Assert
-            Assert.NotNull(result);
+            //Assert            
             Assert.Equal(GrantAccessResult.NotFound, result.Status);
 
             apiKeyAccessRepository
