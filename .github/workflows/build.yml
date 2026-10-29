@@ -5,7 +5,7 @@ on:
     paths:
       - "apikeyvault/**"
       - "apikeyvault-frontend/**"
-      - ".github/workflows/build.yml"
+      - ".github/workflows/**"
 
 jobs:
   build:
