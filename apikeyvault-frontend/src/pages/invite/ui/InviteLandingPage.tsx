@@ -10,6 +10,7 @@ export function InviteLandingPage() {
 
   const token = searchParams.get("token")?.trim() || null;
 
+  const [isErrorDismissed, setIsErrorDismissed] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [teamName, setTeamName] = useState<string | null>(null);
@@ -26,6 +27,7 @@ export function InviteLandingPage() {
         const response = await getInvitePreview(token);
         setTeamName(response.teamName);
       } catch {
+        setIsErrorDismissed(false)
         setErrorMessage("This invitation is no longer valid");
       }
     };
@@ -50,6 +52,7 @@ export function InviteLandingPage() {
             replace: true,
           });
         } catch {
+          setIsErrorDismissed(false)
           setErrorMessage("Failed to accept invitation");
         } finally {
           setIsLoading(false);
@@ -87,13 +90,14 @@ export function InviteLandingPage() {
 
           <LoginError />
 
-          {(token === null || errorMessage) && (
+          {!isErrorDismissed && (token === null || errorMessage) && (
             <ErrorMessage
               message={
                 token === null
                   ? "This invitation is no longer valid"
                   : errorMessage
               }
+              onClose={() => setIsErrorDismissed(true)}
             />
           )}
 

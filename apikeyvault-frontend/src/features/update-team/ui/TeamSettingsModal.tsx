@@ -191,7 +191,7 @@ export function TeamSettingsModal({
                 </PrimaryButton>
               )}
 
-              {isOwner && inviteError && <ErrorMessage message={inviteError} />}
+              {isOwner && inviteError && <ErrorMessage message={inviteError} onClose={() => setInviteError("")} />}
 
               {isOwner && inviteUrl && (
                 <div className="flex flex-col gap-2">

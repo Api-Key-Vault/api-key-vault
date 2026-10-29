@@ -6,7 +6,7 @@ import { getAuthErrorMessage } from "../model/authErrors";
 export function LoginError() {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const [errorMessage] = useState<string | null>(() => {
+    const [errorMessage, setErrorMessage] = useState<string | null>(() => {
         const errorKey = searchParams.get('error');
 
         if (errorKey === null) {
@@ -31,5 +31,5 @@ export function LoginError() {
         return null;
     }
 
-    return <ErrorMessage message={errorMessage} />;
+    return <ErrorMessage message={errorMessage} onClose={() => {setErrorMessage(null)}} />;
 }
