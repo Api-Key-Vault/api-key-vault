@@ -1,12 +1,67 @@
 import { Bubble } from "pixel-retroui";
-import { Card, PrimaryButton } from "@/shared/ui";
-import { useSearchParams } from "react-router";
-import { loginWithGithub } from "@/features/auth";
-import { LoginError } from "@/features/auth";
+import { Card, PrimaryButton, ErrorMessage, Loading } from "@/shared/ui";
+import { useSearchParams, useNavigate } from "react-router";
+import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
+import { useEffect, useState, useRef } from "react";
+import { acceptInvite, getInvitePreview } from "@/features/accept-invite";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
+
+  const token = searchParams.get("token")?.trim() || null;
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [teamName, setTeamName] = useState<string | null>(null);
+
+  const { state } = useAuth();
+  const attemptedTokenRef = useRef<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchInvitePreview = async () => {
+      try {
+        const response = await getInvitePreview(token);
+        setTeamName(response.teamName);
+      } catch {
+        setErrorMessage("This invitation is no longer valid");
+      }
+    };
+
+    fetchInvitePreview();
+  }, [token]);
+
+  useEffect(() => {
+    if (
+      state.status === "authenticated" &&
+      token &&
+      attemptedTokenRef.current !== token
+    ) {
+      attemptedTokenRef.current = token;
+      const handleAcceptInvite = async () => {
+        try {
+          setIsLoading(true);
+
+          const response = await acceptInvite({ token });
+          navigate(`/team/${response.teamId}`, {
+            state: { welcomeTeamName: response.teamName },
+            replace: true,
+          });
+        } catch {
+          setErrorMessage("Failed to accept invitation");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      handleAcceptInvite();
+    }
+  }, [state.status, token, navigate]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
@@ -21,24 +76,48 @@ export function InviteLandingPage() {
           <span className="pixelart-icons-font-mail text-text text-[30px]!"></span>
           You have been invited!
         </Bubble>
+
         <Card className="p-4 text-center w-80 h-80 flex gap-3.5 flex-col">
           <span className="pixelart-icons-font-key text-secondary-accent text-[40px]!" />
+
           <h2 className="text-text text-2xl">Welcome!</h2>
-          {/*TODO: Make sure team name is generated dynamically based on the invite */}
           <p className="text-text-muted">
-            You have been invited to join team: {"TEAM"}
+            You have been invited to join team: {teamName ?? "..."}
           </p>
-          <LoginError/>
-          <PrimaryButton
-            className="flex align-middle items-center justify-center gap-5"
-            onClick={() => loginWithGithub(token ?? undefined)}
-          >
-            <span className="pixelart-icons-font-github text-[30px]!" />
-            Sign in with Github
-          </PrimaryButton>
-          <p className="text-text-muted text-sm">
-            We use your Github account for login. We do not save your password.
-          </p>
+
+          <LoginError />
+
+          {(token === null || errorMessage) && (
+            <ErrorMessage
+              message={
+                token === null
+                  ? "This invitation is no longer valid"
+                  : errorMessage
+              }
+            />
+          )}
+
+          {errorMessage && state.status === "authenticated" && (
+            <PrimaryButton onClick={() => navigate("/dashboard")}>
+              Go to Dashboard
+            </PrimaryButton>
+          )}
+
+          {state.status === "unauthenticated" && teamName && !errorMessage && (
+            <>
+              <PrimaryButton
+                className="flex align-middle items-center justify-center gap-5"
+                onClick={() => loginWithGithub(token ?? undefined)}
+              >
+                <span className="pixelart-icons-font-github text-[30px]!" />
+                Sign in with Github
+              </PrimaryButton>
+              <p className="text-text-muted text-sm">
+                We use your Github account for login. We do not save your
+                password.
+              </p>
+            </>
+          )}
         </Card>
       </div>
     </section>
