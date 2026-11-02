@@ -147,5 +147,52 @@ namespace ApiKeyVault.Tests
 
             teamRepository.Verify(repo => repo.DeleteTeam(team), Times.Once);
         }
+
+        [Fact]
+        public async Task LeaveAsync_MemberLeaves_DoesNotDeleteTeam()
+        {
+            // Arrange
+            var member = new TeamMember
+            {
+                Id = 2,
+                TeamId = 1,
+                UserId = "member",
+                Role = new TeamRole {Name = "member"}
+            };
+
+            var teamMemberRepository = new Mock<ITeamMemberRepository>();
+            var apiKeyAccessRepository = new Mock<IApiKeyAccessRepository>();
+            var teamInviteRepository = new Mock<ITeamInviteRepository>();
+            var teamRepository = new Mock<ITeamRepository>();
+            var apiKeyRepository = new Mock<IApiKeyRepository>();
+
+            teamMemberRepository
+                .Setup(repo => repo.GetByTeamAndUserAsync(1, "member"))
+                .ReturnsAsync(member);
+
+            apiKeyAccessRepository
+                .Setup(repo => repo.GetByTeamMemberIdAsync(2))
+                .ReturnsAsync(new List<ApiKeyAccess>());
+
+            teamMemberRepository
+                .Setup(repo => repo.SaveChangesAsync())
+                .ReturnsAsync(1);
+
+            var service = new TeamMemberService(
+                teamMemberRepository.Object,
+                apiKeyAccessRepository.Object,
+                teamInviteRepository.Object,
+                teamRepository.Object,
+                apiKeyRepository.Object
+            );
+
+            // Act
+            var result = await service.LeaveAsync(1, "member");
+
+            // Assert 
+            Assert.Equal(TeamMemberResult.Success, result);
+
+            teamRepository.Verify(repo => repo.DeleteTeam(It.IsAny<Team>()), Times.Never);
+        }
     }
 }
