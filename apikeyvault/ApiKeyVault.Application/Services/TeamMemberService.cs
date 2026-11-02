@@ -20,7 +20,7 @@ namespace ApiKeyVault.Application.Services
             ITeamInviteRepository teamInviteRepository,
             ITeamRepository teamRepository,
             IApiKeyRepository apiKeyRepository)
-            
+
         {
             _teamMemberRepository = teamMemberRepository;
             _apiKeyAccessRepository = apiKeyAccessRepository;
@@ -113,7 +113,26 @@ namespace ApiKeyVault.Application.Services
 
             if (IsOwner(member))
             {
-                return TeamMemberResult.Forbidden;
+                // When owner leaves, it deletes the team and everything that belongs to it. 
+                var teamDelete = await _teamRepository.GetTeamForDeletionAsync(teamId, userId);
+
+                if (teamDelete is null)
+                {
+                    return TeamMemberResult.NotFound;
+                }
+
+                await _apiKeyRepository.RemoveByTeamAsync(teamId);
+                await _teamInviteRepository.RemoveByTeamAsync(teamId);
+                _teamRepository.DeleteTeam(teamDelete);
+
+                var deleteTeamResult = await _teamMemberRepository.SaveChangesAsync();
+
+                if (deleteTeamResult <= 0)
+                {
+                    return TeamMemberResult.Failed;
+                }
+
+                return TeamMemberResult.Success;
             }
 
             // Remove the Apikey access for the member before removing the member itself.
