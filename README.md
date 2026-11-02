@@ -87,3 +87,48 @@ The icons also accept tailwind css, so you can change for ex. color and size lik
 ```html
 <span className="pixelart-icons-font-key text-text-on-accent text-[50px]!" />
 ```
+
+## Azure Data Protection
+
+API keys and auth cookies are encrypted with ASP.NET Core Data Protection.
+In Azure, the key ring is stored in Blob Storage and encrypted with Azure Key Vault.
+
+### Environment variables
+   Variable | Description |
+ |---|---|
+ | `DataProtection__BlobUri` | URI of the key ring blob, e.g. `https://<account>.blob.core.windows.net/<container>/keys.xml` |
+ | `DataProtection__KeyVaultKeyUri` | Versionless key identifier, e.g. `https://<vault>.vault.azure.net/keys/data-protection` |
+
+If both are set, Azure mode is active. If either is empty or missing, the app
+falls back to the local default key ring. No secrets are used. Authentication runs through managed identity.
+
+### Required Azure resources
+
+- Storage account with one container for the key ring. Do not create the key
+  file manually, the app creates it on first start.
+- Key Vault with the Azure RBAC permission model
+  (not access policies).
+
+### Key Vault key
+
+Create a key in the vault (for example `data-protection`) and configure its versionless identifier. Rotating the key is fine. Never delete old key versions, existing data protection keys are encrypted with them.
+
+### Role assignments
+
+Assign these roles to the app's managed identity. Nothing else is required:
+
+- Storage Blob Data Contributor, scoped to the container.
+- Key Vault Crypto User, scoped to the vault.
+
+### Application name
+
+The application discriminator is set to `ApiKeyVault` for all instances in the
+same environment. Do not change it in an environment with existing encrypted
+API keys, they become undecryptable.
+
+### Environments and verification
+
+Use separate storage accounts, containers, and vaults per environment
+(dev, staging, production). Verification across instances is run at deployment:
+start two instances against the same configuration, protect a value in one and
+unprotect it in the other.

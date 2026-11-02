@@ -53,5 +53,19 @@ namespace ApiKeyVault.Api.Controllers
 
             return response is null ? NotFound() : Ok(response);
         }
+
+        [AllowAnonymous]
+        [HttpGet("/api/invites/preview")]
+        public async Task<ActionResult<InvitePreviewResponse>> GetInvitePreview([FromQuery] string token)
+        {
+            var response = await _teamInviteService.GetInvitePreviewAsync(token);
+
+            if (response is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
+        }
     }
 }

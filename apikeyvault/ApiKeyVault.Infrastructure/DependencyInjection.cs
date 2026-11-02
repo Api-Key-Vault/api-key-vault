@@ -1,11 +1,11 @@
-﻿using ApiKeyVault.Application.Common.Options;
-using ApiKeyVault.Application.Constants;
+﻿using ApiKeyVault.Application.Constants;
 using ApiKeyVault.Application.Interfaces.Repositories;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Infrastructure.Identity;
 using ApiKeyVault.Infrastructure.Persistence;
 using ApiKeyVault.Infrastructure.Persistence.Repositories;
 using ApiKeyVault.Infrastructure.Services;
+using Azure.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
@@ -21,14 +22,37 @@ namespace ApiKeyVault.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddDbContext<ApiKeyVaultDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddDataProtection().SetApplicationName("ApiKeyVault");
+            var dataProtectionBuilder = services.AddDataProtection().SetApplicationName("ApiKeyVault");
+
+            var blobUri = configuration["DataProtection:BlobUri"];
+            var keyUri = configuration["DataProtection:KeyVaultKeyUri"];
+
+            // Values for blobUri and keyUri are empty by default in local development appsettings.json,
+            // This is default and expected behavior, and this if statement will only be run in production
+            // with Azure env variables.
+            if (!environment.IsDevelopment() &&
+                (string.IsNullOrEmpty(blobUri) || string.IsNullOrEmpty(keyUri)))
+            {
+                throw new InvalidOperationException(
+                    "Azure Data Protection is not configured. " +
+                    "Set DataProtection:BlobUri and DataProtection:KeyVaultKeyUri " +
+                    $"(environment: {environment.EnvironmentName}).");
+            }
+
+            if (!string.IsNullOrEmpty(blobUri) && !string.IsNullOrEmpty(keyUri))
+            {
+                var credential = new DefaultAzureCredential();
+                dataProtectionBuilder
+                    .PersistKeysToAzureBlobStorage(new Uri(blobUri), credential)
+                    .ProtectKeysWithAzureKeyVault(new Uri(keyUri), credential);
+            }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApiKeyVaultDbContext>()
