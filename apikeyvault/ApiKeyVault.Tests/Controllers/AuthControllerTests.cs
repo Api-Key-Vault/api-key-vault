@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace ApiKeyVault.Tests
+namespace ApiKeyVault.Tests.Controllers
 {
     public class AuthControllerTests
     {
