@@ -11,12 +11,22 @@ namespace ApiKeyVault.Application.Services
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IApiKeyAccessRepository _apiKeyAccessRepository;
         private readonly ITeamInviteRepository _teamInviteRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IApiKeyRepository _apiKeyRepository;
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IApiKeyAccessRepository apiKeyAccessRepository, ITeamInviteRepository teamInviteRepository)
+        public TeamMemberService(
+            ITeamMemberRepository teamMemberRepository, 
+            IApiKeyAccessRepository apiKeyAccessRepository, 
+            ITeamInviteRepository teamInviteRepository,
+            ITeamRepository teamRepository,
+            IApiKeyRepository apiKeyRepository)
+            
         {
             _teamMemberRepository = teamMemberRepository;
             _apiKeyAccessRepository = apiKeyAccessRepository;
             _teamInviteRepository = teamInviteRepository;
+            _teamRepository = teamRepository;
+            _apiKeyRepository = apiKeyRepository;
         }
 
         public async Task<List<TeamMemberResponse>> GetByTeamAsync(int teamId, string userId)

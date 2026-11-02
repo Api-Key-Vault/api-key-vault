@@ -31,6 +31,8 @@ namespace ApiKeyVault.Tests
             var teamMemberRepository = new Mock<ITeamMemberRepository>();
             var apiKeyAccessRepository = new Mock<IApiKeyAccessRepository>();
             var teamInviteRepository = new Mock<ITeamInviteRepository>();
+            var teamRepository = new Mock<ITeamRepository>();
+            var apiKeyRepository = new Mock<IApiKeyRepository>();
 
             teamMemberRepository
                 .Setup(repo => repo.GetByTeamAndUserAsync(1, "member"))
@@ -43,7 +45,9 @@ namespace ApiKeyVault.Tests
             var service = new TeamMemberService(
                 teamMemberRepository.Object,
                 apiKeyAccessRepository.Object,
-                teamInviteRepository.Object
+                teamInviteRepository.Object,
+                teamRepository.Object,
+                apiKeyRepository.Object
             );
 
             // Act
@@ -70,6 +74,8 @@ namespace ApiKeyVault.Tests
             var teamMemberRepository = new Mock<ITeamMemberRepository>();
             var apiKeyAccessRepository = new Mock<IApiKeyAccessRepository>();
             var teamInviteRepository = new Mock<ITeamInviteRepository>();
+            var teamRepository = new Mock<ITeamRepository>();
+            var apiKeyRepository = new Mock<IApiKeyRepository>();
 
             teamMemberRepository
                 .Setup(repo => repo.GetByTeamAndUserAsync(1, "member"))
@@ -78,7 +84,9 @@ namespace ApiKeyVault.Tests
             var service = new TeamMemberService(
                 teamMemberRepository.Object,
                 apiKeyAccessRepository.Object,
-                teamInviteRepository.Object
+                teamInviteRepository.Object,
+                teamRepository.Object,
+                apiKeyRepository.Object
             );
 
             // Act
