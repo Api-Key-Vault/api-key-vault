@@ -241,7 +241,7 @@ function TeamKeyRow({
   const statusClass = displayedStatus === "Active" ? "text-primary-accent" : "text-error";
 
   return (
-    <Card className="dashboard-card dashboard-key-row max-[599px]:relative m-0! w-full border-2! border-border! p-0! shadow-[3px_3px_0_var(--shadow)]!">
+    <Card className="dashboard-key-row max-[599px]:relative m-0! w-full p-0!">
       <div className="grid w-full gap-1 px-3 py-3 min-[600px]:grid-cols-[minmax(0,1fr)_auto] min-[600px]:items-center min-[600px]:gap-x-5 min-[600px]:gap-y-2 min-[900px]:p-4">
         <div className="flex min-w-0 items-start gap-2 max-[599px]:grid! max-[599px]:grid-cols-[auto_minmax(0,1fr)]! max-[599px]:grid-rows-[auto_auto]! max-[599px]:gap-x-2! max-[599px]:gap-y-1.5! max-[599px]:items-center!">
           <span
