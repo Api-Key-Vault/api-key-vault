@@ -2,14 +2,14 @@ import { type PropsWithChildren } from "react";
 import { useAuth } from "@/features/auth";
 import { Navigate } from "react-router";
 import { ROUTE_PATHS } from "./paths";
-import { Loading } from "@/shared/ui";
+import { PageLoading } from "@/shared/ui";
 
 export function ProtectedRoute({ children }: PropsWithChildren) {
     const { state } = useAuth();
 
     switch (state.status) {
         case "loading":
-            return <Loading />;
+            return <PageLoading />;
         case "unauthenticated":
             return <Navigate to={ROUTE_PATHS.HOME} replace />;
         case "error":

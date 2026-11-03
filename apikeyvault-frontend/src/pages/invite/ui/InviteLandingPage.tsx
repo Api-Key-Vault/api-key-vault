@@ -1,5 +1,5 @@
 import { Bubble } from "pixel-retroui";
-import { Card, PrimaryButton, ErrorMessage, Loading } from "@/shared/ui";
+import { Card, PrimaryButton, ErrorMessage, PageLoading } from "@/shared/ui";
 import { useSearchParams, useNavigate } from "react-router";
 import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
 import { useEffect, useState, useRef } from "react";
@@ -63,7 +63,7 @@ export function InviteLandingPage() {
   }, [state.status, token, navigate]);
 
   if (isLoading) {
-    return <Loading />;
+    return <PageLoading />;
   }
 
   return (
