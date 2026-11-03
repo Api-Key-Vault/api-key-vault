@@ -72,9 +72,9 @@ export function TeamSettingsModal({
   }
 
   function handleRemoveMember(teamMemberId: number){
-    const confirm = window.confirm("Are you sure you want to remove this team member?");
+    const confirmed = window.confirm("Are you sure you want to remove this team member?");
 
-    if(confirm){
+    if(confirmed){
       onRemoveMember?.(teamMemberId);
     }
   }
