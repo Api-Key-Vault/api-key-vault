@@ -11,6 +11,5 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
 		Task AddTeamAsync(Team teamToAdd);
 		void DeleteTeam(Team teamToDelete);
 		Task SaveChangesAsync();
-
 	}
 }
