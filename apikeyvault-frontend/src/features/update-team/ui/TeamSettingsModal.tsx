@@ -14,6 +14,8 @@ type TeamSettingsModalProps = {
 };
 
 export function TeamSettingsModal({
+  actionError,
+  onActionErrorClose,
   isOwner = false,
   onClose,
   onLeave,
@@ -194,6 +196,10 @@ export function TeamSettingsModal({
               )}
 
               {isOwner && inviteError && <ErrorMessage message={inviteError} onClose={() => setInviteError("")} />}
+
+              {actionError && onActionErrorClose && (
+                <ErrorMessage message={actionError} onClose={onActionErrorClose} />
+              )}
 
               {isOwner && inviteUrl && (
                 <div className="flex flex-col gap-2">
