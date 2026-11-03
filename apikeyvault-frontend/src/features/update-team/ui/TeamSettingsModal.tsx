@@ -4,6 +4,8 @@ import type { Team, TeamMember } from "@/entities/team";
 import { createInvite } from "@/features/create-invite";
 
 type TeamSettingsModalProps = {
+  actionError?: string | null;
+  onActionErrorClose?: () => void;
   isOwner?: boolean;
   onClose: () => void;
   onLeave?: () => void;
