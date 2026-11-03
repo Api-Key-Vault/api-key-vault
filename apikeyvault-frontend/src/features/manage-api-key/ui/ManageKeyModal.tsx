@@ -49,6 +49,7 @@ export function ManageKeyModal({
 
   // Api key access variables
   const availableMembers = teamMembers.filter((member: TeamMember) => 
+    member.roleName !== "Owner" &&
     !apiKeyAccesses.some(access => access.teamMemberId === member.id)
   );
 
