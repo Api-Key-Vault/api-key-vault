@@ -25,11 +25,12 @@ import {
   grantKeyAccess,
   type ApiKeyAccess
 } from "@/entities/api-key-access";
-import { Card, PrimaryButton } from "@/shared/ui";
+import { PrimaryButton } from "@/shared/ui";
 import { ROUTE_PATHS } from "@/app/router/paths";
 import { TeamSettingsModal } from "@/features/update-team";
-import "./TeamDashboardPage.css";
 import { Button } from "pixel-retroui";
+import { Card as RetroCard } from "pixel-retroui";
+import { Card } from "@/shared/ui";
 
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
@@ -241,7 +242,16 @@ function TeamKeyRow({
   const statusClass = displayedStatus === "Active" ? "text-primary-accent" : "text-error";
 
   return (
-    <Card className="dashboard-key-row max-[599px]:relative m-0! w-full p-0!">
+    <RetroCard
+      bg={isInactive ? "color-mix(in srgb, var(--color-surface), transparent 50%)" : "var(--color-surface)"}
+      textColor="var(--color-text)"
+      shadowColor={isLocallyExpired
+        ? "color-mix(in srgb, var(--color-warning), transparent 50%)"
+        : apiKey.status !== "Active"
+        ? "color-mix(in srgb, var(--color-error), transparent 50%)"
+        : "var(--color-shadow)"}
+      borderColor="var(--color-border)"
+      className="max-[599px]:relative m-0! w-full p-0!">
       <div className="grid w-full gap-1 px-3 py-3 min-[600px]:grid-cols-[minmax(0,1fr)_auto] min-[600px]:items-center min-[600px]:gap-x-5 min-[600px]:gap-y-2 min-[900px]:p-4">
         <div className="flex min-w-0 items-start gap-2 max-[599px]:grid! max-[599px]:grid-cols-[auto_minmax(0,1fr)]! max-[599px]:grid-rows-[auto_auto]! max-[599px]:gap-x-2! max-[599px]:gap-y-1.5! max-[599px]:items-center!">
           <span
@@ -309,7 +319,7 @@ function TeamKeyRow({
           </div>
         </div>
       </div>
-    </Card>
+    </RetroCard>
   );
 }
 
