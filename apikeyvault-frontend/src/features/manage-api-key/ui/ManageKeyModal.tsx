@@ -4,6 +4,7 @@ import { TeamAccess } from "./TeamAccess";
 import type { ManageKeyModalProps } from "../model/types";
 import type { TeamMember } from "@/entities/team";
 import type { ApiKeyAccess } from "@/entities/api-key-access";
+import { Button } from "pixel-retroui";
 
 export function ManageKeyModal({
   teamId,
@@ -48,6 +49,7 @@ export function ManageKeyModal({
 
   // Api key access variables
   const availableMembers = teamMembers.filter((member: TeamMember) => 
+    member.roleName !== "Owner" &&
     !apiKeyAccesses.some(access => access.teamMemberId === member.id)
   );
 
@@ -93,7 +95,7 @@ export function ManageKeyModal({
   return (
     <dialog
       aria-labelledby="manage-key-title"
-      className="fixed inset-0 z-50 m-0! h-[100dvh] w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
+      className="fixed inset-0 z-50 m-0! h-dvh w-screen max-h-none! max-w-none! overflow-visible border-0! bg-transparent! p-4! open:flex open:items-center open:justify-center backdrop:bg-black/40"
       onCancel={(event) => {
         event.preventDefault();
         if (!isSubmitting) {
@@ -107,8 +109,8 @@ export function ManageKeyModal({
       }}
       ref={dialogRef}
     >
-      <div className="w-full max-w-[32rem]">
-        <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! min-[900px]:px-12!">
+      <div className="w-full max-w-lg">
+        <Card className="relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto px-8! py-5! max-[599px]:p-4! min-[900px]:px-12!">
           <button
             autoFocus
             aria-label="Close manage key modal"
@@ -142,7 +144,7 @@ export function ManageKeyModal({
                 Key name
               </label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="manage-api-key-name"
                 maxLength={50}
@@ -158,7 +160,7 @@ export function ManageKeyModal({
                 Replace API key
               </label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="manage-api-key-value"
                 onChange={(event) => setValue(event.target.value)}
@@ -173,7 +175,7 @@ export function ManageKeyModal({
                 Category
               </label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="manage-api-key-category"
                 maxLength={50}
@@ -188,7 +190,7 @@ export function ManageKeyModal({
                 Expires on
               </label>
               <input
-                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-[5px]! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
+                className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
                 disabled={isSubmitting}
                 id="manage-api-key-expires-at"
                 onChange={(event) => setExpiresAt(event.target.value)}
@@ -198,7 +200,7 @@ export function ManageKeyModal({
             </div>
 
             <PrimaryButton
-              className=" inline-flex h-[23px]! min-h-[23px]! w-[75%] self-center items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-[3px]! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+              className=" inline-flex h-5.75! min-h-5.75! w-[75%] self-center items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
               disabled={isSubmitting}
             >
               Save changes
@@ -225,33 +227,35 @@ export function ManageKeyModal({
                 </p>
                 <div className="flex justify-end gap-2">
                   <button
-                    className="inline-flex h-[23px]! min-h-[23px]! cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-surface-elevated! px-1.5! py-[3px]! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-surface-elevated! px-1.5! py-0.75! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting}
                     onClick={() => setIsConfirmingRevoke(false)}
                     type="button"
                   >
                     Keep key
                   </button>
-                  <button
-                    className="inline-flex h-[23px]! min-h-[23px]! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-warning! px-1.5! py-[3px]! text-[10px]! leading-none! text-warning-on-color! shadow-[2px_2px_0_var(--shadow)]! active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                  <Button
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting || isRevoked}
+                    bg="var(--color-warning)"
                     onClick={handleRevoke}
                     type="button"
                   >
                     Deactivate key
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
-              <button
-                className="inline-flex h-[23px]! min-h-[23px]! cursor-pointer items-center justify-center self-center gap-1 whitespace-nowrap border-2! border-border! bg-warning! px-1.5! py-[3px]! text-[10px]! leading-none! text-warning-on-color! shadow-[2px_2px_0_var(--shadow)]! active:[transform:translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-[29px]! min-[900px]:min-h-[29px]! min-[900px]:px-2.5! min-[900px]:py-[5px]! min-[900px]:text-[13px]!"
+              <Button
+                className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center self-center gap-2 whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
                 disabled={isSubmitting || isRevoked}
+                bg="var(--color-warning)"
                 onClick={() => setIsConfirmingRevoke(true)}
                 type="button"
               >
                 <span aria-hidden="true" className="pixelart-icons-font-power-off text-[14px]! leading-none!" />
                 Deactivate key
-              </button>
+              </Button>
             )}
           </section>
         </Card>

@@ -69,7 +69,12 @@ export function DropDown<T>({
           textColor="var(--success-on-color)"
         >
           <div aria-label={`${ariaLabel} options`} role="menu">
-            {dropDownOptions.map((option) => (
+            {dropDownOptions.length === 0 ? (
+              <span className="block w-full px-1 py-px text-center text-[11px] text-success-on-color">
+                No avaliable members
+              </span>
+            ) : (
+                dropDownOptions.map((option) => (
               <button
                 className="block w-full cursor-pointer border-0! bg-transparent! px-1! py-px! text-left text-[11px]! text-success-on-color! hover:bg-success-on-color! hover:text-success! focus:bg-success-on-color! focus:text-success!"
                 key={getOptionsKey(option)}
@@ -79,7 +84,8 @@ export function DropDown<T>({
               >
                 {getOptionsLabel(option)}
               </button>
-            ))}
+            ))
+            )}
           </div>
         </Card>
       )}
