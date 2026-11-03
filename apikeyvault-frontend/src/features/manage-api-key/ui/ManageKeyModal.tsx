@@ -108,7 +108,7 @@ export function ManageKeyModal({
       ref={dialogRef}
     >
       <div className="w-full max-w-lg">
-        <Card className="dashboard-card relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto border-2! border-border! px-8! py-5! shadow-[5px_5px_0_var(--shadow)]! max-[599px]:p-4! min-[900px]:px-12!">
+        <Card className="relative m-0! flex max-h-[calc(100dvh-2rem)] w-full shrink-0 flex-col gap-3! overflow-y-auto px-8! py-5! max-[599px]:p-4! min-[900px]:px-12!">
           <button
             autoFocus
             aria-label="Close manage key modal"
@@ -198,7 +198,7 @@ export function ManageKeyModal({
             </div>
 
             <PrimaryButton
-              className=" inline-flex h-5.75! min-h-5.75! w-[75%] self-center items-center justify-center gap-1 whitespace-nowrap border-2! border-border! px-1.5! py-0.75! text-[10px]! leading-none! shadow-[3px_3px_0_var(--shadow)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+              className=" inline-flex h-5.75! min-h-5.75! w-[75%] self-center items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
               disabled={isSubmitting}
             >
               Save changes
