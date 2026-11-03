@@ -4,6 +4,7 @@ import { TeamAccess } from "./TeamAccess";
 import type { ManageKeyModalProps } from "../model/types";
 import type { TeamMember } from "@/entities/team";
 import type { ApiKeyAccess } from "@/entities/api-key-access";
+import { Button } from "pixel-retroui";
 
 export function ManageKeyModal({
   teamId,
@@ -232,26 +233,28 @@ export function ManageKeyModal({
                   >
                     Keep key
                   </button>
-                  <button
-                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap border-2! border-border! bg-warning! px-1.5! py-0.75! text-[10px]! leading-none! text-warning-on-color! shadow-[2px_2px_0_var(--shadow)]! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                  <Button
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting || isRevoked}
+                    bg="var(--color-warning)"
                     onClick={handleRevoke}
                     type="button"
                   >
                     Deactivate key
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
-              <button
-                className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center self-center gap-1 whitespace-nowrap border-2! border-border! bg-warning! px-1.5! py-0.75! text-[10px]! leading-none! text-warning-on-color! shadow-[2px_2px_0_var(--shadow)]! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:px-2.5! min-[900px]:py-1.25! min-[900px]:text-[13px]!"
+              <Button
+                className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center self-center gap-2 whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
                 disabled={isSubmitting || isRevoked}
+                bg="var(--color-warning)"
                 onClick={() => setIsConfirmingRevoke(true)}
                 type="button"
               >
                 <span aria-hidden="true" className="pixelart-icons-font-power-off text-[14px]! leading-none!" />
                 Deactivate key
-              </button>
+              </Button>
             )}
           </section>
         </Card>
