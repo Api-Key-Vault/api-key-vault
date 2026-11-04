@@ -68,7 +68,7 @@
   --color-pattern-2: var(--pattern-color-2);
 }
 
-body {
+html {
   min-width: 320px;
   background: conic-gradient(
     var(--pattern-color-1) 25%,
