@@ -156,5 +156,17 @@ namespace ApiKeyVault.Application.Services
 
             return TeamMemberResult.Success;
         }
+
+        public async Task<bool> IsMemberAsync(int teamId, string userId)
+        {
+            var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
+
+            if(member is null)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
