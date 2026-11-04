@@ -374,6 +374,7 @@ function TeamDashboardContent({
   const [isMutating, setIsMutating] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
   const [copiedFeedback, setCopiedFeedback] = useState<CopyFeedback | null>(null);
+  const [memberActionError, setMemberActionError] = useState<string | null>(null);
   const mountedRef = useRef(false);
 
   const currentMember = members.find((member) => member.userId === authUserId);
@@ -384,6 +385,10 @@ function TeamDashboardContent({
     if (mountedRef.current) {
       setCopiedFeedback((current) => current?.keyId === apiKeyId ? null : current);
     }
+  }, []);
+
+  const clearMemberActionError = useCallback(() => {
+    setMemberActionError(null);
   }, []);
 
   async function handleCopyKey(apiKey: ApiKey, isRowValid: () => boolean): Promise<string | null> {
@@ -703,6 +708,7 @@ function TeamDashboardContent({
       return;
     }
 
+    setMemberActionError(null);
     setIsMutating(true);
 
     try {
@@ -714,10 +720,9 @@ function TeamDashboardContent({
 
         setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
       } catch {
-        // TODO: Show this error in a popup (shared ErrorMessage) once its design
-        // is done in ticket-142. Delete errors are not validation errors, so they should
-        // not be shown as inline form text. Remove this comment when the popup is added.
-        console.error("The member could not be removed.");
+        if (mountedRef.current){
+          setMemberActionError("Could not remove member. Try again.");
+        }
       } finally {
         if(mountedRef.current){
           setIsMutating(false);
@@ -730,6 +735,7 @@ function TeamDashboardContent({
       return;
     }
 
+    setMemberActionError(null);
     setIsMutating(true);
 
     try {
@@ -741,10 +747,9 @@ function TeamDashboardContent({
 
       onBack();
       } catch {
-        // TODO: Show this error in a popup (shared ErrorMessage) once its design
-        // is done in ticket-142. Delete errors are not validation errors, so they should
-        // not be shown as inline form text. Remove this comment when the popup is added.
-        console.error("The team could not be left.");
+        if (mountedRef.current){
+          setMemberActionError("Could not leave team. Try again.");
+        }
       } finally {
         if (mountedRef.current) {
           setIsMutating(false);
@@ -894,8 +899,12 @@ function TeamDashboardContent({
 
       {isSettingsOpen && team !== null && (
         <TeamSettingsModal
+          actionError={memberActionError}
+          onActionErrorClose={clearMemberActionError}
           isOwner={isOwner}
-          onClose={() => setIsSettingsOpen(false)}
+          onClose={() => {
+            clearMemberActionError();
+            setIsSettingsOpen(false)}}
           onLeave={handleLeaveTeam}
           onRemoveMember={handleRemoveMember}
           team={{id: team.id, name: team.name, members }}

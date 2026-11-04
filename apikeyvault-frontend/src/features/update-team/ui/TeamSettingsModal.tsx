@@ -4,6 +4,8 @@ import type { Team, TeamMember } from "@/entities/team";
 import { createInvite } from "@/features/create-invite";
 
 type TeamSettingsModalProps = {
+  actionError?: string | null;
+  onActionErrorClose?: () => void;
   isOwner?: boolean;
   onClose: () => void;
   onLeave?: () => void;
@@ -12,6 +14,8 @@ type TeamSettingsModalProps = {
 };
 
 export function TeamSettingsModal({
+  actionError,
+  onActionErrorClose,
   isOwner = false,
   onClose,
   onLeave,
@@ -200,6 +204,10 @@ export function TeamSettingsModal({
               )}
 
               {isOwner && inviteError && <ErrorMessage message={inviteError} onClose={() => setInviteError("")} />}
+
+              {actionError && onActionErrorClose && (
+                <ErrorMessage message={actionError} onClose={onActionErrorClose} />
+              )}
 
               {isOwner && inviteUrl && (
                 <div className="flex flex-col gap-2">
