@@ -1,8 +1,11 @@
 import { useLoading } from "@/shared/lib";
 import { ProgressBar } from "@/shared/ui";
 
-export function PageLoading(){
-    const loadingProgress = useLoading(true);
+type PageLoadingProps = {
+    isLoading: boolean;
+};
+export function PageLoading({isLoading}: PageLoadingProps){
+    const loadingProgress = useLoading(isLoading);
 
     return(
         <section className="flex flex-col gap-8 justify-center items-center w-full min-h-screen">

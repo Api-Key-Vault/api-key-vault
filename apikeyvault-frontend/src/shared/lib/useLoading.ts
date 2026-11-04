@@ -7,19 +7,19 @@ export function useLoading(isLoading: boolean){
     const [progress, setProgress] = useState(0);    
     
     useEffect(() => {
-        if(!isLoading){            
-            return;
+        let progressInterval = 0;
+        if(isLoading){                   
+          progressInterval = setInterval(() => {
+                setProgress(currentProgress => (currentProgress + (maxValue-currentProgress) * 0.10) )
+            }, timeDelay);            
         }
-        const progressInterval = setInterval(() => {
-            setProgress(currentProgress => (currentProgress + (maxValue-currentProgress) * 0.05) )
-        }, timeDelay);            
-    
+            
         return () => {
-            clearInterval(progressInterval);
-            setProgress(0);
+            setProgress(100); 
+            clearInterval(progressInterval);           
         }
 
     }, [isLoading]);
 
-    return isLoading ? progress : 0;
+    return progress;
 }
