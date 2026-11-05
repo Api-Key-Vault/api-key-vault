@@ -7,6 +7,7 @@ type TeamSettingsModalProps = {
   isOwner?: boolean;
   onClose: () => void;
   onLeave?: () => void;
+  onDeleteTeam?: (teamId: number) => Promise<void>;
   onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "id" | "name"> & { members: TeamMember[] };
 };
@@ -16,6 +17,7 @@ export function TeamSettingsModal({
   onClose,
   onLeave,
   onRemoveMember,
+  onDeleteTeam,
   team,
 }: TeamSettingsModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -23,6 +25,8 @@ export function TeamSettingsModal({
   const [inviteUrl, setInviteUrl] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [inviteError, setInviteError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -48,7 +52,7 @@ export function TeamSettingsModal({
   async function handleGenerateInviteLink() {
     try {
       setInviteError("");
-     
+
       const inviteLink = await createInvite(team.id);
 
       setInviteUrl(inviteLink.inviteUrl);
@@ -67,8 +71,20 @@ export function TeamSettingsModal({
     }
   }
 
-  function handleDeleteTeam() {
-    // Team deletion is not wired yet.
+  async function handleDeleteTeam() {
+    try {
+      setDeleteError("");
+      setIsDeleting(true);
+
+      await onDeleteTeam?.(team.id);
+      onClose();
+    } catch {
+      setDeleteError("Deletion of team failed.");
+    } finally {
+      setIsDeleting(false);
+    }
+
+
   }
 
   return (
@@ -153,15 +169,15 @@ export function TeamSettingsModal({
                   <span className="text-[11px]! leading-tight! text-text!">{member.displayName || member.userId}</span>
                   <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">{member.roleName}</span>
                   {isOwner && member.roleName === "Member" && (
-                  <button
-                    aria-label={`Remove ${member.displayName || member.userId}`}
-                    className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                    onClick={() => onRemoveMember?.(member.id)}
-                    type="button"
-                  >
-                    <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
-                  </button>
-                )}
+                    <button
+                      aria-label={`Remove ${member.displayName || member.userId}`}
+                      className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
+                      onClick={() => onRemoveMember?.(member.id)}
+                      type="button"
+                    >
+                      <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
+                    </button>
+                  )}
                 </div>
               ))}
 
@@ -250,8 +266,9 @@ export function TeamSettingsModal({
                   className="self-center inline-flex! text-sm! cursor-pointer items-center justify-center whitespace-nowrap leading-none! text-error-on-color!"
                   onClick={handleDeleteTeam}
                 >
-                  Delete team
+                  {isDeleting ? "Deleting..." : "Delete team"}
                 </DeleteButton>
+                {deleteError && (<ErrorMessage message="{deleteError}" onClose={() => setDeleteError("")} />)}
               </section>
             )}
           </form>

@@ -30,6 +30,7 @@ import { ROUTE_PATHS } from "@/app/router/paths";
 import { TeamSettingsModal } from "@/features/update-team";
 import "./TeamDashboardPage.css";
 import { Button } from "pixel-retroui";
+import { deleteTeam } from "@/features/delete-team";
 
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
@@ -606,18 +607,18 @@ function TeamDashboardContent({
     await handleLoadAccesses(apiKey.id);
   }
 
-  async function handleLoadAccesses(apiKeyId: number){
-    if(!hasValidTeamId){
+  async function handleLoadAccesses(apiKeyId: number) {
+    if (!hasValidTeamId) {
       return;
     }
-    try{
+    try {
       const accesses = await getApiKeyAccesses(teamId, apiKeyId);
 
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setApiKeyAccesses(accesses);
       }
     } catch {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setModalError("The key accesses could not be loaded.")
       }
     }
@@ -628,68 +629,67 @@ function TeamDashboardContent({
     apiKeyId: number,
     teamMemberId: number,
   ) {
-    if(!isOwner || !hasValidTeamId || isMutating) {
+    if (!isOwner || !hasValidTeamId || isMutating) {
       return;
     }
     setIsMutating(true);
     setModalError(null);
 
-    try{
+    try {
       const newAccess = await grantKeyAccess(currentTeamId, { apiKeyId, teamMemberId });
 
-      if(mountedRef.current) {
+      if (mountedRef.current) {
         setApiKeyAccesses((currentAccesses) => [
           ...currentAccesses,
           newAccess,
         ]);
       }
-    } catch{
-      if(mountedRef.current){
+    } catch {
+      if (mountedRef.current) {
         setModalError("Key access could not be added.");
       }
     } finally {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
   }
 
   async function handleRevokeAccess(
-    currentTeamId: number, 
+    currentTeamId: number,
     access: ApiKeyAccess,
   ) {
     if (!isOwner || !hasValidTeamId || isMutating) {
-    return;
+      return;
     }
 
     setIsMutating(true);
     setModalError(null);
 
-    try{
+    try {
       await revokeKeyAccess(currentTeamId, access.apiKeyId, access.teamMemberId);
 
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setApiKeyAccesses((currentAccesses) =>
-        currentAccesses.filter(
-          currentAccess => 
-            currentAccess.teamMemberId !== access.teamMemberId,
+          currentAccesses.filter(
+            currentAccess =>
+              currentAccess.teamMemberId !== access.teamMemberId,
           )
         );
       }
     } catch {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setModalError("Key access could not be removed");
       }
     } finally {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
-  } 
+  }
 
-  async function handleRemoveMember(teamMemberId: number)
-  {
-    if(!isOwner || !hasValidTeamId || isMutating){
+  async function handleRemoveMember(teamMemberId: number) {
+    if (!isOwner || !hasValidTeamId || isMutating) {
       return;
     }
 
@@ -698,25 +698,25 @@ function TeamDashboardContent({
     try {
       await removeTeamMember(teamId, teamMemberId);
 
-      if(!mountedRef.current){
+      if (!mountedRef.current) {
         return;
       }
 
-        setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
-      } catch {
-        // TODO: Show this error in a popup (shared ErrorMessage) once its design
-        // is done in ticket-142. Delete errors are not validation errors, so they should
-        // not be shown as inline form text. Remove this comment when the popup is added.
-        console.error("The member could not be removed.");
-      } finally {
-        if(mountedRef.current){
-          setIsMutating(false);
+      setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
+    } catch {
+      // TODO: Show this error in a popup (shared ErrorMessage) once its design
+      // is done in ticket-142. Delete errors are not validation errors, so they should
+      // not be shown as inline form text. Remove this comment when the popup is added.
+      console.error("The member could not be removed.");
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
       }
     }
   }
 
   async function handleLeaveTeam() {
-    if (isOwner || !hasValidTeamId || isMutating){
+    if (isOwner || !hasValidTeamId || isMutating) {
       return;
     }
 
@@ -725,22 +725,48 @@ function TeamDashboardContent({
     try {
       await leaveTeam(teamId);
 
-      if(!mountedRef.current){
+      if (!mountedRef.current) {
         return;
       }
 
       onBack();
-      } catch {
-        // TODO: Show this error in a popup (shared ErrorMessage) once its design
-        // is done in ticket-142. Delete errors are not validation errors, so they should
-        // not be shown as inline form text. Remove this comment when the popup is added.
-        console.error("The team could not be left.");
-      } finally {
-        if (mountedRef.current) {
-          setIsMutating(false);
+    } catch {
+      // TODO: Show this error in a popup (shared ErrorMessage) once its design
+      // is done in ticket-142. Delete errors are not validation errors, so they should
+      // not be shown as inline form text. Remove this comment when the popup is added.
+      console.error("The team could not be left.");
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
       }
     }
   }
+  async function handleDeleteTeam() {
+    if (!isOwner || !hasValidTeamId || isMutating) {
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      await deleteTeam(teamId);
+
+      if (!mountedRef.current) {
+        return;
+      }
+
+      onBack();
+    } catch {
+      console.error("The team could not be deleted.");
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
+      }
+    }
+  }
+
+
+
 
   const renderStatusCard = (message: string, canRetry: boolean) => (
     <div role="alert">
@@ -812,13 +838,13 @@ function TeamDashboardContent({
                   </span>
                 </div>
               </div>
-                <Button
-                  bg="var(--color-surface-elevated)"
-                  className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
-                  onClick={() => setIsSettingsOpen(true)}
-                >
-                  Settings
-                </Button>
+              <Button
+                bg="var(--color-surface-elevated)"
+                className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
+                onClick={() => setIsSettingsOpen(true)}
+              >
+                Settings
+              </Button>
             </Card>
 
             <div className="mb-10! flex items-center justify-between pl-1 pr-1.5">
@@ -887,8 +913,9 @@ function TeamDashboardContent({
           isOwner={isOwner}
           onClose={() => setIsSettingsOpen(false)}
           onLeave={handleLeaveTeam}
+          onDeleteTeam={handleDeleteTeam}
           onRemoveMember={handleRemoveMember}
-          team={{id: team.id, name: team.name, members }}
+          team={{ id: team.id, name: team.name, members }}
         />
       )}
     </main>
