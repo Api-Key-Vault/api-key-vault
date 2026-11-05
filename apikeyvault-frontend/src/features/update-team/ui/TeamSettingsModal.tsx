@@ -8,6 +8,7 @@ type TeamSettingsModalProps = {
   onClose: () => void;
   onLeave?: () => void;
   onDeleteTeam?: (teamId: number) => Promise<void>;
+  onUpdateTeam?: (teamId: number, name: string) => Promise<void>;
   onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "id" | "name"> & { members: TeamMember[] };
 };
@@ -18,6 +19,7 @@ export function TeamSettingsModal({
   onLeave,
   onRemoveMember,
   onDeleteTeam,
+  onUpdateTeam,
   team,
 }: TeamSettingsModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -27,6 +29,10 @@ export function TeamSettingsModal({
   const [inviteError, setInviteError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [teamName, setTeamName] = useState(team.name);
+  const [osUpdating, setIsUpdating] = useState(false);
+  const [updateerror, setUpdateError] = useState("");
+
 
   useEffect(() => {
     const dialog = dialogRef.current;
