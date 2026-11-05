@@ -76,6 +76,8 @@ export function TeamSettingsModal({
       setDeleteError("");
       setIsDeleting(true);
 
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       await onDeleteTeam?.(team.id);
       onClose();
     } catch {
