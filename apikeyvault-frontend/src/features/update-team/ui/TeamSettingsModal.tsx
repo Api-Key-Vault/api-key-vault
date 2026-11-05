@@ -30,8 +30,8 @@ export function TeamSettingsModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [teamName, setTeamName] = useState(team.name);
-  const [osUpdating, setIsUpdating] = useState(false);
-  const [updateerror, setUpdateError] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
 
   useEffect(() => {
@@ -91,9 +91,27 @@ export function TeamSettingsModal({
     } finally {
       setIsDeleting(false);
     }
-
-
   }
+
+  async function handleUpdateTeam() {
+    const trimmedName = teamName.trim();
+
+    if (!trimmedName || trimmedName === team.name || isUpdating)
+      return;
+
+    try {
+      setUpdateError("");
+      setIsUpdating(true);
+
+      await onUpdateTeam?.(team.id, trimmedName);
+      onClose()
+    } catch {
+      setUpdateError("Team update failed.")
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
 
   return (
     <dialog
@@ -148,10 +166,11 @@ export function TeamSettingsModal({
                 </label>
                 <input
                   className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
-                  disabled
+                  disabled={isUpdating}
                   id="team-settings-name"
                   required
-                  value={team.name}
+                  value={teamName}
+                  onChange={(event) => setTeamName(event.target.value)}
                 />
               </div>
             )}
@@ -159,10 +178,13 @@ export function TeamSettingsModal({
             {isOwner && (
               <PrimaryButton
                 className="m-auto! inline-flex w-[75%] items-center text-sm! justify-center whitespace-nowrap leading-none! disabled:cursor-not-allowed disabled:opacity-50"
-                disabled
+                disabled={isUpdating || !teamName.trim() || teamName.trim() === team.name}
+                onClick={handleUpdateTeam}
               >
-                Save changes
+                {isUpdating ? "Saving" : "Save changes"}
+                {updateError && (<ErrorMessage message={updateError} onClose={() => setUpdateError("")} />)}
               </PrimaryButton>
+
             )}
 
             <section
