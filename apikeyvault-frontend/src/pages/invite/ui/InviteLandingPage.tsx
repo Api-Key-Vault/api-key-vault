@@ -63,7 +63,7 @@ export function InviteLandingPage() {
   }, [state.status, token, navigate]);
 
   if (isLoading) {
-    return <PageLoading />;
+    return <PageLoading isLoading />;
   }
 
   return (

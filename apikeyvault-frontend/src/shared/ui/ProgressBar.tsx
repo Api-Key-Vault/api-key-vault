@@ -20,12 +20,12 @@ export function ProgressBar({
    }    
 
     return(
-        <div role="progressbar" aria-label={ariaLabel} className="w-full" >
+        <div role="progressbar" aria-label={ariaLabel} className="w-[75%]" >
             <RetroProgressBar 
                 size={size}
                 color="var(--primary-accent)"
                 borderColor="var(--border)"
-                className={`w-[75%] ${className}`}
+                className={`${className}`}
                 progress={roundDowntoStep(safeValue)}
             />
         </div>
