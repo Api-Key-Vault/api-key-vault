@@ -86,14 +86,19 @@ export function TeamSettingsModal({
       setDeleteError("");
       setIsDeleting(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
       await onDeleteTeam?.(team.id);
       onClose();
     } catch {
       setDeleteError("Deletion of team failed.");
     } finally {
       setIsDeleting(false);
+    }
+  }
+
+  function handleDeleteTeamConfirmation() {
+    const confirmed = window.confirm("Deleting this team will delete all associated data permanently. Are you sure you want to delete this team?");
+    if (confirmed) {
+      handleDeleteTeam();
     }
   }
 
@@ -310,7 +315,7 @@ export function TeamSettingsModal({
                 <DeleteButton
                   aria-label="Delete team"
                   className="self-center inline-flex! text-sm! cursor-pointer items-center justify-center whitespace-nowrap leading-none! text-error-on-color!"
-                  onClick={handleDeleteTeam}
+                  onClick={handleDeleteTeamConfirmation}
                 >
                   {isDeleting ? "Deleting..." : "Delete team"}
                 </DeleteButton>
