@@ -32,10 +32,9 @@ export function TeamSettingsModal({
   const [isCopied, setIsCopied] = useState(false);
   const [inviteError, setInviteError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
   const [teamName, setTeamName] = useState(team.name);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [updateError, setUpdateError] = useState("");
+
 
 
   useEffect(() => {
@@ -83,14 +82,13 @@ export function TeamSettingsModal({
 
   async function handleDeleteTeam() {
     try {
-      setDeleteError("");
       setIsDeleting(true);
-
       await onDeleteTeam?.(team.id);
       onClose();
     } catch {
-      setDeleteError("Deletion of team failed.");
-    } finally {
+      // errors are handled by the dashboard 
+    }
+    finally {
       setIsDeleting(false);
     }
   }
@@ -109,13 +107,11 @@ export function TeamSettingsModal({
       return;
 
     try {
-      setUpdateError("");
       setIsUpdating(true);
-
       await onUpdateTeam?.(team.id, trimmedName);
       onClose()
     } catch {
-      setUpdateError("Team update failed.")
+      // errors are handled by the dashboard 
     } finally {
       setIsUpdating(false);
     }
@@ -199,7 +195,6 @@ export function TeamSettingsModal({
                 onClick={handleUpdateTeam}
               >
                 {isUpdating ? "Saving" : "Save changes"}
-                {updateError && (<ErrorMessage message={updateError} onClose={() => setUpdateError("")} />)}
               </PrimaryButton>
 
             )}
@@ -319,7 +314,6 @@ export function TeamSettingsModal({
                 >
                   {isDeleting ? "Deleting..." : "Delete team"}
                 </DeleteButton>
-                {deleteError && (<ErrorMessage message={deleteError} onClose={() => setDeleteError("")} />)}
               </section>
             )}
           </form>
