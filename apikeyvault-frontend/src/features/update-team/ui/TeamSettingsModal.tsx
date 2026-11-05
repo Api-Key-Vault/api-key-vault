@@ -298,7 +298,7 @@ export function TeamSettingsModal({
                 >
                   {isDeleting ? "Deleting..." : "Delete team"}
                 </DeleteButton>
-                {deleteError && (<ErrorMessage message="{deleteError}" onClose={() => setDeleteError("")} />)}
+                {deleteError && (<ErrorMessage message={deleteError} onClose={() => setDeleteError("")} />)}
               </section>
             )}
           </form>
