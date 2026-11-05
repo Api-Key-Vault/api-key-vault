@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { AddKeyModal, type AddKeyRequest } from "@/features/create-api-key";
 import { ManageKeyModal, type ManageKeyUpdate } from "@/features/manage-api-key";
 import { useAuth } from "@/features/auth";
+import { updateTeam } from "@/features/update-team";
 import {
   createApiKey,
   getApiKeys,
@@ -509,6 +510,38 @@ function TeamDashboardContent({
     }
   }
 
+  async function handleUpdateTeam(teamId: number, name: string) {
+    if (!isOwner || !hasValidTeamId || isMutating || team === null) {
+      return;
+    }
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName || trimmedName == team.name) {
+      return;
+    }
+
+    setIsMutating(true);
+    setModalError(null);
+
+    try {
+      const updatedTeam = await updateTeam(teamId, { name: trimmedName })
+      if (!mountedRef.current) {
+        return;
+      }
+
+      setTeam((currentTeam) => currentTeam ? { ...currentTeam, name: updatedTeam.name } : currentTeam);
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The team could not be updated.");
+      }
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
+      }
+    }
+  }
+
   async function handleSaveKey(update: ManageKeyUpdate) {
     if (!isOwner || !hasValidTeamId || selectedKey === null || isMutating) {
       return;
@@ -914,6 +947,7 @@ function TeamDashboardContent({
           onClose={() => setIsSettingsOpen(false)}
           onLeave={handleLeaveTeam}
           onDeleteTeam={handleDeleteTeam}
+          onUpdateTeam={handleUpdateTeam}
           onRemoveMember={handleRemoveMember}
           team={{ id: team.id, name: team.name, members }}
         />
