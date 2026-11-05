@@ -4,6 +4,8 @@ import type { Team, TeamMember } from "@/entities/team";
 import { createInvite } from "@/features/create-invite";
 
 type TeamSettingsModalProps = {
+  actionError?: string | null;
+  onActionErrorClose?: () => void;
   isOwner?: boolean;
   onClose: () => void;
   onLeave?: () => void;
@@ -14,6 +16,8 @@ type TeamSettingsModalProps = {
 };
 
 export function TeamSettingsModal({
+  actionError,
+  onActionErrorClose,
   isOwner = false,
   onClose,
   onLeave,
@@ -113,6 +117,14 @@ export function TeamSettingsModal({
   }
 
 
+  function handleRemoveMember(teamMemberId: number) {
+    const confirmed = window.confirm("Are you sure you want to remove this team member?");
+
+    if (confirmed) {
+      onRemoveMember?.(teamMemberId);
+    }
+  }
+
   return (
     <dialog
       aria-labelledby="team-settings-title"
@@ -202,7 +214,7 @@ export function TeamSettingsModal({
                     <button
                       aria-label={`Remove ${member.displayName || member.userId}`}
                       className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                      onClick={() => onRemoveMember?.(member.id)}
+                      onClick={() => handleRemoveMember(member.id)}
                       type="button"
                     >
                       <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
@@ -238,6 +250,10 @@ export function TeamSettingsModal({
               )}
 
               {isOwner && inviteError && <ErrorMessage message={inviteError} onClose={() => setInviteError("")} />}
+
+              {actionError && onActionErrorClose && (
+                <ErrorMessage message={actionError} onClose={onActionErrorClose} />
+              )}
 
               {isOwner && inviteUrl && (
                 <div className="flex flex-col gap-2">

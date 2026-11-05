@@ -26,12 +26,13 @@ import {
   grantKeyAccess,
   type ApiKeyAccess
 } from "@/entities/api-key-access";
-import { Card, PrimaryButton } from "@/shared/ui";
+import { PrimaryButton } from "@/shared/ui";
 import { ROUTE_PATHS } from "@/app/router/paths";
 import { TeamSettingsModal } from "@/features/update-team";
-import "./TeamDashboardPage.css";
 import { Button } from "pixel-retroui";
 import { deleteTeam } from "@/features/delete-team";
+import { Card as RetroCard } from "pixel-retroui";
+import { Card } from "@/shared/ui";
 
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
@@ -243,7 +244,16 @@ function TeamKeyRow({
   const statusClass = displayedStatus === "Active" ? "text-primary-accent" : "text-error";
 
   return (
-    <Card className="dashboard-card dashboard-key-row max-[599px]:relative m-0! w-full border-2! border-border! p-0! shadow-[3px_3px_0_var(--shadow)]!">
+    <RetroCard
+      bg={isInactive ? "color-mix(in srgb, var(--color-surface), transparent 50%)" : "var(--color-surface)"}
+      textColor="var(--color-text)"
+      shadowColor={isLocallyExpired
+        ? "color-mix(in srgb, var(--color-warning), transparent 50%)"
+        : apiKey.status !== "Active"
+          ? "color-mix(in srgb, var(--color-error), transparent 50%)"
+          : "var(--color-shadow)"}
+      borderColor="var(--color-border)"
+      className="max-[599px]:relative m-0! w-full p-0!">
       <div className="grid w-full gap-1 px-3 py-3 min-[600px]:grid-cols-[minmax(0,1fr)_auto] min-[600px]:items-center min-[600px]:gap-x-5 min-[600px]:gap-y-2 min-[900px]:p-4">
         <div className="flex min-w-0 items-start gap-2 max-[599px]:grid! max-[599px]:grid-cols-[auto_minmax(0,1fr)]! max-[599px]:grid-rows-[auto_auto]! max-[599px]:gap-x-2! max-[599px]:gap-y-1.5! max-[599px]:items-center!">
           <span
@@ -311,7 +321,7 @@ function TeamKeyRow({
           </div>
         </div>
       </div>
-    </Card>
+    </RetroCard>
   );
 }
 
@@ -366,6 +376,7 @@ function TeamDashboardContent({
   const [isMutating, setIsMutating] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
   const [copiedFeedback, setCopiedFeedback] = useState<CopyFeedback | null>(null);
+  const [memberActionError, setMemberActionError] = useState<string | null>(null);
   const mountedRef = useRef(false);
 
   const currentMember = members.find((member) => member.userId === authUserId);
@@ -376,6 +387,10 @@ function TeamDashboardContent({
     if (mountedRef.current) {
       setCopiedFeedback((current) => current?.keyId === apiKeyId ? null : current);
     }
+  }, []);
+
+  const clearMemberActionError = useCallback(() => {
+    setMemberActionError(null);
   }, []);
 
   async function handleCopyKey(apiKey: ApiKey, isRowValid: () => boolean): Promise<string | null> {
@@ -726,6 +741,7 @@ function TeamDashboardContent({
       return;
     }
 
+    setMemberActionError(null);
     setIsMutating(true);
 
     try {
@@ -737,10 +753,9 @@ function TeamDashboardContent({
 
       setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
     } catch {
-      // TODO: Show this error in a popup (shared ErrorMessage) once its design
-      // is done in ticket-142. Delete errors are not validation errors, so they should
-      // not be shown as inline form text. Remove this comment when the popup is added.
-      console.error("The member could not be removed.");
+      if (mountedRef.current) {
+        setMemberActionError("Could not remove member. Try again.");
+      }
     } finally {
       if (mountedRef.current) {
         setIsMutating(false);
@@ -753,6 +768,7 @@ function TeamDashboardContent({
       return;
     }
 
+    setMemberActionError(null);
     setIsMutating(true);
 
     try {
@@ -764,10 +780,9 @@ function TeamDashboardContent({
 
       onBack();
     } catch {
-      // TODO: Show this error in a popup (shared ErrorMessage) once its design
-      // is done in ticket-142. Delete errors are not validation errors, so they should
-      // not be shown as inline form text. Remove this comment when the popup is added.
-      console.error("The team could not be left.");
+      if (mountedRef.current) {
+        setMemberActionError("Could not leave team. Try again.");
+      }
     } finally {
       if (mountedRef.current) {
         setIsMutating(false);
@@ -943,8 +958,13 @@ function TeamDashboardContent({
 
       {isSettingsOpen && team !== null && (
         <TeamSettingsModal
+          actionError={memberActionError}
+          onActionErrorClose={clearMemberActionError}
           isOwner={isOwner}
-          onClose={() => setIsSettingsOpen(false)}
+          onClose={() => {
+            clearMemberActionError();
+            setIsSettingsOpen(false)
+          }}
           onLeave={handleLeaveTeam}
           onDeleteTeam={handleDeleteTeam}
           onUpdateTeam={handleUpdateTeam}
