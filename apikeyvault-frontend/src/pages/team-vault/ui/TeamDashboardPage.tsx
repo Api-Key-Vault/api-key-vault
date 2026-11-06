@@ -792,23 +792,28 @@ function TeamDashboardContent({
       }
     }
   }
-  async function handleDeleteTeam() {
+  async function handleDeleteTeam(): Promise<boolean> {
     if (!isOwner || !hasValidTeamId || isMutating) {
-      return;
+      return false;
     }
 
     setIsMutating(true);
+    setModalError(null);
 
     try {
       await deleteTeam(teamId);
 
       if (!mountedRef.current) {
-        return;
+        return false;
       }
 
       onBack();
+      return true;
     } catch {
-      console.error("The team could not be deleted.");
+      if (mountedRef.current) {
+        setModalError("The team could not be deleted.")
+      }
+      return false;
     } finally {
       if (mountedRef.current) {
         setIsMutating(false);

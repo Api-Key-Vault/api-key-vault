@@ -9,7 +9,7 @@ type TeamSettingsModalProps = {
   isOwner?: boolean;
   onClose: () => void;
   onLeave?: () => void;
-  onDeleteTeam?: (teamId: number) => Promise<void>;
+  onDeleteTeam?: (teamId: number) => Promise<boolean>;
   onUpdateTeam?: (teamId: number, name: string) => Promise<boolean>;
   onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "id" | "name"> & { members: TeamMember[] };
@@ -81,12 +81,13 @@ export function TeamSettingsModal({
   }
 
   async function handleDeleteTeam() {
+    setIsDeleting(true);
+
     try {
-      setIsDeleting(true);
-      await onDeleteTeam?.(team.id);
-      onClose();
-    } catch {
-      // errors are handled by the dashboard 
+      const success = await onDeleteTeam?.(team.id);
+      if (success) {
+        onClose();
+      }
     }
     finally {
       setIsDeleting(false);
