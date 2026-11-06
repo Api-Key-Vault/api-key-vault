@@ -2,5 +2,6 @@ export { Card } from './Card';
 export { DeleteButton } from './DeleteButton';
 export { DropDown } from './DropDown';
 export { ErrorMessage } from './ErrorMessage';
-export { Loading } from './Loading';
+export { PageLoading } from './PageLoading';
+export { ProgressBar } from './ProgressBar';
 export { PrimaryButton } from './PrimaryButton';
