@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { AddKeyModal, type AddKeyRequest } from "@/features/create-api-key";
-import { ManageKeyModal, type ManageKeyUpdate } from "@/features/manage-api-key";
+import {
+  ManageKeyModal,
+  type ManageKeyUpdate,
+} from "@/features/manage-api-key";
 import { useAuth } from "@/features/auth";
 import {
   createApiKey,
@@ -23,7 +26,7 @@ import {
   getApiKeyAccesses,
   revokeKeyAccess,
   grantKeyAccess,
-  type ApiKeyAccess
+  type ApiKeyAccess,
 } from "@/entities/api-key-access";
 import { PrimaryButton } from "@/shared/ui";
 import { ROUTE_PATHS } from "@/app/router/paths";
@@ -31,6 +34,7 @@ import { TeamSettingsModal } from "@/features/update-team";
 import { Button } from "pixel-retroui";
 import { Card as RetroCard } from "pixel-retroui";
 import { Card } from "@/shared/ui";
+import { useTeamSignalR } from "@/entities/team/model/useTeamSignalR";
 
 const MASKED_API_KEY = "••••••••••••••••";
 const MAX_TIMEOUT_MS = 2_147_483_647;
@@ -101,12 +105,15 @@ function TeamKeyRow({
   const [revealedValue, setRevealedValue] = useState<string | null>(null);
   const [isKeyActionPending, setIsKeyActionPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLocallyExpired, setIsLocallyExpired] = useState(() => hasExpired(apiKey.expiresAt));
+  const [isLocallyExpired, setIsLocallyExpired] = useState(() =>
+    hasExpired(apiKey.expiresAt),
+  );
   const mountedRef = useRef(false);
   const isInactive = apiKey.status !== "Active" || isLocallyExpired;
   const isPending = isKeyActionPending || isBusy;
   const isRevealed = revealedValue !== null;
-  const displayedStatus = isLocallyExpired && apiKey.status === "Active" ? "Expired" : apiKey.status;
+  const displayedStatus =
+    isLocallyExpired && apiKey.status === "Active" ? "Expired" : apiKey.status;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -132,7 +139,10 @@ function TeamKeyRow({
       const remainingTime = expiry.getTime() - Date.now();
 
       if (remainingTime > 0) {
-        timeoutId = window.setTimeout(expireKey, Math.min(remainingTime, MAX_TIMEOUT_MS));
+        timeoutId = window.setTimeout(
+          expireKey,
+          Math.min(remainingTime, MAX_TIMEOUT_MS),
+        );
         return;
       }
 
@@ -145,7 +155,10 @@ function TeamKeyRow({
       }
     };
 
-    timeoutId = window.setTimeout(expireKey, Math.min(Math.max(0, expiry.getTime() - Date.now()), MAX_TIMEOUT_MS));
+    timeoutId = window.setTimeout(
+      expireKey,
+      Math.min(Math.max(0, expiry.getTime() - Date.now()), MAX_TIMEOUT_MS),
+    );
 
     return () => window.clearTimeout(timeoutId);
   }, [apiKey.expiresAt, apiKey.id, onCopyReset]);
@@ -213,7 +226,12 @@ function TeamKeyRow({
   }
 
   async function handleCopy() {
-    if (isInactive || hasExpired(apiKey.expiresAt) || isPending || !navigator.clipboard) {
+    if (
+      isInactive ||
+      hasExpired(apiKey.expiresAt) ||
+      isPending ||
+      !navigator.clipboard
+    ) {
       return;
     }
 
@@ -221,12 +239,14 @@ function TeamKeyRow({
     setErrorMessage(null);
 
     try {
-      const copyError = await onCopy(apiKey, () => (
-        mountedRef.current
-        && apiKey.status === "Active"
-        && !isLocallyExpired
-        && !hasExpired(apiKey.expiresAt)
-      ));
+      const copyError = await onCopy(
+        apiKey,
+        () =>
+          mountedRef.current &&
+          apiKey.status === "Active" &&
+          !isLocallyExpired &&
+          !hasExpired(apiKey.expiresAt),
+      );
 
       if (mountedRef.current && copyError !== null) {
         setErrorMessage(copyError);
@@ -239,19 +259,27 @@ function TeamKeyRow({
   }
 
   const displayedValue = revealedValue ?? MASKED_API_KEY;
-  const statusClass = displayedStatus === "Active" ? "text-primary-accent" : "text-error";
+  const statusClass =
+    displayedStatus === "Active" ? "text-primary-accent" : "text-error";
 
   return (
     <RetroCard
-      bg={isInactive ? "color-mix(in srgb, var(--color-surface), transparent 50%)" : "var(--color-surface)"}
+      bg={
+        isInactive
+          ? "color-mix(in srgb, var(--color-surface), transparent 50%)"
+          : "var(--color-surface)"
+      }
       textColor="var(--color-text)"
-      shadowColor={isLocallyExpired
-        ? "color-mix(in srgb, var(--color-warning), transparent 50%)"
-        : apiKey.status !== "Active"
-        ? "color-mix(in srgb, var(--color-error), transparent 50%)"
-        : "var(--color-shadow)"}
+      shadowColor={
+        isLocallyExpired
+          ? "color-mix(in srgb, var(--color-warning), transparent 50%)"
+          : apiKey.status !== "Active"
+            ? "color-mix(in srgb, var(--color-error), transparent 50%)"
+            : "var(--color-shadow)"
+      }
       borderColor="var(--color-border)"
-      className="max-[599px]:relative m-0! w-full p-0!">
+      className="max-[599px]:relative m-0! w-full p-0!"
+    >
       <div className="grid w-full gap-1 px-3 py-3 min-[600px]:grid-cols-[minmax(0,1fr)_auto] min-[600px]:items-center min-[600px]:gap-x-5 min-[600px]:gap-y-2 min-[900px]:p-4">
         <div className="flex min-w-0 items-start gap-2 max-[599px]:grid! max-[599px]:grid-cols-[auto_minmax(0,1fr)]! max-[599px]:grid-rows-[auto_auto]! max-[599px]:gap-x-2! max-[599px]:gap-y-1.5! max-[599px]:items-center!">
           <span
@@ -259,27 +287,38 @@ function TeamKeyRow({
             className="pixelart-icons-font-key shrink-0 text-xl text-secondary-accent max-[599px]:col-start-1! max-[599px]:row-start-1! max-[599px]:text-[18px]! max-[599px]:leading-none! min-[600px]:mt-1 min-[600px]:translate-y-2.5!"
           />
           <div className="min-w-0 flex-1 max-[599px]:contents!">
-            <p className="wrap-break-word text-xs! leading-tight! max-[599px]:col-start-2! max-[599px]:row-start-1! max-[599px]:pr-33! min-[900px]:text-base! min-[900px]:leading-tight!">{apiKey.name}</p>
+            <p className="wrap-break-word text-xs! leading-tight! max-[599px]:col-start-2! max-[599px]:row-start-1! max-[599px]:pr-33! min-[900px]:text-base! min-[900px]:leading-tight!">
+              {apiKey.name}
+            </p>
             <p className="mt-1 wrap-break-word text-[9px]! leading-tight! text-text-muted! max-[599px]:col-span-full! max-[599px]:row-start-2! max-[599px]:mt-0! max-[599px]:pr-33! min-[900px]:text-[11px]!">
               {apiKey.category ?? "Uncategorized"}
             </p>
             <input
-              aria-label={apiKey.name + (isRevealed ? " revealed value" : " masked value")}
+              aria-label={
+                apiKey.name + (isRevealed ? " revealed value" : " masked value")
+              }
               className="mt-2 h-3.75! w-full min-w-0 border! border-border! bg-surface-elevated! px-1! py-px! text-[8px]! leading-none! text-text-muted! outline-none max-[599px]:col-span-full! max-[599px]:row-start-3! max-[599px]:mt-0! min-[900px]:h-6! min-[900px]:px-1.5! min-[900px]:py-0.75! min-[900px]:text-[11px]!"
               readOnly
               type="text"
               value={displayedValue}
             />
             {errorMessage !== null && (
-              <p className="mt-1 text-[9px]! leading-tight! text-error! max-[599px]:col-span-full! max-[599px]:row-start-4!">{errorMessage}</p>
+              <p className="mt-1 text-[9px]! leading-tight! text-error! max-[599px]:col-span-full! max-[599px]:row-start-4!">
+                {errorMessage}
+              </p>
             )}
           </div>
         </div>
 
         <div className="flex flex-col items-start gap-1 max-[599px]:contents min-[600px]:items-end">
           <div className="contents max-[599px]:absolute max-[599px]:right-2 max-[599px]:top-2.5 max-[599px]:flex max-[599px]:max-w-33! max-[599px]:flex-col max-[599px]:items-end">
-            <p className={`text-[8px]! leading-tight! max-[599px]:text-right! min-[900px]:text-[10px]! ${statusClass}`}>
-              {displayedStatus} · {apiKey.expiresAt === null ? "No expiry" : `Expires ${formatDate(apiKey.expiresAt)}`}
+            <p
+              className={`text-[8px]! leading-tight! max-[599px]:text-right! min-[900px]:text-[10px]! ${statusClass}`}
+            >
+              {displayedStatus} ·{" "}
+              {apiKey.expiresAt === null
+                ? "No expiry"
+                : `Expires ${formatDate(apiKey.expiresAt)}`}
             </p>
             <p className="text-[8px]! leading-tight! text-text-muted! max-[599px]:text-right!">
               Added {formatDate(apiKey.createdAt)}
@@ -293,7 +332,10 @@ function TeamKeyRow({
               onClick={handleReveal}
               type="button"
             >
-              <span aria-hidden="true" className={`${isRevealed ? "pixelart-icons-font-eye-off" : "pixelart-icons-font-eye"} text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!`} />
+              <span
+                aria-hidden="true"
+                className={`${isRevealed ? "pixelart-icons-font-eye-off" : "pixelart-icons-font-eye"} text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!`}
+              />
             </button>
             <button
               aria-label={(isCopied ? "Copied " : "Copy ") + apiKey.name}
@@ -303,7 +345,10 @@ function TeamKeyRow({
               title={isCopied ? "Copied" : "Copy API key"}
               type="button"
             >
-              <span aria-hidden="true" className={`${isCopied ? "pixelart-icons-font-check" : "pixelart-icons-font-copy"} text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!`} />
+              <span
+                aria-hidden="true"
+                className={`${isCopied ? "pixelart-icons-font-check" : "pixelart-icons-font-copy"} text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!`}
+              />
             </button>
             {isOwner && (
               <button
@@ -313,7 +358,10 @@ function TeamKeyRow({
                 onClick={() => onManage(apiKey)}
                 type="button"
               >
-                <span aria-hidden="true" className="pixelart-icons-font-settings-cog text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!" />
+                <span
+                  aria-hidden="true"
+                  className="pixelart-icons-font-settings-cog text-[14px]! leading-none! max-[599px]:text-[16px]! min-[900px]:text-[18px]!"
+                />
               </button>
             )}
           </div>
@@ -336,7 +384,8 @@ export function TeamDashboardPage() {
   const navigate = useNavigate();
   const { teamId: teamIdParam } = useParams<{ teamId: string }>();
   const { logout, state: authState } = useAuth();
-  const authUserId = authState.status === "authenticated" ? authState.user.id : null;
+  const authUserId =
+    authState.status === "authenticated" ? authState.user.id : null;
   const teamId = Number(teamIdParam);
   const hasValidTeamId = Number.isInteger(teamId) && teamId > 0;
   const [loadAttempt, setLoadAttempt] = useState(0);
@@ -379,11 +428,32 @@ function TeamDashboardContent({
 
   const currentMember = members.find((member) => member.userId === authUserId);
   const isOwner = currentMember?.roleName === "Owner";
-  const roleLabel = currentMember?.roleName ?? (isLoading ? "Loading..." : "Unknown");
+  const roleLabel =
+    currentMember?.roleName ?? (isLoading ? "Loading..." : "Unknown");
+
+  const refreshMembers = useCallback(async () => {
+    try {
+      const updatedTeamMembers = await getTeamMembers(teamId);
+
+      if (mountedRef.current) {
+        setMembers(updatedTeamMembers);
+      }
+    } catch (error) {
+      console.error("Failed to refresh members:", error);
+    }
+  }, [teamId]);
+
+  useTeamSignalR(
+    [teamId],
+    refreshMembers,
+    hasValidTeamId && authUserId !== null,
+  );
 
   const clearCopyForKey = useCallback((apiKeyId: number) => {
     if (mountedRef.current) {
-      setCopiedFeedback((current) => current?.keyId === apiKeyId ? null : current);
+      setCopiedFeedback((current) =>
+        current?.keyId === apiKeyId ? null : current,
+      );
     }
   }, []);
 
@@ -406,7 +476,9 @@ function TeamDashboardContent({
     try {
       response = await revealApiKey(teamId, apiKey.id);
     } catch {
-      return mountedRef.current && isRowValid() ? "The API key could not be revealed." : null;
+      return mountedRef.current && isRowValid()
+        ? "The API key could not be revealed."
+        : null;
     }
 
     if (!mountedRef.current || !isRowValid()) {
@@ -439,7 +511,9 @@ function TeamDashboardContent({
     }
 
     const timeoutId = window.setTimeout(() => {
-      setCopiedFeedback((current) => current === copiedFeedback ? null : current);
+      setCopiedFeedback((current) =>
+        current === copiedFeedback ? null : current,
+      );
     }, COPY_FEEDBACK_TIMEOUT_MS);
 
     return () => window.clearTimeout(timeoutId);
@@ -546,9 +620,9 @@ function TeamDashboardContent({
         return;
       }
 
-      setKeys((currentKeys) => currentKeys.map((key) => (
-        key.id === selectedKeyId ? updatedKey : key
-      )));
+      setKeys((currentKeys) =>
+        currentKeys.map((key) => (key.id === selectedKeyId ? updatedKey : key)),
+      );
       setSelectedKey(null);
     } catch {
       if (mountedRef.current) {
@@ -588,7 +662,9 @@ function TeamDashboardContent({
         setKeys(latestKeys);
       } catch {
         if (mountedRef.current) {
-          setLoadError("The API key was deactivated, but the key list could not be refreshed. Please retry.");
+          setLoadError(
+            "The API key was deactivated, but the key list could not be refreshed. Please retry.",
+          );
         }
       }
     } catch {
@@ -621,19 +697,19 @@ function TeamDashboardContent({
     await handleLoadAccesses(apiKey.id);
   }
 
-  async function handleLoadAccesses(apiKeyId: number){
-    if(!hasValidTeamId){
+  async function handleLoadAccesses(apiKeyId: number) {
+    if (!hasValidTeamId) {
       return;
     }
-    try{
+    try {
       const accesses = await getApiKeyAccesses(teamId, apiKeyId);
 
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setApiKeyAccesses(accesses);
       }
     } catch {
-      if(mountedRef.current){
-        setModalError("The key accesses could not be loaded.")
+      if (mountedRef.current) {
+        setModalError("The key accesses could not be loaded.");
       }
     }
   }
@@ -643,68 +719,71 @@ function TeamDashboardContent({
     apiKeyId: number,
     teamMemberId: number,
   ) {
-    if(!isOwner || !hasValidTeamId || isMutating) {
+    if (!isOwner || !hasValidTeamId || isMutating) {
       return;
     }
     setIsMutating(true);
     setModalError(null);
 
-    try{
-      const newAccess = await grantKeyAccess(currentTeamId, { apiKeyId, teamMemberId });
+    try {
+      const newAccess = await grantKeyAccess(currentTeamId, {
+        apiKeyId,
+        teamMemberId,
+      });
 
-      if(mountedRef.current) {
-        setApiKeyAccesses((currentAccesses) => [
-          ...currentAccesses,
-          newAccess,
-        ]);
+      if (mountedRef.current) {
+        setApiKeyAccesses((currentAccesses) => [...currentAccesses, newAccess]);
       }
-    } catch{
-      if(mountedRef.current){
+    } catch {
+      if (mountedRef.current) {
         setModalError("Key access could not be added.");
       }
     } finally {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
   }
 
   async function handleRevokeAccess(
-    currentTeamId: number, 
+    currentTeamId: number,
     access: ApiKeyAccess,
   ) {
     if (!isOwner || !hasValidTeamId || isMutating) {
-    return;
+      return;
     }
 
     setIsMutating(true);
     setModalError(null);
 
-    try{
-      await revokeKeyAccess(currentTeamId, access.apiKeyId, access.teamMemberId);
+    try {
+      await revokeKeyAccess(
+        currentTeamId,
+        access.apiKeyId,
+        access.teamMemberId,
+      );
 
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setApiKeyAccesses((currentAccesses) =>
-        currentAccesses.filter(
-          currentAccess => 
-            currentAccess.teamMemberId !== access.teamMemberId,
-          )
+          currentAccesses.filter(
+            (currentAccess) =>
+              currentAccess.teamMemberId !== access.teamMemberId,
+          ),
         );
       }
     } catch {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setModalError("Key access could not be removed");
       }
     } finally {
-      if(mountedRef.current){
+      if (mountedRef.current) {
         setIsMutating(false);
       }
     }
-  } 
+  }
 
-  async function handleRemoveMember(teamMemberId: number)
-  {
-    if(!isOwner || !hasValidTeamId || isMutating){
+  async function handleRemoveMember(teamMemberId: number) {
+    if (!isOwner || !hasValidTeamId || isMutating) {
       return;
     }
 
@@ -714,7 +793,7 @@ function TeamDashboardContent({
     try {
       await removeTeamMember(teamId, teamMemberId);
 
-      if(!mountedRef.current){
+      if (!mountedRef.current) {
         return;
       }
 
@@ -731,7 +810,7 @@ function TeamDashboardContent({
   }
 
   async function handleLeaveTeam() {
-    if (isOwner || !hasValidTeamId || isMutating){
+    if (isOwner || !hasValidTeamId || isMutating) {
       return;
     }
 
@@ -741,7 +820,7 @@ function TeamDashboardContent({
     try {
       await leaveTeam(teamId);
 
-      if(!mountedRef.current){
+      if (!mountedRef.current) {
         return;
       }
 
@@ -781,15 +860,23 @@ function TeamDashboardContent({
             className="m-0! inline-flex! items-center justify-center gap-2 whitespace-nowrap px-1.5! text-[10px]! leading-none! min-[900px]:px-2.5! min-[900px]:text-[13px]!"
             onClick={onBack}
           >
-            <span aria-hidden="true" className="pixelart-icons-font-arrow-left text-[20px]! leading-none! min-[900px]:text-[30px]!" />
-            <span className="hidden min-[600px]:inline text-base">Back to dashboard</span>
+            <span
+              aria-hidden="true"
+              className="pixelart-icons-font-arrow-left text-[20px]! leading-none! min-[900px]:text-[30px]!"
+            />
+            <span className="hidden min-[600px]:inline text-base">
+              Back to dashboard
+            </span>
             <span className="min-[600px]:hidden text-sm">Back</span>
           </PrimaryButton>
           <PrimaryButton
             className="m-0! inline-flex! items-center justify-center gap-2 whitespace-nowrap px-1.5! py-0! text-[10px]! leading-none! min-[900px]:px-2.5! min-[900px]:text-[13px]!"
             onClick={() => void onLogout()}
           >
-            <span aria-hidden="true" className="pixelart-icons-font-logout text-[20px]! leading-none! min-[900px]:text-[30px]!" />
+            <span
+              aria-hidden="true"
+              className="pixelart-icons-font-logout text-[20px]! leading-none! min-[900px]:text-[30px]!"
+            />
             <span className="text-sm min-[600px]:text-base">Logout</span>
           </PrimaryButton>
         </div>
@@ -808,7 +895,9 @@ function TeamDashboardContent({
           <>
             <Card className="m-0! mb-10! flex w-full flex-col gap-3 px-4 pb-5! pt-3! min-[600px]:min-h-15.5 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between min-[900px]:min-h-22 min-[900px]:pb-7! min-[900px]:pt-4.5!">
               <div className="min-w-0">
-                <h1 className="truncate text-lg min-[900px]:text-2xl! min-[900px]:leading-tight!">{team.name}</h1>
+                <h1 className="truncate text-lg min-[900px]:text-2xl! min-[900px]:leading-tight!">
+                  {team.name}
+                </h1>
                 <div className="mt-1 flex flex-wrap gap-x-8 gap-y-1 text-xs text-text-muted min-[900px]:mt-2! min-[900px]:text-sm!">
                   <span className="inline-flex items-center gap-1">
                     <span
@@ -822,22 +911,27 @@ function TeamDashboardContent({
                     Your role: {roleLabel}
                   </span>
                   <span className="inline-flex items-center gap-1">
-                    <span aria-hidden="true" className="pixelart-icons-font-users text-secondary-accent text-[14px]! leading-none! min-[900px]:text-lg!" />
+                    <span
+                      aria-hidden="true"
+                      className="pixelart-icons-font-users text-secondary-accent text-[14px]! leading-none! min-[900px]:text-lg!"
+                    />
                     Members: {members.length}
                   </span>
                 </div>
               </div>
-                <Button
-                  bg="var(--color-surface-elevated)"
-                  className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
-                  onClick={() => setIsSettingsOpen(true)}
-                >
-                  Settings
-                </Button>
+              <Button
+                bg="var(--color-surface-elevated)"
+                className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
+                onClick={() => setIsSettingsOpen(true)}
+              >
+                Settings
+              </Button>
             </Card>
 
             <div className="mb-10! flex items-center justify-between pl-1 pr-1.5">
-              <h2 className="text-base! text-primary-accent! min-[900px]:text-xl! min-[900px]:leading-tight!">Keys</h2>
+              <h2 className="text-base! text-primary-accent! min-[900px]:text-xl! min-[900px]:leading-tight!">
+                Keys
+              </h2>
               {isOwner && (
                 <PrimaryButton
                   className="m-0! inline-flex min-h-5.75! px-5! items-center justify-center whitespace-nowrap text-sm! leading-none! min-[900px]:min-h-7.25! min-[900px]:text-base!"
@@ -874,7 +968,12 @@ function TeamDashboardContent({
       </div>
 
       {isOwner && isAddKeyOpen && (
-        <AddKeyModal onAdd={handleAddKey} onClose={handleCloseAddKey} error={modalError} isSubmitting={isMutating} />
+        <AddKeyModal
+          onAdd={handleAddKey}
+          onClose={handleCloseAddKey}
+          error={modalError}
+          isSubmitting={isMutating}
+        />
       )}
 
       {isOwner && selectedKey !== null && (
@@ -907,7 +1006,7 @@ function TeamDashboardContent({
             setIsSettingsOpen(false)}}
           onLeave={handleLeaveTeam}
           onRemoveMember={handleRemoveMember}
-          team={{id: team.id, name: team.name, members }}
+          team={{ id: team.id, name: team.name, members }}
         />
       )}
     </main>

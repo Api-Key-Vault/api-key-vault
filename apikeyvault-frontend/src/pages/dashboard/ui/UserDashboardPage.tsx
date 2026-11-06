@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, PrimaryButton } from "@/shared/ui";
 import { TeamCard } from "./TeamCard";
 import { StatsBox } from "./StatsBox";
@@ -9,6 +9,7 @@ import type { TeamResponse } from "@/features/get-team";
 import { getAllTeams } from "@/features/get-team/api/getTeam";
 import { useAuth } from "@/features/auth";
 import { useNavigate } from "react-router";
+import { useTeamSignalR } from "@/entities/team/model/useTeamSignalR";
 
 export function UserDashboardPage() {
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
@@ -18,7 +19,7 @@ export function UserDashboardPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const { logout } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -40,6 +41,19 @@ export function UserDashboardPage() {
 
   const totalKeys = userTeams.reduce((sum, team) => sum + team.keys, 0);
   const totalMembers = userTeams.reduce((sum, team) => sum + team.members, 0);
+
+  const refreshTeams = useCallback(async () => {
+    try {
+      const updatedTeams = await getAllTeams();
+      setUserTeams(updatedTeams);
+    } catch (error) {
+      console.error("Failed to refresh teams:", error);
+    }
+  }, []);
+
+  const teamIds = userTeams.map((team) => team.id);
+
+  useTeamSignalR(teamIds, refreshTeams, teamIds.length > 0);
 
   return (
     <section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
@@ -99,36 +113,32 @@ export function UserDashboardPage() {
       </div>
 
       <section className="w-4/5">
-  {errorMessage || isLoading || userTeams.length === 0 ? (
-    <div className="flex justify-center w-full mt-20">
-      {errorMessage ? (
-        <p className="text-center text-error text-2xl">
-          {errorMessage}
-        </p>
-      ) : isLoading ? (
-        <p className="text-center text-text text-2xl">
-          Loading teams...
-        </p>
-      ) : (
-        <p className="text-center text-text text-2xl">
-          You are not a member of any teams yet.
-        </p>
-      )}
-    </div>
-  ) : (
-    <div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
-      {userTeams.map((team) => (
-        <TeamCard
-          key={team.id}
-          name={team.name}
-          keyCount={team.keys}
-          memberCount={team.members}
-          onClick={() => navigate(`/team/${team.id}`)}
-        />
-      ))}
-    </div>
-  )}
-</section>
+        {errorMessage || isLoading || userTeams.length === 0 ? (
+          <div className="flex justify-center w-full mt-20">
+            {errorMessage ? (
+              <p className="text-center text-error text-2xl">{errorMessage}</p>
+            ) : isLoading ? (
+              <p className="text-center text-text text-2xl">Loading teams...</p>
+            ) : (
+              <p className="text-center text-text text-2xl">
+                You are not a member of any teams yet.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
+            {userTeams.map((team) => (
+              <TeamCard
+                key={team.id}
+                name={team.name}
+                keyCount={team.keys}
+                memberCount={team.members}
+                onClick={() => navigate(`/team/${team.id}`)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
       {isCreateTeamOpen && (
         <CreateTeamModal
           onClose={() => setIsCreateTeamOpen(false)}
