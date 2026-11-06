@@ -1,3 +1,4 @@
+using ApiKeyVault.Api.Hubs;
 using ApiKeyVault.Application;
 using ApiKeyVault.Application.Common.Options;
 using ApiKeyVault.Infrastructure;
@@ -43,6 +44,8 @@ namespace ApiKeyVault.Api
                 options.SuppressAsyncSuffixInActionNames = false;
             });
 
+            builder.Services.AddSignalR();
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -63,6 +66,8 @@ namespace ApiKeyVault.Api
 
 
             app.MapControllers();
+
+            app.MapHub<TeamHub>("/hubs/team");
 
             app.Run();
         }
