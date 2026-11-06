@@ -1,8 +1,10 @@
 using System.Security.Claims;
+using ApiKeyVault.Api.Hubs;
 using ApiKeyVault.Application.Dtos.TeamInvite;
 using ApiKeyVault.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ApiKeyVault.Api.Controllers
 {
@@ -12,10 +14,12 @@ namespace ApiKeyVault.Api.Controllers
     public class TeamInvitesController : ControllerBase
     {
         private readonly ITeamInviteService _teamInviteService;
-        
-        public TeamInvitesController(ITeamInviteService teamInviteService)
+        private readonly IHubContext<TeamHub> _hubContext;
+
+        public TeamInvitesController(ITeamInviteService teamInviteService, IHubContext<TeamHub> hubContext)
         {
             _teamInviteService = teamInviteService;
+            _hubContext = hubContext;
         }
 
         [HttpPost]
@@ -51,7 +55,14 @@ namespace ApiKeyVault.Api.Controllers
 
             var response = await _teamInviteService.AcceptAsync(req, userId);
 
-            return response is null ? NotFound() : Ok(response);
+            if (response is null)
+            {
+                return NotFound();
+            }
+
+            await _hubContext.Clients.Group($"team-{response.TeamId}").SendAsync("TeamMembersChanged");
+
+            return Ok(response);
         }
 
         [AllowAnonymous]

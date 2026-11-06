@@ -1,8 +1,10 @@
 using System.Security.Claims;
+using ApiKeyVault.Api.Hubs;
 using ApiKeyVault.Application.Dtos.TeamMember;
 using ApiKeyVault.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ApiKeyVault.Api.Controllers
 {
@@ -12,10 +14,12 @@ namespace ApiKeyVault.Api.Controllers
     public class TeamMembersController : ControllerBase
     {
         private readonly ITeamMemberService _teamMemberService;
+        private readonly IHubContext<TeamHub> _hubContext;
 
-        public TeamMembersController(ITeamMemberService teamMemberService)
+        public TeamMembersController(ITeamMemberService teamMemberService, IHubContext<TeamHub> hubContext)
         {
             _teamMemberService = teamMemberService;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -23,7 +27,7 @@ namespace ApiKeyVault.Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(userId is null)
+            if (userId is null)
             {
                 return Unauthorized();
             }
@@ -38,17 +42,21 @@ namespace ApiKeyVault.Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(userId is null)
+            if (userId is null)
             {
                 return Unauthorized();
             }
 
             var result = await _teamMemberService.RemoveAsync(teamId, userId, teamMemberId);
 
+            if (result == TeamMemberResult.Success)
+            {
+                await _hubContext.Clients.Group($"team-{teamId}").SendAsync("TeamMembersChanged");
+                return NoContent();
+            }
+
             return result switch
             {
-                TeamMemberResult.Success
-                    => NoContent(),
                 TeamMemberResult.Forbidden
                     => Forbid(),
                 TeamMemberResult.NotFound
@@ -64,17 +72,21 @@ namespace ApiKeyVault.Api.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if(userId is null)
+            if (userId is null)
             {
                 return Unauthorized();
             }
 
             var result = await _teamMemberService.LeaveAsync(teamId, userId);
 
+            if(result == TeamMemberResult.Success)
+            {
+                await _hubContext.Clients.Group($"team-{teamId}").SendAsync("TeamMembersChanged");
+                return NoContent();
+            }
+
             return result switch
             {
-                TeamMemberResult.Success
-                    => NoContent(),
                 TeamMemberResult.Forbidden
                     => Forbid(),
                 TeamMemberResult.NotFound

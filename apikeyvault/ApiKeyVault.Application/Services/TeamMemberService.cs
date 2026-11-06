@@ -11,12 +11,22 @@ namespace ApiKeyVault.Application.Services
         private readonly ITeamMemberRepository _teamMemberRepository;
         private readonly IApiKeyAccessRepository _apiKeyAccessRepository;
         private readonly ITeamInviteRepository _teamInviteRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IApiKeyRepository _apiKeyRepository;
 
-        public TeamMemberService(ITeamMemberRepository teamMemberRepository, IApiKeyAccessRepository apiKeyAccessRepository, ITeamInviteRepository teamInviteRepository)
+        public TeamMemberService(
+            ITeamMemberRepository teamMemberRepository, 
+            IApiKeyAccessRepository apiKeyAccessRepository, 
+            ITeamInviteRepository teamInviteRepository,
+            ITeamRepository teamRepository,
+            IApiKeyRepository apiKeyRepository)
+
         {
             _teamMemberRepository = teamMemberRepository;
             _apiKeyAccessRepository = apiKeyAccessRepository;
             _teamInviteRepository = teamInviteRepository;
+            _teamRepository = teamRepository;
+            _apiKeyRepository = apiKeyRepository;
         }
 
         public async Task<List<TeamMemberResponse>> GetByTeamAsync(int teamId, string userId)
@@ -103,7 +113,26 @@ namespace ApiKeyVault.Application.Services
 
             if (IsOwner(member))
             {
-                return TeamMemberResult.Forbidden;
+                // When owner leaves, it deletes the team and everything that belongs to it. 
+                var teamDelete = await _teamRepository.GetTeamForDeletionAsync(teamId, userId);
+
+                if (teamDelete is null)
+                {
+                    return TeamMemberResult.NotFound;
+                }
+
+                await _apiKeyRepository.RemoveByTeamAsync(teamId);
+                await _teamInviteRepository.RemoveByTeamAsync(teamId);
+                _teamRepository.DeleteTeam(teamDelete);
+
+                var deleteTeamResult = await _teamMemberRepository.SaveChangesAsync();
+
+                if (deleteTeamResult <= 0)
+                {
+                    return TeamMemberResult.Failed;
+                }
+
+                return TeamMemberResult.Success;
             }
 
             // Remove the Apikey access for the member before removing the member itself.
@@ -126,6 +155,18 @@ namespace ApiKeyVault.Application.Services
             }
 
             return TeamMemberResult.Success;
+        }
+
+        public async Task<bool> IsMemberAsync(int teamId, string userId)
+        {
+            var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
+
+            if(member is null)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
