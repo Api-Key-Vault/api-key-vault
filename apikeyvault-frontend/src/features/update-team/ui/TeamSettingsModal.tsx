@@ -9,6 +9,8 @@ type TeamSettingsModalProps = {
   isOwner?: boolean;
   onClose: () => void;
   onLeave?: () => void;
+  onDeleteTeam?: (teamId: number) => Promise<boolean>;
+  onUpdateTeam?: (teamId: number, name: string) => Promise<boolean>;
   onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "id" | "name"> & { members: TeamMember[] };
 };
@@ -20,6 +22,8 @@ export function TeamSettingsModal({
   onClose,
   onLeave,
   onRemoveMember,
+  onDeleteTeam,
+  onUpdateTeam,
   team,
 }: TeamSettingsModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -27,6 +31,11 @@ export function TeamSettingsModal({
   const [inviteUrl, setInviteUrl] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [inviteError, setInviteError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [teamName, setTeamName] = useState(team.name);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -52,7 +61,7 @@ export function TeamSettingsModal({
   async function handleGenerateInviteLink() {
     try {
       setInviteError("");
-     
+
       const inviteLink = await createInvite(team.id);
 
       setInviteUrl(inviteLink.inviteUrl);
@@ -71,14 +80,49 @@ export function TeamSettingsModal({
     }
   }
 
-  function handleDeleteTeam() {
-    // Team deletion is not wired yet.
+  async function handleDeleteTeam() {
+    setIsDeleting(true);
+
+    try {
+      const success = await onDeleteTeam?.(team.id);
+      if (success) {
+        onClose();
+      }
+    }
+    finally {
+      setIsDeleting(false);
+    }
   }
 
-  function handleRemoveMember(teamMemberId: number){
+  function handleDeleteTeamConfirmation() {
+    const confirmed = window.confirm("Deleting this team will delete all associated data permanently. Are you sure you want to delete this team?");
+    if (confirmed) {
+      handleDeleteTeam();
+    }
+  }
+
+  async function handleUpdateTeam() {
+    const trimmedName = teamName.trim();
+
+    if (!trimmedName || trimmedName === team.name || isUpdating)
+      return;
+
+    setIsUpdating(true);
+    try {
+      const success = await onUpdateTeam?.(team.id, trimmedName);
+      if (success) {
+        onClose()
+      }
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
+
+  function handleRemoveMember(teamMemberId: number) {
     const confirmed = window.confirm("Are you sure you want to remove this team member?");
 
-    if(confirmed){
+    if (confirmed) {
       onRemoveMember?.(teamMemberId);
     }
   }
@@ -136,10 +180,11 @@ export function TeamSettingsModal({
                 </label>
                 <input
                   className="min-h-8! w-full border-2! border-border! bg-surface-elevated! px-2! py-1.25! text-[14px]! text-text! placeholder:text-text-muted focus:outline-2 focus:outline-primary-accent focus:outline-offset-2 max-[599px]:text-[12px]!"
-                  disabled
+                  disabled={isUpdating}
                   id="team-settings-name"
                   required
-                  value={team.name}
+                  value={teamName}
+                  onChange={(event) => setTeamName(event.target.value)}
                 />
               </div>
             )}
@@ -147,10 +192,12 @@ export function TeamSettingsModal({
             {isOwner && (
               <PrimaryButton
                 className="m-auto! inline-flex w-[75%] items-center text-sm! justify-center whitespace-nowrap leading-none! disabled:cursor-not-allowed disabled:opacity-50"
-                disabled
+                disabled={isUpdating || !teamName.trim() || teamName.trim() === team.name}
+                onClick={handleUpdateTeam}
               >
-                Save changes
+                {isUpdating ? "Saving" : "Save changes"}
               </PrimaryButton>
+
             )}
 
             <section
@@ -165,15 +212,15 @@ export function TeamSettingsModal({
                   <span className="text-[11px]! leading-tight! text-text!">{member.displayName || member.userId}</span>
                   <span className="ml-auto! whitespace-nowrap text-[10px]! leading-tight! text-text-muted!">{member.roleName}</span>
                   {isOwner && member.roleName === "Member" && (
-                  <button
-                    aria-label={`Remove ${member.displayName || member.userId}`}
-                    className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
-                    onClick={() => handleRemoveMember(member.id)}
-                    type="button"
-                  >
-                    <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
-                  </button>
-                )}
+                    <button
+                      aria-label={`Remove ${member.displayName || member.userId}`}
+                      className="inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center border-0! bg-transparent! p-0! text-error!"
+                      onClick={() => handleRemoveMember(member.id)}
+                      type="button"
+                    >
+                      <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
+                    </button>
+                  )}
                 </div>
               ))}
 
@@ -264,9 +311,9 @@ export function TeamSettingsModal({
                 <DeleteButton
                   aria-label="Delete team"
                   className="self-center inline-flex! text-sm! cursor-pointer items-center justify-center whitespace-nowrap leading-none! text-error-on-color!"
-                  onClick={handleDeleteTeam}
+                  onClick={handleDeleteTeamConfirmation}
                 >
-                  Delete team
+                  {isDeleting ? "Deleting..." : "Delete team"}
                 </DeleteButton>
               </section>
             )}

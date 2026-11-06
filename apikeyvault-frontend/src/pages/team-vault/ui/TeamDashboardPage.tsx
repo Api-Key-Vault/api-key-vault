@@ -6,6 +6,7 @@ import {
   type ManageKeyUpdate,
 } from "@/features/manage-api-key";
 import { useAuth } from "@/features/auth";
+import { updateTeam } from "@/features/update-team";
 import {
   createApiKey,
   getApiKeys,
@@ -32,6 +33,7 @@ import { PrimaryButton } from "@/shared/ui";
 import { ROUTE_PATHS } from "@/app/router/paths";
 import { TeamSettingsModal } from "@/features/update-team";
 import { Button } from "pixel-retroui";
+import { deleteTeam } from "@/features/delete-team";
 import { Card as RetroCard } from "pixel-retroui";
 import { Card } from "@/shared/ui";
 import { useTeamSignalR } from "@/entities/team/model/useTeamSignalR";
@@ -597,6 +599,41 @@ function TeamDashboardContent({
     }
   }
 
+  async function handleUpdateTeam(teamId: number, name: string): Promise<boolean> {
+    if (!isOwner || !hasValidTeamId || isMutating || team === null) {
+      return false;
+    }
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName || trimmedName == team.name) {
+      return false;
+    }
+
+    setIsMutating(true);
+    setModalError(null);
+
+    try {
+      const updatedTeam = await updateTeam(teamId, { name: trimmedName })
+      if (!mountedRef.current) {
+        return false;
+      }
+
+      setTeam((currentTeam) =>
+        currentTeam ? { ...currentTeam, name: updatedTeam.name } : currentTeam);
+      return true;
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The team could not be updated.");
+      }
+      return false;
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
+      }
+    }
+  }
+
   async function handleSaveKey(update: ManageKeyUpdate) {
     if (!isOwner || !hasValidTeamId || selectedKey === null || isMutating) {
       return;
@@ -797,14 +834,14 @@ function TeamDashboardContent({
         return;
       }
 
-        setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
-      } catch {
-        if (mountedRef.current){
-          setMemberActionError("Could not remove member. Try again.");
-        }
-      } finally {
-        if(mountedRef.current){
-          setIsMutating(false);
+      setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
+    } catch {
+      if (mountedRef.current) {
+        setMemberActionError("Could not remove member. Try again.");
+      }
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
       }
     }
   }
@@ -825,16 +862,47 @@ function TeamDashboardContent({
       }
 
       onBack();
-      } catch {
-        if (mountedRef.current){
-          setMemberActionError("Could not leave team. Try again.");
-        }
-      } finally {
-        if (mountedRef.current) {
-          setIsMutating(false);
+    } catch {
+      if (mountedRef.current) {
+        setMemberActionError("Could not leave team. Try again.");
+      }
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
       }
     }
   }
+  async function handleDeleteTeam(): Promise<boolean> {
+    if (!isOwner || !hasValidTeamId || isMutating) {
+      return false;
+    }
+
+    setIsMutating(true);
+    setModalError(null);
+
+    try {
+      await deleteTeam(teamId);
+
+      if (!mountedRef.current) {
+        return false;
+      }
+
+      onBack();
+      return true;
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The team could not be deleted.")
+      }
+      return false;
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
+      }
+    }
+  }
+
+
+
 
   const renderStatusCard = (message: string, canRetry: boolean) => (
     <div role="alert">
@@ -922,7 +990,11 @@ function TeamDashboardContent({
               <Button
                 bg="var(--color-surface-elevated)"
                 className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
-                onClick={() => setIsSettingsOpen(true)}
+                onClick={() => {
+                  setModalError(null)
+                  setMemberActionError(null)
+                  setIsSettingsOpen(true)
+                }}
               >
                 Settings
               </Button>
@@ -998,13 +1070,16 @@ function TeamDashboardContent({
 
       {isSettingsOpen && team !== null && (
         <TeamSettingsModal
-          actionError={memberActionError}
+          actionError={memberActionError ?? modalError}
           onActionErrorClose={clearMemberActionError}
           isOwner={isOwner}
           onClose={() => {
             clearMemberActionError();
-            setIsSettingsOpen(false)}}
+            setIsSettingsOpen(false)
+          }}
           onLeave={handleLeaveTeam}
+          onDeleteTeam={handleDeleteTeam}
+          onUpdateTeam={handleUpdateTeam}
           onRemoveMember={handleRemoveMember}
           team={{ id: team.id, name: team.name, members }}
         />
