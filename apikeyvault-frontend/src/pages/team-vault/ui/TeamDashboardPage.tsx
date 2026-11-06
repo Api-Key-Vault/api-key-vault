@@ -525,15 +525,15 @@ function TeamDashboardContent({
     }
   }
 
-  async function handleUpdateTeam(teamId: number, name: string) {
+  async function handleUpdateTeam(teamId: number, name: string): Promise<boolean> {
     if (!isOwner || !hasValidTeamId || isMutating || team === null) {
-      return;
+      return false;
     }
 
     const trimmedName = name.trim();
 
     if (!trimmedName || trimmedName == team.name) {
-      return;
+      return false;
     }
 
     setIsMutating(true);
@@ -542,14 +542,17 @@ function TeamDashboardContent({
     try {
       const updatedTeam = await updateTeam(teamId, { name: trimmedName })
       if (!mountedRef.current) {
-        return;
+        return false;
       }
 
-      setTeam((currentTeam) => currentTeam ? { ...currentTeam, name: updatedTeam.name } : currentTeam);
+      setTeam((currentTeam) =>
+        currentTeam ? { ...currentTeam, name: updatedTeam.name } : currentTeam);
+      return true;
     } catch {
       if (mountedRef.current) {
         setModalError("The team could not be updated.");
       }
+      return false;
     } finally {
       if (mountedRef.current) {
         setIsMutating(false);
@@ -889,7 +892,11 @@ function TeamDashboardContent({
               <Button
                 bg="var(--color-surface-elevated)"
                 className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
-                onClick={() => setIsSettingsOpen(true)}
+                onClick={() => {
+                  setModalError(null)
+                  setMemberActionError(null)
+                  setIsSettingsOpen(true)
+                }}
               >
                 Settings
               </Button>
@@ -958,7 +965,7 @@ function TeamDashboardContent({
 
       {isSettingsOpen && team !== null && (
         <TeamSettingsModal
-          actionError={memberActionError}
+          actionError={memberActionError ?? modalError}
           onActionErrorClose={clearMemberActionError}
           isOwner={isOwner}
           onClose={() => {

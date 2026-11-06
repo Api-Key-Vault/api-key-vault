@@ -10,7 +10,7 @@ type TeamSettingsModalProps = {
   onClose: () => void;
   onLeave?: () => void;
   onDeleteTeam?: (teamId: number) => Promise<void>;
-  onUpdateTeam?: (teamId: number, name: string) => Promise<void>;
+  onUpdateTeam?: (teamId: number, name: string) => Promise<boolean>;
   onRemoveMember?: (teamMemberId: number) => void;
   team: Pick<Team, "id" | "name"> & { members: TeamMember[] };
 };
@@ -106,12 +106,12 @@ export function TeamSettingsModal({
     if (!trimmedName || trimmedName === team.name || isUpdating)
       return;
 
+    setIsUpdating(true);
     try {
-      setIsUpdating(true);
-      await onUpdateTeam?.(team.id, trimmedName);
-      onClose()
-    } catch {
-      // errors are handled by the dashboard 
+      const success = await onUpdateTeam?.(team.id, trimmedName);
+      if (success) {
+        onClose()
+      }
     } finally {
       setIsUpdating(false);
     }
