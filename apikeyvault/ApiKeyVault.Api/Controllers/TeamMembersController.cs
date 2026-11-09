@@ -79,7 +79,7 @@ namespace ApiKeyVault.Api.Controllers
 
             var result = await _teamMemberService.LeaveAsync(teamId, userId);
 
-            if(result == TeamMemberResult.Success)
+            if (result == TeamMemberResult.Success)
             {
                 await _hubContext.Clients.Group($"team-{teamId}").SendAsync("TeamMembersChanged");
                 return NoContent();
