@@ -18,11 +18,27 @@ export function useTeamSignalR(
 
     const connection = new HubConnectionBuilder()
       .withUrl(hubUrl, { withCredentials: true })
+      .withAutomaticReconnect()
       .build();
 
     connection.on("TeamMembersChanged", () => {
       if (!cancelled) {
         onMembersChanged();
+      }
+    });
+
+    connection.onreconnected(async () => {
+      try {
+        for (const id of teamIds) {
+          if (cancelled) break;
+          await connection.invoke("JoinTeam", id);
+        }
+
+        if (!cancelled) {
+          onMembersChanged();
+        }
+      } catch (error) {
+        console.error("Failed to rejoin SignalR teams:", error);
       }
     });
 
