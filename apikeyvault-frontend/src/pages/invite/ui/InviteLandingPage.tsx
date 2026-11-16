@@ -4,6 +4,7 @@ import { useSearchParams, useNavigate } from "react-router";
 import { loginWithGithub, LoginError, useAuth } from "@/features/auth";
 import { useEffect, useState, useRef } from "react";
 import { acceptInvite, getInvitePreview } from "@/features/accept-invite";
+import { useShowLoading } from "@/shared/lib";
 
 export function InviteLandingPage() {
   const [searchParams] = useSearchParams();
@@ -12,7 +13,8 @@ export function InviteLandingPage() {
 
   const [isErrorDismissed, setIsErrorDismissed] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(token !== null);
+  const showLoading = useShowLoading(isPreviewLoading);
   const [teamName, setTeamName] = useState<string | null>(null);
 
   const { state } = useAuth();
@@ -29,6 +31,8 @@ export function InviteLandingPage() {
       } catch {
         setIsErrorDismissed(false)
         setErrorMessage("This invitation is no longer valid");
+      } finally{
+        setIsPreviewLoading(false);
       }
     };
 
@@ -44,8 +48,6 @@ export function InviteLandingPage() {
       attemptedTokenRef.current = token;
       const handleAcceptInvite = async () => {
         try {
-          setIsLoading(true);
-
           const response = await acceptInvite({ token });
           navigate(`/team/${response.teamId}`, {
             state: { welcomeTeamName: response.teamName },
@@ -54,17 +56,22 @@ export function InviteLandingPage() {
         } catch {
           setIsErrorDismissed(false)
           setErrorMessage("Failed to accept invitation");
-        } finally {
-          setIsLoading(false);
         }
       };
       handleAcceptInvite();
     }
   }, [state.status, token, navigate]);
 
-  if (isLoading) {
-    return <PageLoading isLoading />;
-  }
+  switch (showLoading) {
+    case "wait":
+      return null;
+    case "showLoading":
+      return <PageLoading isLoading />;
+    case "finishing":
+      return <PageLoading isLoading={false} />;
+    case "done":
+      break;
+}
 
   return (
     <section className="flex justify-center items-center w-full min-h-screen">
