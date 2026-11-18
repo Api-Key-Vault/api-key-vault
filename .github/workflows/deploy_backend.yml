@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - ApiKeyVault-Api
+name: Build and deploy ASP.Net Core app to Azure Web App - apikeyvault-api
 
 on:
   push:
@@ -55,15 +55,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BF3E7EAE71804C23BC49EFE51D094330 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A7865DC4AE524A108A67F6A45C189565 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3353AEACF9E046A98FD179E804489E62 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EAA7CBD4B1EA49E7A8683F25B741EBED }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E5C82EDFF6974D0C8DFB6F753357AA1A }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_26A96CB65E1348D68A75A68448CF3945 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'ApiKeyVault-Api'
+          app-name: 'apikeyvault-api'
           slot-name: 'Production'
           package: artifacts/api
-          

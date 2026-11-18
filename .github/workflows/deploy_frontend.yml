@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - ApiKeyVault
+name: Build and deploy Node.js app to Azure Web App - apikeyvault-frontend
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '24.x'
 
@@ -54,15 +54,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9ABCAEA35E8E4CDC93AC87E292518AAF }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D6E9961303E647B5BFFC0BA94AD503FE }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B7EAD2DFFBD84C419D6E8C66A8F6C32A }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_61090EDABB4F46B083B5FDEC56547805 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_89A30E5CB56541C2BCA4CBF4CB787C78 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_90CE79CC834F44AC9FA2C14644AE2936 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'ApiKeyVault'
+          app-name: 'apikeyvault-frontend'
           slot-name: 'Production'
           package: .
-          
