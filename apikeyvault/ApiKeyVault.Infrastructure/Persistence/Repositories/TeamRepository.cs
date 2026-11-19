@@ -51,6 +51,15 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 				}).ToListAsync();
 		}
 
+		public async Task<int> GetUniqueMemberCountAsync(string userId)
+		{
+			return await _dbContext.TeamMembers
+				.Where(tm => tm.Team.Members.Any(m => m.UserId == userId))
+				.Select(tm => tm.UserId)
+				.Distinct()
+				.CountAsync();
+		}
+
 		public async Task AddTeamAsync(Team teamToAdd)
         {
             await _dbContext.Teams.AddAsync(teamToAdd);
@@ -65,6 +74,5 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
 		{
 			return _dbContext.SaveChangesAsync();
 		}
-
 	}
 }
