@@ -10,5 +10,6 @@ namespace ApiKeyVault.Application.Interfaces.Services
         Task<ApiKeyResponse?> UpdateAsync(int teamId, int apiKeyId, string userId, UpdateApiKeyRequest request);
         Task<RevealApiKeyResponse?> RevealAsync(int teamId, int apiKeyId, string userId);
         Task<bool> RevokeAsync(int teamId, int apiKeyId, string userId);
+        Task<bool> DeleteAsync(int teamId, int apiKeyId, string userId);
     }
 }
