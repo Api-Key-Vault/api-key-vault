@@ -38,11 +38,6 @@ export function UserDashboardPage() {
     fetchTeams();
   }, []);
 
-  const handleTeamCreated = async (newTeam: TeamResponse) => {
-    setUserTeams((prev) => [...prev, newTeam]);
-    setTotalMembers(await getMemberCount());
-  };
-
   const totalKeys = userTeams.reduce((sum, team) => sum + team.keys, 0);
 
   const refreshTeams = useCallback(async () => {
@@ -146,7 +141,7 @@ export function UserDashboardPage() {
       {isCreateTeamOpen && (
         <CreateTeamModal
           onClose={() => setIsCreateTeamOpen(false)}
-          onTeamCreated={handleTeamCreated}
+          onTeamCreated={refreshTeams}
         />
       )}
 
