@@ -10,6 +10,7 @@ import { getAllTeams } from "@/features/get-team/api/getTeam";
 import { useAuth } from "@/features/auth";
 import { useNavigate } from "react-router";
 import { useTeamSignalR } from "@/entities/team/model/useTeamSignalR";
+import { getMemberCount } from "@/features/get-team/api/getMemberCount";
 
 export function UserDashboardPage() {
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
@@ -17,6 +18,7 @@ export function UserDashboardPage() {
   const [userTeams, setUserTeams] = useState<TeamResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [totalMembers, setTotalMembers] = useState(0);
 
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -24,8 +26,9 @@ export function UserDashboardPage() {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const teams = await getAllTeams();
+        const [teams, memberCount] = await Promise.all([getAllTeams(), getMemberCount()]);
         setUserTeams(teams);
+        setTotalMembers(memberCount);
       } catch {
         setErrorMessage("Failed to fetch teams");
       } finally {
@@ -35,17 +38,18 @@ export function UserDashboardPage() {
     fetchTeams();
   }, []);
 
-  const handleTeamCreated = (newTeam: TeamResponse) => {
+  const handleTeamCreated = async (newTeam: TeamResponse) => {
     setUserTeams((prev) => [...prev, newTeam]);
+    setTotalMembers(await getMemberCount());
   };
 
   const totalKeys = userTeams.reduce((sum, team) => sum + team.keys, 0);
-  const totalMembers = userTeams.reduce((sum, team) => sum + team.members, 0);
 
   const refreshTeams = useCallback(async () => {
     try {
-      const updatedTeams = await getAllTeams();
+      const [updatedTeams, memberCount] = await Promise.all([getAllTeams(), getMemberCount()]);
       setUserTeams(updatedTeams);
+      setTotalMembers(memberCount);
     } catch (error) {
       console.error("Failed to refresh teams:", error);
     }
