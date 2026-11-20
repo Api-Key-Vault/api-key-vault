@@ -125,7 +125,7 @@ export function UserDashboardPage() {
             )}
           </div>
         ) : (
-          <div className="flex flex-wrap gap-4 w-full justify-center-safe md:justify-between">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(18.75rem,1fr))] gap-8 w-full">
             {userTeams.map((team) => (
               <TeamCard
                 key={team.id}
