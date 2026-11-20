@@ -13,6 +13,7 @@ export function ManageKeyModal({
   teamMembers,
   onClose,
   onRevoke,
+  onDelete,
   onSave,
   onAddAccess,
   onRevokeAccess,
@@ -43,6 +44,7 @@ export function ManageKeyModal({
   const initialExpiresAt = apiKey.expiresAt?.slice(0, 10) ?? "";
   const [expiresAt, setExpiresAt] = useState(initialExpiresAt);
   const [isConfirmingRevoke, setIsConfirmingRevoke] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [name, setName] = useState(apiKey.name);
   const [value, setValue] = useState("");
   const isRevoked = Boolean(apiKey.revokedAt) || apiKey.status === "Revoked";
@@ -73,8 +75,14 @@ export function ManageKeyModal({
     if (isSubmitting || isRevoked) {
       return;
     }
-
     onRevoke();
+  }
+
+  function handleDelete() {
+    if (isSubmitting) {
+      return;
+    }
+    onDelete();
   }
 
   // Api key access functions
@@ -255,6 +263,43 @@ export function ManageKeyModal({
               >
                 <span aria-hidden="true" className="pixelart-icons-font-power-off text-[14px]! leading-none!" />
                 Deactivate key
+              </Button>
+            )}
+
+            {isConfirmingDelete ? (
+              <div className="flex flex-col gap-2 border-2! border-error! p-2!">
+                <p className="text-[11px]! leading-tight! text-text!">
+                  Delete this key? This cannot be undone.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-surface-elevated! px-1.5! py-0.75! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isSubmitting}
+                    onClick={() => setIsConfirmingDelete(false)}
+                    type="button"
+                  >
+                    Keep key
+                  </button>
+                  <Button
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-error-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isSubmitting}
+                    bg="var(--color-error)"
+                    onClick={handleDelete}
+                    type="button"
+                  >
+                    Delete key
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center self-center gap-2 whitespace-nowrap text-[10px]! leading-none! text-error-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
+                disabled={isSubmitting}
+                bg="var(--color-error)"
+                onClick={() => setIsConfirmingDelete(true)}
+                type="button"
+              >
+                Delete key
               </Button>
             )}
           </section>

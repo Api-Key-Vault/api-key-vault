@@ -11,6 +11,7 @@ import {
   createApiKey,
   getApiKeys,
   revealApiKey,
+  deleteApiKey,
   revokeApiKey,
   updateApiKey,
   type ApiKey,
@@ -715,6 +716,49 @@ function TeamDashboardContent({
     }
   }
 
+    async function handleDeleteKey() {
+    if (!isOwner || !hasValidTeamId || selectedKey === null || isMutating) {
+      return;
+    }
+
+    const selectedKeyId = selectedKey.id;
+    setIsMutating(true);
+    setModalError(null);
+
+    try {
+      await deleteApiKey(teamId, selectedKeyId);
+
+      if (!mountedRef.current) {
+        return;
+      }
+
+      setSelectedKey(null);
+
+      try {
+        const latestKeys = await getApiKeys(teamId);
+        if (!mountedRef.current) {
+          return;
+        }
+
+        setKeys(latestKeys);
+      } catch {
+        if (mountedRef.current) {
+          setLoadError(
+            "The API key was deleted, but the key list could not be refreshed. Please retry.",
+          );
+        }
+      }
+    } catch {
+      if (mountedRef.current) {
+        setModalError("The API key could not be deleted.");
+      }
+    } finally {
+      if (mountedRef.current) {
+        setIsMutating(false);
+      }
+    }
+  }
+
   function handleOpenAddKey() {
     setModalError(null);
     setIsAddKeyOpen(true);
@@ -1062,6 +1106,7 @@ function TeamDashboardContent({
             }
           }}
           onRevoke={handleRevokeKey}
+          onDelete={handleDeleteKey}
           onSave={handleSaveKey}
           onAddAccess={handleAddAccess}
           onRevokeAccess={handleRevokeAccess}
