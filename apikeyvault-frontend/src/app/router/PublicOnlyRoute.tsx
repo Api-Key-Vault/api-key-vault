@@ -1,13 +1,14 @@
-import { type PropsWithChildren } from "react";
+import { type PropsWithChildren, useState } from "react";
 import { useAuth } from "@/features/auth";
 import { Navigate } from "react-router";
 import { ROUTE_PATHS } from "./paths";
-import { PageLoading } from "@/shared/ui";
+import { ErrorMessage, PageLoading } from "@/shared/ui";
 import { useShowLoading } from "@/shared/lib";
 
 export function PublicOnlyRoute({children} : PropsWithChildren){
     const { state } = useAuth();
     const showLoading = useShowLoading(state.status === "loading")
+    const [isErrorVisible, setIsErrorVisible] = useState(true);
     
     switch (showLoading)
     {
@@ -18,17 +19,26 @@ export function PublicOnlyRoute({children} : PropsWithChildren){
         case "finishing":
             return <PageLoading isLoading={false} />;
         case "done": {
-             switch (state.status){
+            switch (state.status){
                 case "loading": 
                     return null;
                 case "unauthenticated":
                     return children;
                 case "error":
-                    return children;
-                // TODO: Add errorMessage if we want: `ERROR: ${state.error.message}`;
+                    return (
+                        <>
+                            {isErrorVisible && (
+                                <ErrorMessage
+                                    message="Something went wrong on our side. Please try again."
+                                    onClose={() => setIsErrorVisible(false)}
+                                />
+                            )}
+                            {children}
+                        </>
+                    );
                 case "authenticated":
                     return <Navigate to={ROUTE_PATHS.DASHBOARD} replace />
-    }
+            }
         }
     }
 }
