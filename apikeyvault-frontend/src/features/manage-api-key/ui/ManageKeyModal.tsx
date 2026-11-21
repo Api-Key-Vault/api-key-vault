@@ -234,14 +234,15 @@ export function ManageKeyModal({
                   Deactivate this key? It cannot be revealed or copied afterwards.
                 </p>
                 <div className="flex justify-end gap-2">
-                  <button
-                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-surface-elevated! px-1.5! py-0.75! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                  <Button
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-text! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting}
+                    bg="var(--color-surface-elevated)"
                     onClick={() => setIsConfirmingRevoke(false)}
                     type="button"
                   >
                     Keep key
-                  </button>
+                  </Button>
                   <Button
                     className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting || isRevoked}
@@ -253,18 +254,7 @@ export function ManageKeyModal({
                   </Button>
                 </div>
               </div>
-            ) : (
-              <Button
-                className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center self-center gap-2 whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
-                disabled={isSubmitting || isRevoked}
-                bg="var(--color-warning)"
-                onClick={() => setIsConfirmingRevoke(true)}
-                type="button"
-              >
-                <span aria-hidden="true" className="pixelart-icons-font-power-off text-[14px]! leading-none!" />
-                Deactivate key
-              </Button>
-            )}
+            ) : null}
 
             {isConfirmingDelete ? (
               <div className="flex flex-col gap-2 border-2! border-error! p-2!">
@@ -272,14 +262,15 @@ export function ManageKeyModal({
                   Delete this key? This cannot be undone.
                 </p>
                 <div className="flex justify-end gap-2">
-                  <button
-                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center whitespace-nowrap border-2! border-border! bg-surface-elevated! px-1.5! py-0.75! text-[10px]! leading-none! text-text! shadow-[2px_2px_0_var(--shadow)]! hover:bg-surface active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
+                  <Button
+                    className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-text! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting}
+                    bg="var(--color-surface-elevated)"
                     onClick={() => setIsConfirmingDelete(false)}
                     type="button"
                   >
                     Keep key
-                  </button>
+                  </Button>
                   <Button
                     className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center gap-1 whitespace-nowrap text-[10px]! leading-none! text-error-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={isSubmitting}
@@ -291,17 +282,37 @@ export function ManageKeyModal({
                   </Button>
                 </div>
               </div>
-            ) : (
-              <Button
-                className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center self-center gap-2 whitespace-nowrap text-[10px]! leading-none! text-error-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
-                disabled={isSubmitting}
-                bg="var(--color-error)"
-                onClick={() => setIsConfirmingDelete(true)}
-                type="button"
-              >
-                Delete key
-              </Button>
-            )}
+            ) : null}
+
+            {!isConfirmingRevoke && !isConfirmingDelete ? (
+              <div className="flex flex-row justify-center gap-3">
+                <Button
+                  className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center whitespace-nowrap text-[10px]! leading-none! text-error-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
+                  disabled={isSubmitting}
+                  bg="var(--color-error)"
+                  onClick={() => setIsConfirmingDelete(true)}
+                  type="button"
+                >
+                  <span className="flex items-center gap-2">
+                    <span aria-hidden="true" className="pixelart-icons-font-trash text-[14px]! leading-none!" />
+                    Delete key
+                  </span>
+                </Button>
+
+                <Button
+                  className="inline-flex h-5.75! min-h-5.75! cursor-pointer items-center justify-center whitespace-nowrap text-[10px]! leading-none! text-warning-on-color! active:transform-[translateY(2px)]! disabled:cursor-not-allowed disabled:opacity-50 min-[900px]:h-7.25! min-[900px]:min-h-7.25! min-[900px]:text-[13px]!"
+                  disabled={isSubmitting || isRevoked}
+                  bg="var(--color-warning)"
+                  onClick={() => setIsConfirmingRevoke(true)}
+                  type="button"
+                >
+                  <span className="flex items-center gap-2">
+                    <span aria-hidden="true" className="pixelart-icons-font-power-off text-[14px]! leading-none!" />
+                    Deactivate
+                  </span>
+                </Button>
+              </div>
+            ) : null}
           </section>
         </Card>
       </div>
