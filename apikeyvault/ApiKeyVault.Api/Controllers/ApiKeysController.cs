@@ -1,7 +1,9 @@
+using ApiKeyVault.Api.Hubs;
 using ApiKeyVault.Application.Dtos.ApiKey;
 using ApiKeyVault.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace ApiKeyVault.Api.Controllers
@@ -12,10 +14,12 @@ namespace ApiKeyVault.Api.Controllers
     public class ApiKeysController : ControllerBase
     {
         private readonly IApiKeyService _apiKeyService;
+        private readonly IHubContext<TeamHub> _hubContext;
 
-        public ApiKeysController(IApiKeyService apiKeyService)
+        public ApiKeysController(IApiKeyService apiKeyService, IHubContext<TeamHub> hubContext)
         {
             _apiKeyService = apiKeyService;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -70,6 +74,8 @@ namespace ApiKeyVault.Api.Controllers
                 return Forbid();
             }
 
+            await _hubContext.Clients.Group($"team-{teamId}").SendAsync("ApiKeysChanged");
+
             return CreatedAtAction(nameof(GetByIdAsync), new { teamId, apiKeyId = apiKey.Id }, apiKey);
         }
 
@@ -89,6 +95,8 @@ namespace ApiKeyVault.Api.Controllers
             {
                 return NotFound();
             }
+
+            await _hubContext.Clients.Group($"team-{teamId}").SendAsync("ApiKeysChanged");
 
             return Ok(apiKey);
         }
@@ -129,6 +137,8 @@ namespace ApiKeyVault.Api.Controllers
             {
                 return NotFound();
             }
+
+            await _hubContext.Clients.Group($"team-{teamId}").SendAsync("ApiKeysChanged");
 
             return NoContent();
         }

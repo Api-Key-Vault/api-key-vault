@@ -1,9 +1,11 @@
-﻿using ApiKeyVault.Application.Dtos.ApiKeyAccess;
+﻿using ApiKeyVault.Api.Hubs;
+using ApiKeyVault.Application.Dtos.ApiKeyAccess;
 using ApiKeyVault.Application.Interfaces.Services;
 using ApiKeyVault.Application.ReadModels;
 using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace ApiKeyVault.Api.Controllers
@@ -14,9 +16,12 @@ namespace ApiKeyVault.Api.Controllers
     public class ApiKeyAccessController : ControllerBase
     {
         private readonly IApiKeyAccessService _apiKeyAccessService;
-        public ApiKeyAccessController(IApiKeyAccessService apiKeyAccessService)
+        private readonly IHubContext<TeamHub> _hubcontext;
+
+        public ApiKeyAccessController(IApiKeyAccessService apiKeyAccessService, IHubContext<TeamHub> hubContext)
         {
             _apiKeyAccessService = apiKeyAccessService;
+            _hubcontext = hubContext;
         }
 
         [HttpPost("keys/accesses")]
@@ -30,6 +35,11 @@ namespace ApiKeyVault.Api.Controllers
             }
 
             var result = await _apiKeyAccessService.CreateAsync(teamId, userId, request);
+
+            if (result.Status == GrantAccessResult.Success)
+            {
+                await _hubcontext.Clients.Group($"team-{teamId}").SendAsync("ApiKeysChanged");
+            }
 
             return result.Status switch
             {
@@ -63,6 +73,8 @@ namespace ApiKeyVault.Api.Controllers
             {
                 return BadRequest();
             }
+
+            await _hubcontext.Clients.Group($"team-{teamId}").SendAsync("ApiKeysChanged");
 
             return NoContent();
         }
