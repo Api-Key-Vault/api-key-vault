@@ -24,8 +24,7 @@
   --pattern-color-2: #393939;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root[data-theme="dark"] {
     --surface: #311448;
     --surface-elevated: #3D2355;
     --border: #000000;
@@ -45,7 +44,6 @@
     --pattern-color-1: #3B304F;
     --pattern-color-2: #302346;
   }
-}
 
 @theme inline {
   --color-surface: var(--surface);
