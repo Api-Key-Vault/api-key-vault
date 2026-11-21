@@ -173,6 +173,28 @@ namespace ApiKeyVault.Application.Services
             return true;
         }
 
+        public async Task<bool> DeleteAsync(int teamId, int apiKeyId, string userId)
+        {
+            var member = await _teamMemberRepository.GetByTeamAndUserAsync(teamId, userId);
+
+            if (member is null || !IsOwner(member))
+            {
+                return false;
+            }
+
+            var apiKey = await _apiKeyRepository.GetByIdAsync(teamId, apiKeyId);
+
+            if (apiKey is null)
+            {
+                return false;
+            }
+
+            _apiKeyRepository.Remove(apiKey);
+            await _apiKeyRepository.SaveChangesAsync();
+
+            return true;
+        }
+
         private static bool CanAccess(ApiKey apiKey, TeamMember member)
         {
             return apiKey.TeamId == member.TeamId &&

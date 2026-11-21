@@ -52,6 +52,11 @@ namespace ApiKeyVault.Infrastructure.Persistence.Repositories
             _dbContext.ApiKeys.Update(apiKey);
         }
 
+        public void Remove(ApiKey apiKey)
+        {
+            _dbContext.ApiKeys.Remove(apiKey);
+        }
+
         public Task SaveChangesAsync()
         {
             return _dbContext.SaveChangesAsync();

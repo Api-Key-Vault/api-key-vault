@@ -142,5 +142,25 @@ namespace ApiKeyVault.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{apiKeyId:int}")]
+        public async Task<IActionResult> DeleteAsync(int teamId, int apiKeyId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var deleted = await _apiKeyService.DeleteAsync(teamId, apiKeyId, userId);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }
