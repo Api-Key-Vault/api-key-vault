@@ -15,7 +15,7 @@ export function TeamCard({
 }: TeamCardProps) {
 	return (
 		<button onClick={onClick} className="contents">
-			<Card className="p-4 w-75 h-60 flex flex-col items-center gap-4 hover:cursor-pointer transition-transform! hover:scale-105! transform!">
+			<Card className="m-0! p-4 w-full h-60 flex flex-col items-center gap-4 hover:cursor-pointer transition-transform! hover:scale-105! transform!">
 				<h3 className="text-text text-xl mb-5">{name}</h3>
 				<div className="flex flex-row items-center gap-4 w-4/5 border-2! border-border! bg-surface-elevated px-2 py-1">
 					<span className="pixelart-icons-font-key text-secondary-accent text-[20px]!" />

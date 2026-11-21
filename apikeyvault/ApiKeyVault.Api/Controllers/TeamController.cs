@@ -52,6 +52,21 @@ namespace ApiKeyVault.Api.Controllers
 			return Ok(allTeams);
 		}
 
+		[HttpGet("members/count")]
+		public async Task<ActionResult<int>> GetUniqueMemberCount()
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (userId is null)
+			{
+				return Unauthorized();
+			}
+
+			var count = await _teamService.GetUniqueMemberCountAsync(userId);
+
+			return Ok(count);
+		}
+
 		[HttpPost]
 		public async Task<ActionResult<TeamResponse>> CreateTeam([FromBody] CreateTeamRequest createTeamRequest)
         {
@@ -68,7 +83,6 @@ namespace ApiKeyVault.Api.Controllers
             {
                 return Forbid();
             }
-
 
 			return StatusCode(StatusCodes.Status201Created, newTeam);
 		}
@@ -93,8 +107,6 @@ namespace ApiKeyVault.Api.Controllers
 			return Ok(updatedTeam);
 		}
 
-
-
 		[HttpDelete("{teamId:int}")]
 		public async Task<ActionResult> DeleteTeam(int teamId)
 		{
@@ -113,7 +125,6 @@ namespace ApiKeyVault.Api.Controllers
 			}
 
 			return NoContent();
-
 		}
     }
 }
