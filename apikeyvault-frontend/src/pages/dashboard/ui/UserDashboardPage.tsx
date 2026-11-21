@@ -52,7 +52,7 @@
 
     const teamIds = userTeams.map((team) => team.id);
 
-    useTeamSignalR(teamIds, refreshTeams, teamIds.length > 0);
+    useTeamSignalR(teamIds, refreshTeams, teamIds.length > 0, refreshTeams);
 
     return (
       <section className="flex flex-col items-center w-full min-h-screen p-8 gap-8">
