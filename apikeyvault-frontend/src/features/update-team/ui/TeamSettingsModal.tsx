@@ -121,7 +121,6 @@ export function TeamSettingsModal({
     }
   }
 
-
   function handleRemoveMember(teamMemberId: number) {
     const confirmed = window.confirm("Are you sure you want to remove this team member?");
 
@@ -227,9 +226,6 @@ export function TeamSettingsModal({
                 </div>
               ))}
 
-              {/* TODO: Show "Leave Team" for Owner with a warning popup explaining that
-                  the team and all its members are deleted when the Owner leaves.
-                  Requires backend support first. */}
               {!isOwner && (
                 <PrimaryButton
                   className="m-auto! inline-flex! w-[75%] cursor-pointer items-center justify-center whitespace-nowrap bg-error! text-sm! leading-none! text-error-on-color!"

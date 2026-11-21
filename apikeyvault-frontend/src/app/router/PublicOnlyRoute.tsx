@@ -30,8 +30,5 @@ export function PublicOnlyRoute({children} : PropsWithChildren){
                     return <Navigate to={ROUTE_PATHS.DASHBOARD} replace />
     }
         }
-            
     }
-
-   
 }
