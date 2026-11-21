@@ -8,6 +8,7 @@ export type {
 
 export {
   createApiKey,
+  deleteApiKey,
   getApiKeys,
   revealApiKey,
   revokeApiKey,
