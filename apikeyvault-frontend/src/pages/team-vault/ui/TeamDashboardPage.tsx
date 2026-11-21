@@ -424,8 +424,12 @@ function TeamDashboardContent({
   const [apiKeyAccesses, setApiKeyAccesses] = useState<ApiKeyAccess[]>([]);
   const [isMutating, setIsMutating] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
-  const [copiedFeedback, setCopiedFeedback] = useState<CopyFeedback | null>(null);
-  const [memberActionError, setMemberActionError] = useState<string | null>(null);
+  const [copiedFeedback, setCopiedFeedback] = useState<CopyFeedback | null>(
+    null,
+  );
+  const [memberActionError, setMemberActionError] = useState<string | null>(
+    null,
+  );
   const mountedRef = useRef(false);
 
   const currentMember = members.find((member) => member.userId === authUserId);
@@ -445,10 +449,23 @@ function TeamDashboardContent({
     }
   }, [teamId]);
 
+  const refreshKeys = useCallback(async () => {
+    try {
+      const updatedKeys = await getApiKeys(teamId);
+
+      if (mountedRef.current) {
+        setKeys(updatedKeys);
+      }
+    } catch (error) {
+      console.error("Failed to refresh keys", error);
+    }
+  },[teamId]);
+
   useTeamSignalR(
     [teamId],
     refreshMembers,
     hasValidTeamId && authUserId !== null,
+    refreshKeys
   );
 
   const clearCopyForKey = useCallback((apiKeyId: number) => {
@@ -463,7 +480,10 @@ function TeamDashboardContent({
     setMemberActionError(null);
   }, []);
 
-  async function handleCopyKey(apiKey: ApiKey, isRowValid: () => boolean): Promise<string | null> {
+  async function handleCopyKey(
+    apiKey: ApiKey,
+    isRowValid: () => boolean,
+  ): Promise<string | null> {
     if (!mountedRef.current || !isRowValid()) {
       return null;
     }
@@ -599,7 +619,10 @@ function TeamDashboardContent({
     }
   }
 
-  async function handleUpdateTeam(teamId: number, name: string): Promise<boolean> {
+  async function handleUpdateTeam(
+    teamId: number,
+    name: string,
+  ): Promise<boolean> {
     if (!isOwner || !hasValidTeamId || isMutating || team === null) {
       return false;
     }
@@ -614,13 +637,14 @@ function TeamDashboardContent({
     setModalError(null);
 
     try {
-      const updatedTeam = await updateTeam(teamId, { name: trimmedName })
+      const updatedTeam = await updateTeam(teamId, { name: trimmedName });
       if (!mountedRef.current) {
         return false;
       }
 
       setTeam((currentTeam) =>
-        currentTeam ? { ...currentTeam, name: updatedTeam.name } : currentTeam);
+        currentTeam ? { ...currentTeam, name: updatedTeam.name } : currentTeam,
+      );
       return true;
     } catch {
       if (mountedRef.current) {
@@ -834,7 +858,9 @@ function TeamDashboardContent({
         return;
       }
 
-      setMembers((currentMember) => currentMember.filter((member) => member.id !== teamMemberId));
+      setMembers((currentMember) =>
+        currentMember.filter((member) => member.id !== teamMemberId),
+      );
     } catch {
       if (mountedRef.current) {
         setMemberActionError("Could not remove member. Try again.");
@@ -891,7 +917,7 @@ function TeamDashboardContent({
       return true;
     } catch {
       if (mountedRef.current) {
-        setModalError("The team could not be deleted.")
+        setModalError("The team could not be deleted.");
       }
       return false;
     } finally {
@@ -900,9 +926,6 @@ function TeamDashboardContent({
       }
     }
   }
-
-
-
 
   const renderStatusCard = (message: string, canRetry: boolean) => (
     <div role="alert">
@@ -991,9 +1014,9 @@ function TeamDashboardContent({
                 bg="var(--color-surface-elevated)"
                 className="inline-flex! cursor-pointer items-center justify-center px-1.5! text-[10px]! text-text! min-[600px]:self-end min-[900px]:px-2.5! min-[900px]:text-[13px]!"
                 onClick={() => {
-                  setModalError(null)
-                  setMemberActionError(null)
-                  setIsSettingsOpen(true)
+                  setModalError(null);
+                  setMemberActionError(null);
+                  setIsSettingsOpen(true);
                 }}
               >
                 Settings
@@ -1075,7 +1098,7 @@ function TeamDashboardContent({
           isOwner={isOwner}
           onClose={() => {
             clearMemberActionError();
-            setIsSettingsOpen(false)
+            setIsSettingsOpen(false);
           }}
           onLeave={handleLeaveTeam}
           onDeleteTeam={handleDeleteTeam}
