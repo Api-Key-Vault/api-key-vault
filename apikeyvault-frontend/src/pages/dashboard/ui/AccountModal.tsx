@@ -1,5 +1,7 @@
 import { Card, DeleteButton } from "@/shared/ui";
 import { useAuth } from "@/features/auth";
+import { Button } from "pixel-retroui";
+import { useTheme } from "@/features/toggle-theme";
 
 type AccountModalProps ={
     onClose?: () => void;
@@ -7,6 +9,7 @@ type AccountModalProps ={
 
 export function AccountModal({ onClose }: AccountModalProps) {
 	const { state: authState } = useAuth();
+	const { theme, toggleTheme } = useTheme();
 	const displayName = authState.status === "authenticated" ? authState.user.displayName : "Unknown user";
 
 	return (
@@ -32,6 +35,25 @@ export function AccountModal({ onClose }: AccountModalProps) {
 				</div>
 
 				<hr className="border-t-2! border-dashed! border-text-muted!" />
+
+				<p className="text-text text-left">Theme</p>
+
+				<Button
+					bg="var(--color-surface-elevated)"
+					textColor="var(--color-text)"
+					borderColor="var(--color-border)"
+					shadow="var(--color-shadow)"
+					onClick={toggleTheme}
+					className="flex items-center justify-center gap-3 w-[90%]"
+				>
+					<span
+					aria-hidden="true"
+					className={`${theme === "dark" ? "pixelart-icons-font-moon" : "pixelart-icons-font-sun"} text-[24px]!`}
+					/>
+					{theme === "dark" ? "Dark mode" : "Light mode"}
+				</Button>
+
+                <hr className="border-t-2! border-dashed! border-text-muted!" />
 
 				<p className="text-text text-left">Danger zone</p>
 				{/* TODO: Add function to delete the account. */}
