@@ -53,7 +53,6 @@ export function AuthProvider ({children } : PropsWithChildren){
                 console.error("Error logging out: " + error.message);                
             }            
         //Potential TODO: feedback to user if not able to logout, offer retry?
-        //TODO: add disabled on logout button if (state.status === "loading")
         }  
     }, [state]);
 
