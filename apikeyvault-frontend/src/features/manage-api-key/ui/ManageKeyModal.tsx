@@ -110,11 +110,6 @@ export function ManageKeyModal({
           onClose();
         }
       }}
-      onClick={(event) => {
-        if (!isSubmitting && event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
       ref={dialogRef}
     >
       <div className="w-full max-w-lg">
