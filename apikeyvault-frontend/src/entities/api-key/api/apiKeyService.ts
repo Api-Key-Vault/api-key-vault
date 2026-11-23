@@ -25,6 +25,10 @@ export async function revokeApiKey(teamId: number, keyId: number): Promise<void>
   await apiClient.post(`teams/${teamId}/keys/${keyId}/revoke`);
 }
 
+export async function deleteApiKey(teamId: number, keyId: number): Promise<void> {
+  await apiClient.delete(`teams/${teamId}/keys/${keyId}`);
+}
+
 export async function revealApiKey(teamId: number, keyId: number): Promise<RevealApiKeyResponse> {
   const response = await apiClient.post<RevealApiKeyResponse>(`teams/${teamId}/keys/${keyId}/reveal`);
   return response.data;

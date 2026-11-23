@@ -1,6 +1,5 @@
 import {Button} from "pixel-retroui";
 
-// TODO: Add function to open profile menu.
 type AvatarButtonProps = {
     onClick?: () => void;
 };

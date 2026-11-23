@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Card, DeleteButton, PrimaryButton, ErrorMessage } from "@/shared/ui";
 import type { Team, TeamMember } from "@/entities/team";
 import { createInvite } from "@/features/create-invite";
+import { useAuth } from "@/features/auth";
 
 type TeamSettingsModalProps = {
   actionError?: string | null;
@@ -34,7 +35,9 @@ export function TeamSettingsModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [teamName, setTeamName] = useState(team.name);
   const [isUpdating, setIsUpdating] = useState(false);
-
+  const { state: authState } = useAuth();
+  const displayName =  authState.status === "authenticated" ? authState.user.displayName : null;
+  const inviteLinkMessage = `${displayName ?? "A team owner"} has invited you to join the team ${teamName} in Api Key Vault:\n`
 
 
   useEffect(() => {
@@ -73,7 +76,7 @@ export function TeamSettingsModal({
 
   async function handleCopyInviteLink() {
     try {
-      await navigator.clipboard.writeText(inviteUrl);
+      await navigator.clipboard.writeText(inviteLinkMessage + inviteUrl);
       setIsCopied(true);
     } catch {
       setInviteError("Failed to copy invite link.");
@@ -117,7 +120,6 @@ export function TeamSettingsModal({
       setIsUpdating(false);
     }
   }
-
 
   function handleRemoveMember(teamMemberId: number) {
     const confirmed = window.confirm("Are you sure you want to remove this team member?");
@@ -224,9 +226,6 @@ export function TeamSettingsModal({
                 </div>
               ))}
 
-              {/* TODO: Show "Leave Team" for Owner with a warning popup explaining that
-                  the team and all its members are deleted when the Owner leaves.
-                  Requires backend support first. */}
               {!isOwner && (
                 <PrimaryButton
                   className="m-auto! inline-flex! w-[75%] cursor-pointer items-center justify-center whitespace-nowrap bg-error! text-sm! leading-none! text-error-on-color!"

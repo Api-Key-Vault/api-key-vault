@@ -16,6 +16,7 @@ export type ManageKeyModalProps = {
   teamMembers: TeamMember[];
   onClose: () => void;
   onRevoke: () => void;
+  onDelete: () => void;
   onSave: (update: ManageKeyUpdate) => void;
   onAddAccess: (teamId: number, apiKeyId: number, teamMemberId: number) => void;
   onRevokeAccess : (teamId: number, access: ApiKeyAccess) => void

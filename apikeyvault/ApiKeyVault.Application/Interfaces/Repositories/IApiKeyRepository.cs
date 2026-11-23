@@ -9,6 +9,7 @@ namespace ApiKeyVault.Application.Interfaces.Repositories
         Task AddAsync(ApiKey apiKey);
         Task RemoveByTeamAsync(int teamId);
         void Update(ApiKey apiKey);
+        void Remove(ApiKey apiKey);
         Task SaveChangesAsync();
     }
 }

@@ -5,6 +5,7 @@ export function useTeamSignalR(
   teamIds: number[],
   onMembersChanged: () => void,
   enabled: boolean,
+  onKeysChanged?: () => void,
 ) {
   const teamIdsKey = teamIds.join(",");
 
@@ -18,11 +19,37 @@ export function useTeamSignalR(
 
     const connection = new HubConnectionBuilder()
       .withUrl(hubUrl, { withCredentials: true })
+      .withAutomaticReconnect()
       .build();
 
     connection.on("TeamMembersChanged", () => {
       if (!cancelled) {
         onMembersChanged();
+      }
+    });
+
+    connection.on("ApiKeysChanged", () => {
+      if (!cancelled && onKeysChanged) {
+        onKeysChanged();
+      }
+    });
+
+    connection.onreconnected(async () => {
+      try {
+        for (const id of teamIds) {
+          if (cancelled) break;
+          await connection.invoke("JoinTeam", id);
+        }
+
+        if (!cancelled) {
+          onMembersChanged();
+
+          if (onKeysChanged) {
+            onKeysChanged();
+          }
+        }
+      } catch (error) {
+        console.error("Failed to rejoin SignalR teams:", error);
       }
     });
 
@@ -52,5 +79,5 @@ export function useTeamSignalR(
         void connection.stop();
       }
     };
-  }, [teamIdsKey, onMembersChanged, enabled]);
+  }, [teamIdsKey, onMembersChanged, enabled, onKeysChanged]);
 }

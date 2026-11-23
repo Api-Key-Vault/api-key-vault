@@ -62,6 +62,11 @@ namespace ApiKeyVault.Application.Services
 			return await _teamRepository.GetAllTeamsByUserIdAsync(userId);
 		}
 
+		public async Task<int> GetUniqueMemberCountAsync(string userId)
+		{
+			return await _teamRepository.GetUniqueMemberCountAsync(userId);
+		}
+
 		public async Task<TeamResponse?> CreateTeamAsync(CreateTeamRequest request, string userId)
 		{
 
@@ -115,9 +120,6 @@ namespace ApiKeyVault.Application.Services
 
 			return true;
 		}
-
-
-
 
 		public async Task<TeamResponse?> UpdateTeam(UpdateTeamRequest updateTeamRequest, string userId, int teamId)
 		{

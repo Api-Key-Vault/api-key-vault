@@ -9,5 +9,6 @@ export type AuthState =
 
 export interface AuthContextValue{
         state: AuthState;
-        logout : () => Promise<void>
+        logout: () => Promise<void>
+        retry: () => void
     }
