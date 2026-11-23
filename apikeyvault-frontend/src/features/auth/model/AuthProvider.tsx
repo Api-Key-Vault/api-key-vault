@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } fro
 import { AuthContext } from './AuthContext';
 import type { AuthContextValue, AuthState } from "./types";
 import { getCurrentUser, logout as logoutRequest } from '../api/authService';
+import { ErrorMessage } from "@/shared/ui";
 
 export function AuthProvider ({children } : PropsWithChildren){
     const [state, setState] = useState<AuthState>({status: "loading"});
     const [attempt, setAttempt] = useState(0);
+    const [isLogoutErrorVisible, setIsLogoutErrorVisible] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -56,7 +58,7 @@ export function AuthProvider ({children } : PropsWithChildren){
             if(error instanceof Error){
                 console.error("Error logging out: " + error.message);
             }
-        //Potential TODO: feedback to user if not able to logout, offer retry?
+        setIsLogoutErrorVisible(true);
         }
     }, [state]);
 
@@ -68,6 +70,12 @@ export function AuthProvider ({children } : PropsWithChildren){
     return(
         <AuthContext.Provider value={value}>
             {children}
+            {isLogoutErrorVisible && (
+                <ErrorMessage
+                    message="We could not log you out. Please try again."
+                    onClose={() => setIsLogoutErrorVisible(false)}
+                />
+            )}
         </AuthContext.Provider>
     )
 }
